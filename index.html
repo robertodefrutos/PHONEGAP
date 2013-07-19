@@ -2,64 +2,791 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Aplic. Web de jQuery Mobile</title>
-<link href="jquery-mobile/jquery.mobile-1.0.min.css" rel="stylesheet" type="text/css"/>
-<script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
-<script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>
+<title>Preference Club</title>
+
+<!--<link href="jquery-mobile/jquery.mobile-1.0.min.css" rel="stylesheet" type="text/css"/>-->
+<!--<link href="bootstrap/bootstrap.css" rel="stylesheet" type="text/css"/>
+-->
+<!--
+-->
+<link href="bootstrap/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+<script src="bootstrap/js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
+
+<!--<script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
+<script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>-->
+
+<script>
+
+function ocultarElemento(elemento){
+	elemento.parentNode.style.display = 'none';
+	document.getElementById('footer2').setAttribute('data-position','fixed');
+}
+
+window.onload = function() {
+  var contenido = document.getElementsByClassName("ui-btn-inner ui-btn-corner-all");
+  for(var i= 0; i<contenido.length; i++){
+		contenido[i].style.fontSize="35px";
+	}
+	var contenido2 = document.getElementsByClassName("ui-link-inherit");
+	for(var i= 0; i<contenido2.length; i++){
+		contenido2[i].style.fontSize="35px";
+	}
+};
+
+function continuarPedidoUno(){
+	document.getElementById("pedido1").style.display = 'none';
+	document.getElementById("pedido2").style.display = 'block';
+	document.getElementById("botonPedido").style.display = 'block';	
+	document.getElementById("pedido3").style.display = 'none';	
+}
+
+function continuarPedidoUnoVolver(){
+	document.getElementById("pedido1").style.display = 'block';
+	document.getElementById("pedido2").style.display = 'none';
+	document.getElementById("botonPedido").style.display = 'none';	
+	document.getElementById("pedido3").style.display = 'none';
+}
+
+function anadoProducto(){
+	var numero = document.getElementById("contadorArticulos").innerHTML;	
+	var total = parseFloat(numero)+parseFloat(1);
+	document.getElementById("contadorArticulos").innerHTML = total;
+}
+
+function quitoProducto(){
+	var numero = document.getElementById("contadorArticulos").innerHTML;	
+	var total = parseFloat(numero)-parseFloat(1);
+	document.getElementById("contadorArticulos").innerHTML = total;
+}
+
+function excluirEnPedido(objeto){
+	objeto.style.display='none';
+	var pedido = document.getElementById("totalProductos");
+	var elemento = objeto.getElementsByTagName('a');
+	pedido.innerHTML +="<li class=\"ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c\" onclick=\"incluirEnPedido(this)\" data-theme=\"c\"><div class=\"ui-btn-inner ui-li\" aria-hidden=\"true\"><div class=\"ui-btn-text\"><a class=\"ui-link-inherit\" href=\"#\" style=\"font-size: 35px;\">"+elemento[0].innerHTML+"</a></div><span class=\"ui-icon ui-icon-arrow-r ui-icon-shadow\"></span></div></li>";;
+	quitoProducto();
+}
+
+function incluirEnPedido(objeto,unidades){
+	objeto.style.display='none';
+	var pedido = document.getElementById("cestaPedido");
+	var elemento = objeto.getElementsByTagName('a');	
+	
+	pedido.innerHTML +="<li  onclick=\"detallesCesta(this)\" class=\"ui-btn ui-btn-icon-right ui-li-has-delete ui-li ui-li-has-count ui-btn-up-c\" style=\"height:85px; font-size:35px;\" data-theme=\"c\"><div class=\"ui-btn-inner ui-li \" aria-hidden=\"true\"><div class=\"ui-btn-text\"><a class=\"ui-link-inherit\" data-inline=\"true\" data-transition=\"fade\" href=\"#\">"+elemento[0].innerHTML+"<span class=\"ui-li-count ui-btn-up-c ui-btn\" name=\"unidadesArticulo\" style=\"height:40px; font-size:25px;\">"+unidades+" unidades</span></a></div><span class=\"ui-icon ui-icon-delete-r ui-icon-shadow\"></span></div></li>";
+	
+	anadoProducto();
+}
+
+function irPedido(){
+	var unidadesArticulo = document.getElementsByName('unidadesArticulo');
+	for(var i = 0; i<unidadesArticulo.length;i++){
+		unidadesArticulo[i].style.display='block';
+	}
+	document.getElementById("pedido1").style.display = 'none';
+	document.getElementById("pedido2").style.display = 'none';
+	document.getElementById("pedido3").style.display = 'block';
+	document.getElementById("botonPedido").style.display = 'block';	
+}
+function atrasPedido(){
+	var unidadesArticulo = document.getElementsByName('unidadesArticulo');
+	for(var i = 0; i<unidadesArticulo.length;i++){
+		unidadesArticulo[i].style.display='none';
+	}
+	document.getElementById("pedido1").style.display = 'none';
+	document.getElementById("pedido2").style.display = 'block';
+	document.getElementById("pedido3").style.display = 'none';
+	document.getElementById("botonPedido").style.display = 'block';	
+}
+
+
+function detallesCesta(objeto){
+	var alertDialog=document.getElementById("alertDialog");
+	var textoDialog=document.getElementById("textoDialog");
+	
+	var elemento = objeto.getElementsByTagName('a');
+	var datos =  elemento[0].innerHTML;
+	var datosFinal = datos.split('<span');
+	textoDialog.innerHTML = datosFinal[0]+"";
+	
+	$('#alertDialog').dialog('open');
+}
+
+$(function ()
+{
+	 // Error Dialog
+        $('#alertDialog').dialog({
+            autoOpen: false,
+            width: 480,
+            buttons:
+			{
+                "Aceptar": function ()
+				{
+                    $(this).dialog("close");
+					document.location.href="reposo.php";
+                },
+                "Borrar": function () {
+                    $(this).dialog("close");
+					$(this).style.backgroundColor = '#F00';
+                }
+            },
+            show: "fade",
+            hide: "drop",
+            draggable: true,
+            resizable: false,
+            modal: true
+        });
+});
+</script>
+
 </head> 
 <body> 
 
+<div id="alertDialog" style="background-color:#FFF" title="Informacion">
+    <h3 id="textoDialog">Texo informativo aquí ...</h3>
+    <input id="unidades" style="height:60px; width:100%;text-align:center;" placeholder="10" type="text" autofocus ">
+</div>    	
+
 <div data-role="page" id="page">
-	<div data-role="header">
-		<h1>Página uno</h1>
+    <div data-role="panel" id="defaultpanel">
+		<h1>Preference Club</h1>
+        <h3>Aplicación de administración de tu local, con la que podrás realizar tus pedidos desde el movil, ver el estado de los mismos y acceder en tiempo real a la facturación de tu local.</h3>
+        <a href="#page" data-rel="close" data-role="button" data-theme="a" data-icon="delete" data-inline="true">Cerrar</a>
+	</div>
+    
+	<div data-role="header" data-fullscreen="true"  style="font-size:25px; height:120px; background:#9A1642">
+     <a href="#defaultpanel" data-role="button" data-inline="true" data-iconpos="notext" data-icon="bars"></a>
+		<h1 style="font-size:25px;" style="font-size:25px;">Preference Club</h1>
 	</div>
 	<div data-role="content">	
 		<ul data-role="listview">
-			<li><a href="#page2">Página dos</a></li>
-            <li><a href="#page3">Página tres</a></li>
-			<li><a href="#page4">Página cuatro</a></li>
+			<li style="height:120px; font-size:35px;"><a href="#page2">Mis Puntos</a></li>
+            <li style="height:120px; font-size:35px;"><a href="#page3">Mis Pedidos</a></li>
+			<li style="height:120px; font-size:35px;"><a href="#page4">Realizar pedido nuevo</a></li>
 		</ul>		
 	</div>
-	<div data-role="footer">
-		<h4>Pie de página</h4>
+	<div id="footer" data-role="footer" data-position="fixed"  style="font-size:25px; height:120px; background:#9A1642">
+		<h4 style="font-size:25px">www.preferenceclub.com</h4>
 	</div>
 </div>
 
-<div data-role="page" id="page2">
-	<div data-role="header">
-		<h1>Página dos</h1>
+<div data-role="page" data-position="fixed" id="page2">
+	<div data-role="header"  style=" font-size:25px; height:120px; background:#9A1642">
+    <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
+		<h1 style="font-size:25px;">Mis Puntos</h1>
 	</div>
 	<div data-role="content">	
-		Contenido		
+		<div class="ui-bar ui-bar-e">
+        	<h5 style="height:120px; font-size:35px;">Recuerda que puedes canjear los puntos en tu proximo pedido y conseguir productos ¡gratis!</h5>
+            <a href="#" onclick="ocultarElemento(this);" style="float:right" data-role="button" data-icon="delete" data-inline="true" data-iconpos="notext">Dismiss</a>
+       	</div>
+        
+        <ul data-role="listview" data-inset="true" data-divider-theme="d">
+            <li style="height:60px; font-size:25px;" data-role="list-divider">PERNORD RICARD</li>
+                <li style="height:120px; font-size:35px;"><a href="#fabricante1" data-transition="fade" data-inline="true">745 puntos</a></li>
+            <li style="height:60px; font-size:25px;" data-role="list-divider">DIAGEO</li>
+                <li style="height:120px; font-size:35px;"><a href="#fabricante2" data-transition="fade" data-inline="true">230 puntos</a></li>
+        </ul>
+        
+        <ul data-role="listview" data-count-theme="c" data-inset="true">
+            <li style="height:85px; font-size:35px;"><a href="#fabricante1" data-transition="fade" data-inline="true">PERNORD RICARD <span style="height:40px; font-size:25px;" class="ui-li-count">745 puntos</span></a></li>
+            <li style="height:85px; font-size:35px;"><a href="#fabricante2" data-transition="fade" data-inline="true">DIAGEO <span class="ui-li-count" style="height:40px; font-size:25px;">230 puntos</span></a></li>
+        </ul>
+                
+        
 	</div>
-	<div data-role="footer">
-		<h4>Pie de página</h4>
+	<div id="footer2" data-role="footer" data-position="fixed"  style="font-size:25px; height:120px; background:#9A1642;width:100%;position:absolute;bottom:0;left:0;">
+		<h4 style="font-size:25px">www.preferenceclub.com</h4>
 	</div>
 </div>
 
 <div data-role="page" id="page3">
-	<div data-role="header">
-		<h1>Página tres</h1>
+	<div data-role="header" data-position="fixed"  style="font-size:25px; height:120px; background:#9A1642">
+    <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
+		<h1 style="font-size:25px;">Mis Pedidos</h1>
 	</div>
 	<div data-role="content">	
-		Contenido		
+        
+        <ul data-role="listview" data-inset="true" data-divider-theme="e">
+            <li style="height:30px" class="ui-grid-c" data-role="list-divider">
+            	<span style="height:60px; font-size:25px;" class="ui-block-a">Fecha</span>
+                <span style="height:60px; font-size:25px; text-align:center" class="ui-block-b">Total</span>
+                <span style="height:60px; font-size:25px;" class="ui-block-c">Proveedor</span>
+                <span style="height:60px; font-size:25px; text-align:center" class="ui-block-d">Estado</span>
+            </li>
+             <li>
+             <a  href="#detallePedido1" style="height:30px">
+             	<div  class="ui-grid-c">
+            	<span style="height:60px; font-size:25px;" class="ui-block-a">Sin fecha de recepción</span>
+                <span style="height:60px; font-size:25px; text-align:center" class="ui-block-b">209.75€</span>
+                <span style="height:60px; font-size:25px;" class="ui-block-c">Asturianos de Sanabria</span>
+                <span style="height:60px; font-size:25px; text-align:center" class="ui-block-d"><span style="color:#F00">Borrador</span></span>
+                  </div>
+                </a>
+            </li>
+             <li>
+            	<a href="#detallePedido2" style="height:30px">
+                	<div  class="ui-grid-c">
+                    <span style="height:60px; font-size:25px;" class="ui-block-a">Viernes 19/07/2013</span>
+                    <span style="height:60px; font-size:25px; text-align:center" class="ui-block-b">366.63€</span>
+                    <span style="height:60px; font-size:25px;" class="ui-block-c">Asturianos de Sanabria</span>
+                    <span style="height:60px; font-size:25px; text-align:center" class="ui-block-d"><span  style="color:#090">Solicitado</span></span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+       <!-- <div class="ui-grid-a">
+            <div class="ui-block-a"><div class="ui-bar ui-bar-e" style="height:60px">Block A</div></div>
+            <div class="ui-block-b"><div class="ui-bar ui-bar-e" style="height:60px">Block B</div></div>
+        </div>-->
 	</div>
-	<div data-role="footer">
-		<h4>Pie de página</h4>
+	<div data-role="footer" data-position="fixed"  style="font-size:25px; height:120px; background:#9A1642">
+		<h4 style="font-size:25px">www.preferenceclub.com</h4>
 	</div>
 </div>
 
-<div data-role="page" id="page4">
-	<div data-role="header">
-		<h1>Página cuatro</h1>
+
+
+<div data-role="page" id="fabricante1">
+	<div data-role="header"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+    <a href="#page2" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
+		<h1 style="font-size:25px;">TRANSACCIONES PERNORD RICARD</h1>
 	</div>
 	<div data-role="content">	
-		Contenido		
+		<ul data-role="listview" data-inset="true">
+            <li>
+                <h2>Acumuluación 200 puntos</h2>
+                <span>Pedido número:44</span> <span style="float:right">02/07/2013   10:48</span>
+            </li>
+            <li>
+               <h2>Acumuluación 175 puntos</h2>
+                <span>Pedido número:45</span> <span style="float:right">08/07/2013   17:33</span>
+            </li>
+            <li>
+               <h2>Acumuluación 370 puntos</h2>
+                <span>Pedido número:46</span> <span style="float:right">16/07/2013   12:24</span>
+            </li>
+        </ul>
 	</div>
-	<div data-role="footer">
-		<h4>Pie de página</h4>
+	<div data-role="footer"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+		<h4 style="font-size:25px">www.preferenceclub.com</h4>
 	</div>
 </div>
+
+
+<div data-role="page" id="fabricante2">
+	<div data-role="header"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+    <a href="#page2" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
+		<h1 style="font-size:25px;">TRANSACCIONES DIAGEO</h1>
+	</div>
+	<div data-role="content">	
+		  <ul data-role="listview" data-inset="true" data-divider-theme="e">
+            <li data-role="list-divider">Acumuluación 130 puntos</li>
+            <li>
+            	<span>Pedido número:44</span> <span style="float:right">02/07/2013   10:48</span>
+            </li>
+            <li data-role="list-divider">Acumuluación 100 puntos</li>
+            <li>
+            	<span>Pedido número:45</span> <span style="float:right">08/07/2013   17:33</span>
+            </li>
+        </ul>
+      
+	</div>
+	<div data-role="footer"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+		<h4 style="font-size:25px">www.preferenceclub.com</h4>
+	</div>
+</div>
+
+
+<div data-role="page" id="detallePedido1">
+	<div data-role="header"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+    <a href="#page3" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
+		<h1 style="font-size:25px;">Nº PEDIDO: 44</h1>
+	</div>
+	<div data-role="content">	
+    
+    	
+            
+            	<div class="ui-grid-b">
+                    <div class="ui-block-a" style="text-align:right;">
+                        <p>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:15px;">Descripción:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-top:5px;">Proveedor:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:5px;">Almacen:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:5px;">Fecha de Pedido:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:5px;">Fecha para la recepción:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:5px;">Fecha de entrega:</strong><br/>
+                        </p>
+                    </div>
+                    <div class="ui-block-b" style="text-align:left">
+                        <p>
+                            <span  style="font-size:25px;">---</span><br/>
+                            <span style="font-size:25px;">Asturianos de Sanabria, S.L.</span><br/>
+                            <span style="font-size:25px;"> C/ Modesto Lafuente, 26</span><br/>
+                            <span style="font-size:25px;">02/07/2013 10:48:36</span><br/>
+                            <span style="font-size:25px;">Sin fecha para la recepción</span><br/>
+                            <span style="font-size:25px;">Sin fecha de entrega</span><br/>
+                        </p>
+                    </div>
+                    <div class="ui-block-c"><h1 style="font-size:25px; color:#F00;text-align:center;"> BORRADOR</h1></div>
+                </div><!-- /grid-a -->
+            
+        
+    
+		<h1 style="font-size:25px;" style="text-align:center">Productos del pedido</h1>
+          
+      	<ul data-role="listview" data-inset="true" data-divider-theme="e">
+            <li style="height:50px" class="ui-grid-c" data-role="list-divider">
+            	<div class="ui-block-a">
+                   <span style="font-size:20px;">Producto</span>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>Unidades</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Unidad</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-c">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>Precio</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Base Imp.</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-d">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>IVA</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Total</span></div>
+                    </div>
+                </div>
+
+            </li>
+             <li style="height:50px" class="ui-grid-c">
+            	<div class="ui-block-a">
+                     <span style="font-size:20px;">Havana Club 3 años (Bot 0,7)</span>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>3,00</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Udn</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-c">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>9,05</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>27,15</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-d">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>5,70</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>32,85</span></div>
+                    </div>
+                </div>
+            </li>
+             <li style="height:50px" class="ui-grid-c">
+            	<div class="ui-block-a">
+                    <span style="font-size:20px;" >Havana Club 7 años (Bot 0,7)</span>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>10,00</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Uds</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-c">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>14,62</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>146,20</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-d">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>30,70</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>176,90</span></div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        
+        <h1 style="font-size:25px;" style="text-align:center">Desglose por impuestos</h1>
+        
+       <ul data-role="listview" data-inset="true" data-divider-theme="e">
+            <li style="height:50px" data-role="list-divider">
+            
+            	<div class="ui-grid-d">
+                    <div class="ui-block-a">
+                     	<span style="font-size:20px;">Tipo Impuesto</span>
+                    </div>
+                    <div class="ui-block-b">
+                    	<span style="font-size:20px;">Base Imp.</span>
+                    </div>
+                    <div class="ui-block-c">
+                    	<span style="font-size:20px;">%Impuesto</span>
+                    </div>
+                    <div class="ui-block-d">
+                    	<span style="font-size:20px;">Importe Impuesto</span>
+                    </div>
+                    <div class="ui-block-e">
+                    	<span style="font-size:20px;">SubTotal</span>
+                    </div>
+                </div>
+
+            </li>
+             <li style="height:50px">
+            
+            	<div class="ui-grid-d">
+                    <div class="ui-block-a">
+                     	<span style="font-size:20px;">IVA 21%</span>
+                    </div>
+                    <div class="ui-block-b">
+                    <span style="font-size:20px;">173,35</span>
+                    </div>
+                    <div class="ui-block-c">
+                    <span style="font-size:20px;">21,00</span>
+                    </div>
+                    <div class="ui-block-d">
+                    <span style="font-size:20px;">36,40</span>
+                    </div>
+                    <div class="ui-block-e">
+                    <span style="font-size:20px;">209.75</span>
+                    </div>
+                </div>
+
+            </li>
+             <li style="height:50px" data-role="list-divider">
+            
+            	<div class="ui-grid-b">
+                    <div class="ui-block-a">
+                     	<span style="font-size:20px;">Total Bases Imp.</span>
+                    </div>
+                    <div class="ui-block-b">
+                    <span style="font-size:20px;">Total Impuestos</span>
+                    </div>
+                    <div class="ui-block-c">
+                    <span style="font-size:20px;">TOTAL</span>
+                    </div>
+                </div>
+
+            </li>
+            <li style="height:50px">
+            
+            	<div class="ui-grid-b">
+                    <div class="ui-block-a">
+                     	<span style="font-size:20px;">173,35</span>
+                    </div>
+                    <div class="ui-block-b">
+                    <span style="font-size:20px;">36,40</span>
+                    </div>
+                    <div class="ui-block-c">
+                    <span style="font-size:20px;">209,75</span>
+                    </div>
+                </div>
+
+            </li>
+
+        </ul>
+        
+        
+        
+        
+      
+	</div>
+	<div data-role="footer"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+		<h4 style="font-size:25px">www.preferenceclub.com</h4>
+	</div>
+</div>
+
+<div data-role="page" id="detallePedido2">
+	<div data-role="header"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+    <a href="#page3" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
+		<h1 style="font-size:25px;">Nº PEDIDO: 44</h1>
+	</div>
+	<div data-role="content">	
+    
+    	
+            
+            	<div class="ui-grid-b">
+                    <div class="ui-block-a" style="text-align:right;">
+                        <p>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:15px;">Descripción:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-top:5px;">Proveedor:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:5px;">Almacen:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:5px;">Fecha de Pedido:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:5px;">Fecha para la recepción:</strong><br/>
+                            <strong style="font-size:25px; margin-right:10px; margin-bottom:5px;">Fecha de entrega:</strong><br/>
+                        </p>
+                    </div>
+                    <div class="ui-block-b" style="text-align:left">
+                        <p>
+                            <span  style="font-size:25px;">---</span><br/>
+                            <span style="font-size:25px;">Asturianos de Sanabria, S.L.</span><br/>
+                            <span style="font-size:25px;"> C/ Modesto Lafuente, 26</span><br/>
+                            <span style="font-size:25px;">02/07/2013 10:48:36</span><br/>
+                            <span style="font-size:25px;">Sin fecha para la recepción</span><br/>
+                            <span style="font-size:25px;">Sin fecha de entrega</span><br/>
+                        </p>
+                    </div>
+                    <div class="ui-block-c"><h1 style="font-size:25px; color:#090;text-align:center;"> SOLICITADO</h1></div>
+                </div><!-- /grid-a -->
+            
+        
+    
+		<h1 style="font-size:25px;" style="text-align:center">Productos del pedido</h1>
+          
+      	<ul data-role="listview" data-inset="true" data-divider-theme="e">
+            <li style="height:50px" class="ui-grid-c" data-role="list-divider">
+            	<div class="ui-block-a">
+                   <span style="font-size:20px;">Producto</span>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>Unidades</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Unidad</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-c">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>Precio</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Base Imp.</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-d">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>IVA</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Total</span></div>
+                    </div>
+                </div>
+
+            </li>
+             <li style="height:50px" class="ui-grid-c">
+            	<div class="ui-block-a">
+                     <span style="font-size:20px;">Havana Club 3 años (Bot 0,7)</span>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>3,00</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Udn</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-c">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>9,05</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>27,15</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-d">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>5,70</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>32,85</span></div>
+                    </div>
+                </div>
+            </li>
+             <li style="height:50px" class="ui-grid-c">
+            	<div class="ui-block-a">
+                    <span style="font-size:20px;" >Havana Club 7 años (Bot 0,7)</span>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>10,00</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>Uds</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-c">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>14,62</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>146,20</span></div>
+                    </div>
+                </div>
+
+                <div class="ui-block-d">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a" style="font-size:20px; width:50%;text-align:center;"><span>30,70</span></div>
+                        <div class="ui-block-b" style="font-size:20px; width:50%;text-align:center;"><span>176,90</span></div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        
+        <h1 style="font-size:25px;" style="text-align:center">Desglose por impuestos</h1>
+        
+       <ul data-role="listview" data-inset="true" data-divider-theme="e">
+            <li style="height:50px" data-role="list-divider">
+            
+            	<div class="ui-grid-d">
+                    <div class="ui-block-a">
+                     	<span style="font-size:20px;">Tipo Impuesto</span>
+                    </div>
+                    <div class="ui-block-b">
+                    	<span style="font-size:20px;">Base Imp.</span>
+                    </div>
+                    <div class="ui-block-c">
+                    	<span style="font-size:20px;">%Impuesto</span>
+                    </div>
+                    <div class="ui-block-d">
+                    	<span style="font-size:20px;">Importe Impuesto</span>
+                    </div>
+                    <div class="ui-block-e">
+                    	<span style="font-size:20px;">SubTotal</span>
+                    </div>
+                </div>
+
+            </li>
+             <li style="height:50px">
+            
+            	<div class="ui-grid-d">
+                    <div class="ui-block-a">
+                     	<span style="font-size:20px;">IVA 21%</span>
+                    </div>
+                    <div class="ui-block-b">
+                    <span style="font-size:20px;">173,35</span>
+                    </div>
+                    <div class="ui-block-c">
+                    <span style="font-size:20px;">21,00</span>
+                    </div>
+                    <div class="ui-block-d">
+                    <span style="font-size:20px;">36,40</span>
+                    </div>
+                    <div class="ui-block-e">
+                    <span style="font-size:20px;">209.75</span>
+                    </div>
+                </div>
+
+            </li>
+             <li style="height:50px" data-role="list-divider">
+            
+            	<div class="ui-grid-b">
+                    <div class="ui-block-a">
+                     	<span style="font-size:20px;">Total Bases Imp.</span>
+                    </div>
+                    <div class="ui-block-b">
+                    <span style="font-size:20px;">Total Impuestos</span>
+                    </div>
+                    <div class="ui-block-c">
+                    <span style="font-size:20px;">TOTAL</span>
+                    </div>
+                </div>
+
+            </li>
+            <li style="height:50px">
+            
+            	<div class="ui-grid-b">
+                    <div class="ui-block-a">
+                     	<span style="font-size:20px;">173,35</span>
+                    </div>
+                    <div class="ui-block-b">
+                    <span style="font-size:20px;">36,40</span>
+                    </div>
+                    <div class="ui-block-c">
+                    <span style="font-size:20px;">209,75</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+      
+	</div>
+	<div data-role="footer"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+		<h4 style="font-size:25px">www.preferenceclub.com</h4>
+	</div>
+</div>
+
+
+<div data-role="page" id="page4">
+	<div data-role="header"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642">
+    <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
+		<h1 style="font-size:25px;">Realizar pedido nuevo</h1>
+     	
+        <a id="botonPedido" style="display:none" onclick="irPedido();" data-role="button" data-icon="grid" data-iconpos="right"  data-theme="e" data-inline="true"><span id="contadorArticulos" class="ui-li-count" style="font-size:25px;">0</span></a>
+	</div>
+	<div id="pedido1" data-role="content">	
+		
+        <label style="font-size:25px;" for="select-choice-a" class="select">Aplicación:</label>
+        <select style="height:50px;" name="select-choice-a" id="select-choice-a" data-native-menu="false">
+            <option value="dmo1">DEMO OFICINA</option>
+            <option value="dmo2">DEMO OFICINA 2</option>
+        </select>
+        <label style="font-size:25px;" for="select-choice-a" class="select">Almacén:</label>
+        <select name="select-choice-a" id="select-choice-a" data-native-menu="false">
+            <option value="sin">--Sin almacén--</option>
+            <option value="alm1">Almacén DEMO 1</option>
+            <option value="alm1">Almacén DEMO 2</option>
+        </select>
+        <label style="font-size:25px;" for="select-choice-a" class="select">Proveedor:</label>
+        <select name="select-choice-a" id="select-choice-a" data-native-menu="false">
+            <option value="pro1">Asturianos de Sanabria, S.L</option>
+            <option value="pro2">Otro proveedor</option>
+        </select>        
+        </br>
+        </br>
+        </br>
+        </br>
+        <p>
+        	<a onClick="continuarPedidoUno();" href="#" data-role="button" data-theme="b">Continuar con el pedido</a>
+        </p>        
+	</div>
+    <div id="pedido2" style="display:none" data-role="content">
+    	
+ 
+        <div class="ui-bar ui-bar-e">
+            <h5 style="height:60px; font-size:25px;">
+                No olvides que desde aquí solo podrás pedir tus productos favoritos
+                </br>
+                Si no encuentras el producto que buscas recuerda que debes ponerlo como favorito en la plataforma de Preference Club para tu proximo pedido.
+            </h5>
+            <a href="#" onclick="ocultarElemento(this);" style="float:right" data-role="button" data-icon="delete" data-inline="true" data-iconpos="notext">Dismiss</a>
+       	</div>
+         </br>
+        <div class="ui-bar ui-bar-b">
+            <h5 style="height:60px; font-size:25px;">
+            	Añade tus productos a tu pedido, estos se incluirán con las últimas unidades que necesitaste y desde tu pedido podrás modificarlas antes de completarlo.
+            </h5>
+            <a href="#" onclick="ocultarElemento(this);" style="float:right" data-role="button" data-icon="delete" data-inline="true" data-iconpos="notext">Dismiss</a>
+       	</div>
+        
+
+        <ul id="totalProductos" data-role="listview" data-inset="true">
+            <li onclick="incluirEnPedido(this,10)"><a value="Havana Club 3 años (Bot 0,7)"  href="#">Havana Club 3 años (Bot 0,7)</a></li>
+            <li onclick="incluirEnPedido(this,10)"><a value="Havana Club 10 años (Bot 0,7)" href="#">Havana Club 10 años (Bot 0,7)</a></li>
+            <li onclick="incluirEnPedido(this,10)"><a value="100 Pipers (Bot 0,7)" href="#">100 Pipers (Bot 0,7)</a></li>
+            <li onclick="incluirEnPedido(this,10)"><a value="Ponche Caballero (Bot 1L)" href="#">Ponche Caballero (Bot 1L)</a></li>
+            <li onclick="incluirEnPedido(this,10)"><a value="Ron Ritual (Bot 0,7)" href="#">Ron Ritual (Bot 0,7)</a></li>
+        </ul>	
+       
+        </br>
+        </br>
+        <p>
+        	<a onClick="continuarPedidoUnoVolver();" href="#" data-role="button" data-theme="e">Volver</a>
+        </p>        
+    </div>
+    <div id="pedido3" style="display:none" data-role="content">
+    	<ul id="cestaPedido" data-role="listview" data-inset="true">
+           
+        </ul>	
+        
+        </br>
+        </br>
+        <p>
+        	<a onClick="atrasPedido();" href="#" data-role="button" data-theme="e">Volver</a>
+        </p>  
+   	</div>
+    
+	<div data-role="footer"  data-position="fixed" style="font-size:25px; height:120px; background:#9A1642;width:100%;position:absolute;bottom:0;left:0;">
+		<h4 style="font-size:25px">www.preferenceclub.com</h4>
+	</div>
+</div>
+
 
 </body>
 </html>
