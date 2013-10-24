@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Preference Club</title>
+<title>DrinkBo</title>
 
 <!--<link href="jquery-mobile/jquery.mobile-1.0.min.css" rel="stylesheet" type="text/css"/>-->
 <!--<link href="bootstrap/bootstrap.css" rel="stylesheet" type="text/css"/>
@@ -10,13 +10,18 @@
 <!--
 -->
 <link href="bootstrap/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css"/>
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
-<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
-<script src="bootstrap/js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.3.2.css" />
 
-<!--<script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
-<script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>-->
+<!--
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="jquery-mobile/js/jquery.mobile-1.3.2.js"></script>
+<script src="bootstrap/js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
+-->
+
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+<script src="bootstrap/js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
 
 <script>
 
@@ -116,7 +121,7 @@ function detallesCesta(objeto){
 
 $(function ()
 {
-	 // Error Dialog
+	 	// Error Dialog
         $('#alertDialog').dialog({
             autoOpen: false,
             width: 300,
@@ -138,42 +143,201 @@ $(function ()
             resizable: false,
             modal: true
         });
+		
+		$('#alertDialogInfo').dialog({
+            autoOpen: false,
+            width: 300,
+            buttons:
+			{
+                "Aceptar": function ()
+				{
+                    $(this).dialog("close");					
+                }
+            },
+            show: "fade",
+            hide: "drop",
+            draggable: true,
+            resizable: false,
+            modal: true,
+			background: "#FFFFFF"
+        });
 });
+
+	function logueo(){
+		var emailLogueo = $('#emailLogueo').val();
+		var passLogueo = $('#passLogueo').val();
+		if(emailLogueo == ""){		
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El email debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (passLogueo == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La contraseña debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else{
+			/*
+			$.ajax({
+				type: "POST",
+				url: "http://www.drinkbo.com/wsMovil/returnSocio.aspx?MAI=roberto.frutos@drinkbo.net&PAS=123456",
+				data: "{ idPedido: '" + idPedido + "'}",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				beforeSend: function () {
+					//var fondo = document.getElementById('fondoModal');
+					// fondo.style.visibility = 'visible';
+				},
+				complete: function () {
+					//var fondo = document.getElementById('fondoModal');
+					//fondo.style.visibility = 'hidden';
+				},
+				success: function (response) {
+					alert(response);
+					alert(JSON.stringify(response.d));
+				}
+			});*/
+			//Si la respuesta son más de un local vamos a pageSeleccionaLocal, 
+			//si no vamos a page2 con el único local seleccionado
+			document.location.href ="#pageSeleccionaLocal";
+		}
+	}
+	function seleccionaLocal(id,nombre){
+		//Guardamos el id del local seleccionado
+		document.location.href ="#page";
+		$('#idNombreLocal').val(nombre)
+		$('#tituloPage').html(nombre);
+	}
+	
+	function misPedidos(){
+		//$.mobile.showPageLoadingMsg();
+		//$.mobile.hidePageLoadingMsg();
+		 $.ajax({
+            type: "POST",
+            url: "webservices.preferenceclub.com/WSDrinkboPedidos/pedidos.asmx/getPedidosAbiertosXML",
+            data: "{ idAplicacion: '" + $('#inputIdAplicacion').val() + "', idEstablecimiento: '" + $('#inputIdEstablecimiento').val() + "'}",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            beforeSend: function () {
+                //var fondo = document.getElementById('fondoModal');
+                // fondo.style.visibility = 'visible';
+				$.mobile.showPageLoadingMsg();
+            },
+            complete: function () {
+                //var fondo = document.getElementById('fondoModal');
+                //fondo.style.visibility = 'hidden';
+				//$.mobile.hidePageLoadingMsg();
+            },
+            success: function (response) {
+				alert(response);
+                for (var j = 0; j < response.d.length; j++) {
+                    if (response.d[j]["estado"] == 'Borrador') {
+						alert(response.d[j]["estado"]);
+                       /* bodyResumenAbiertos.innerHTML += "<tr><td><img alt='' src='img/del.png' onclick='borrarPedidoAbierto(\"" + response.d[j]["id"] + "\")' /></td><td style='display: none'>" + response.d[j]["id"] + "</td><td><a href='#' onclick='cargarPedidoSeleccionado(" + response.d[j]["id"] + "," + response.d[j]["idProveedor"] + ");'>" + response.d[j]["proveedor"] + "</a></td><td>" + response.d[j]["almacen"] + "</td><td>" + response.d[j]["importe"] + "</td><td>" + response.d[j]["fechaCreacion"] + "</td><td>" + response.d[j]["fechaRecepcion"] + "</td><td style='color: #" + response.d[j]["color"] + "'>" + response.d[j]["estado"] + "</td><td><a href='#' class='icon-print' style='cursor: pointer' onclick='imprimirPedidoAbierto(\"" + response.d[j]["id"] + "\")' ></a></td></tr> ";
+                    } else {
+                        bodyResumenAbiertos.innerHTML += "<tr><td> </td><td style='display: none'>" + response.d[j]["id"] + "</td><td><a href='#' onclick='cargarPedidoSeleccionado(" + response.d[j]["id"] + "," + response.d[j]["idProveedor"] + ");'>" + response.d[j]["proveedor"] + "</a></td><td>" + response.d[j]["almacen"] + "</td><td>" + response.d[j]["importe"] + "</td><td>" + response.d[j]["fechaCreacion"] + "</td><td>" + response.d[j]["fechaRecepcion"] + "</td><td style='color: #" + response.d[j]["color"] + "'>" + response.d[j]["estado"] + "</td><td><a href='#' class='icon-print' style='cursor: pointer' onclick='imprimirPedidoAbierto(\"" + response.d[j]["id"] + "\")' ></a></td></tr> ";
+						*/
+                    }
+                }
+            },
+			error: function (jqXHR,error, errorThrown) {  
+               if(jqXHR.status&&jqXHR.status==400){
+                    alert(jqXHR.responseText); 
+               }else{
+                   alert("Something went wrong   "+jqXHR.status + "      " + errorThrown);
+               }
+			}
+        });
+	}
 </script>
 
+<style>
+	.pagina{
+		background:#222222 !important;
+	}
+	.ui-dialog {
+		background: #FFFFFF !important;
+	}
+</style>
 </head> 
 <body> 
+
+<input type="hidden" value="73" id="inputIdAplicacion">
+<input type="hidden" value="63" id="inputIdEstablecimiento">
+<input type="hidden" value="" id="idLocal">
+<input type="hidden" value="" id="idNombreLocal">
+<div id="alertDialogInfo" style="background-color:#FFF; background:#FFFFFF !important;" title="Informacion">
+    <h3 id="alertDialogInfo">Texo informativo aquí ...</h3>    
+</div>   
 
 <div id="alertDialog" style="background-color:#FFF;" title="Informacion">
     <h3 id="textoDialog">Texo informativo aquí ...</h3>
     <input id="unidades" style="height:60px; width:100%;text-align:center;" placeholder="10" type="text" autofocus>
 </div>    	
 
+<div data-role="page" class="pagina" data-position="fixed" id="pageLogueo">
+	<div data-role="header" data-fullscreen="true" style="background:#000000">    
+		<h1>DrinkBo</h1>
+	</div>
+	<div data-role="content">
+    	<div style="text-align:center; margin-top:10%;">
+        	<img alt="" style="width:70%;" src="img/logoBL.png" />
+    	</div>
+		<div style="width: 70%; margin: 0px auto; text-align:center; margin-top:10%;">       
+        	<input type="text" style="width:70%;" name="text-basic" id="emailLogueo" value="" placeholder="Email">
+            <input type="password" style="width:70%;" name="text-basic" id="passLogueo" value="" placeholder="Contraseña">
+			<a href="#" data-role="button" onclick="logueo();" data-inline="true">Entrar</a>
+        </div>
+	</div>
+	<div id="footer2" data-role="footer" data-position="fixed"  style="background:#000000;">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+
+<div data-role="page" id="pageSeleccionaLocal">
+	<div data-role="header"  style=" background:#000000">     
+		<h1 id="titulopageSeleccionaLocal">DrinkBo</h1>
+	</div>
+	<div data-role="content">	
+		<ul data-role="listview">
+			<li><a href="#" onclick="seleccionaLocal('1','Local Demo')">Local Demo</a></li>
+            <li><a href="#" onclick="seleccionaLocal('2','Local Demo2')">Local Demo 2</a></li>
+			<li><a href="#" onclick="seleccionaLocal('3','Local Demo3')">Local Demo 3</a></li>
+		</ul>		
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+
 <div data-role="page" id="page">
     <div data-role="panel" id="defaultpanel">
-		<h1>Preference Club</h1>
-        <h3>Aplicación de administración de tu local, con la que podrás realizar tus pedidos desde el movil, ver el estado de los mismos y acceder en tiempo real a la facturación de tu local.</h3>
-        <a href="#page" data-rel="close" data-role="button" data-theme="a" data-icon="delete" data-inline="true">Cerrar</a>
+		<h1>DrinkBo</h1>
+        <h3>Aplicación de administración de tu local, con la que podrás realizar tus pedidos desde el movil, ver el estado de los mismos.</h3>
+        <div style="text-align:center;">
+        <a href="#pageLogueo"  data-role="button" data-theme="a"  data-inline="true">Logout</a>
+        <a href="#pageSeleccionaLocal"  data-role="button" data-theme="a"  data-inline="true">Cambiar local</a>
+        </div>
 	</div>
     
-	<div data-role="header" data-fullscreen="true" style=" background:#9A1642">
+	<div data-role="header"  style=" background:#000000">
      <a href="#defaultpanel" data-role="button" data-inline="true" data-iconpos="notext" data-icon="bars"></a>
-		<h1>Preference Club</h1>
+		<h1 id="tituloPage">DrinkBo</h1>
 	</div>
 	<div data-role="content">	
 		<ul data-role="listview">
 			<li><a href="#page2">Mis Puntos</a></li>
-            <li><a href="#page3">Mis Pedidos</a></li>
+            <li><a href="#" onclick="misPedidos();">Mis Pedidos</a></li>
 			<li><a href="#page4">Realizar pedido nuevo</a></li>
 		</ul>		
 	</div>
-	<div id="footer" data-role="footer" data-position="fixed"  style="background:#9A1642">
-		<h1>www.preferenceclub.com</h1>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
 <div data-role="page" data-position="fixed" id="page2">
-	<div data-role="header"  style="background:#9A1642">
+	<div data-role="header"  style="background:#000000">
     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Mis Puntos</h1>
 	</div>
@@ -197,13 +361,13 @@ $(function ()
                 
         
 	</div>
-	<div id="footer2" data-role="footer" data-position="fixed"  style="background:#9A1642;">
-		<h1>www.preferenceclub.com</h1>
+	<div id="footer2" data-role="footer" data-position="fixed"  style="background:#000000;">
+		<h1>www.drinkbo.com</h1>
 	</div>
-</div>
+</div> 
 
 <div data-role="page" id="page3">
-	<div data-role="header" data-position="fixed"  style="background:#9A1642">
+	<div data-role="header" data-position="fixed"  style="background:#000000">
     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Mis Pedidos</h1>
 	</div>
@@ -242,15 +406,15 @@ $(function ()
             <div class="ui-block-b"><div class="ui-bar ui-bar-e" style="height:60px">Block B</div></div>
         </div>-->
 	</div>
-	<div data-role="footer" data-position="fixed"  style="background:#9A1642">
-		<h1>www.preferenceclub.com</h1>
+	<div data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
 
 
 <div data-role="page" id="fabricante1">
-	<div data-role="header"  data-position="fixed" style="background:#9A1642">
+	<div data-role="header"  data-position="fixed" style="background:#000000">
     <a href="#page2" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>TRANSACCIONES PERNORD RICARD</h1>
 	</div>
@@ -270,14 +434,14 @@ $(function ()
             </li>
         </ul>
 	</div>
-	<div data-role="footer"  data-position="fixed" style="background:#9A1642">
-		<h1>www.preferenceclub.com</h1>
+	<div data-role="footer"  data-position="fixed" style="background:#000000">
+		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
 
 <div data-role="page" id="fabricante2">
-	<div data-role="header"  data-position="fixed" style="background:#9A1642">
+	<div data-role="header"  data-position="fixed" style="background:#000000">
     <a href="#page2" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>DIAGEO</h1>
 	</div>
@@ -294,14 +458,14 @@ $(function ()
         </ul>
       
 	</div>
-	<div data-role="footer"  data-position="fixed" style=" background:#9A1642">
-		<h1>www.preferenceclub.com</h1>
+	<div data-role="footer"  data-position="fixed" style=" background:#000000">
+		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
 
 <div data-role="page" id="detallePedido1">
-	<div data-role="header"  data-position="fixed" style="background:#9A1642">
+	<div data-role="header"  data-position="fixed" style="background:#000000">
     <a href="#page3" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Nº PEDIDO: 44</h1>
 	</div>
@@ -453,13 +617,13 @@ $(function ()
         
       
 	</div>
-	<div data-role="footer"  data-position="fixed" style="background:#9A1642">
-		<h1>www.preferenceclub.com</h1>
+	<div data-role="footer"  data-position="fixed" style="background:#000000">
+		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
 <<div data-role="page" id="detallePedido2">
-	<div data-role="header"  data-position="fixed" style="background:#9A1642">
+	<div data-role="header"  data-position="fixed" style="background:#000000">
     <a href="#page3" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Nº PEDIDO: 44</h1>
 	</div>
@@ -611,14 +775,14 @@ $(function ()
         
       
 	</div>
-	<div data-role="footer"  data-position="fixed" style="background:#9A1642">
-		<h1>www.preferenceclub.com</h1>
+	<div data-role="footer"  data-position="fixed" style="background:#000000">
+		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
 
 <div data-role="page" id="page4">
-	<div data-role="header"  data-position="fixed" style="background:#9A1642">
+	<div data-role="header"  data-position="fixed" style="background:#000000">
     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Realizar pedido</h1>
      	
@@ -657,7 +821,7 @@ $(function ()
             <h5>
                 No olvides que desde aquí solo podrás pedir tus productos favoritos
                 </br>
-                Si no encuentras el producto que buscas recuerda que debes ponerlo como favorito en la plataforma de Preference Club para tu proximo pedido.
+                Si no encuentras el producto que buscas recuerda que debes ponerlo como favorito en la plataforma de DrinkBo para tu proximo pedido.
             </h5>
             <a href="#" onclick="ocultarElemento(this);" style="float:right" data-role="button" data-icon="delete" data-inline="true" data-iconpos="notext">Dismiss</a>
        	</div>
@@ -696,8 +860,8 @@ $(function ()
         </p>  
    	</div>
     
-	<div data-role="footer"  data-position="fixed" style="background:#9A1642;">
-		<h1>www.preferenceclub.com</h1>
+	<div data-role="footer"  data-position="fixed" style="background:#000000;">
+		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
