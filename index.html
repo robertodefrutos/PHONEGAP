@@ -206,46 +206,204 @@ $(function ()
 		$('#idNombreLocal').val(nombre)
 		$('#tituloPage').html(nombre);
 	}
-	
+			
 	function misPedidos(){
-		//$.mobile.showPageLoadingMsg();
-		//$.mobile.hidePageLoadingMsg();
-		 $.ajax({
-            type: "POST",
-            url: "webservices.preferenceclub.com/WSDrinkboPedidos/pedidos.asmx/getPedidosAbiertosXML",
-            data: "{ idAplicacion: '" + $('#inputIdAplicacion').val() + "', idEstablecimiento: '" + $('#inputIdEstablecimiento').val() + "'}",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            beforeSend: function () {
-                //var fondo = document.getElementById('fondoModal');
-                // fondo.style.visibility = 'visible';
-				$.mobile.showPageLoadingMsg();
+		
+		var url = "http://www.canalpreference.com/ws.aspx";         
+        var success = function(data){
+            var html = [];
+            /* parse JSON */
+            data = $.parseJSON(data);
+            /* loop through array */
+            $.each(data, function(index, d){           
+                html.push("Manufacturer : ", d.Manufacturer, ", ",
+                          "Sold : ", d.Sold, ", ",
+                          "Month : ", d.Month, "<br>");
+            }); 			
+            $("#tituloPage").html(html.join('')).css("background-color", "orange");
+        };
+         
+        $.ajax({
+          type: 'GET',   
+          url: url,
+          data: "{ws:''}",
+          dataType: "jsonp",
+          crossDomain: true,         
+          cache:false,
+          success: success,
+		  beforeSend: function () {
+                $.mobile.showPageLoadingMsg("a", "Cargando...");
             },
-            complete: function () {
-                //var fondo = document.getElementById('fondoModal');
-                //fondo.style.visibility = 'hidden';
-				//$.mobile.hidePageLoadingMsg();
-            },
-            success: function (response) {
-				alert(response);
-                for (var j = 0; j < response.d.length; j++) {
-                    if (response.d[j]["estado"] == 'Borrador') {
-						alert(response.d[j]["estado"]);
+			complete: function () {
+				$.mobile.hidePageLoadingMsg();
+			},	 
+          error:function(jqXHR, textStatus, errorThrown){
+            alert(errorThrown);
+          }
+        });		
+		/*    
                        /* bodyResumenAbiertos.innerHTML += "<tr><td><img alt='' src='img/del.png' onclick='borrarPedidoAbierto(\"" + response.d[j]["id"] + "\")' /></td><td style='display: none'>" + response.d[j]["id"] + "</td><td><a href='#' onclick='cargarPedidoSeleccionado(" + response.d[j]["id"] + "," + response.d[j]["idProveedor"] + ");'>" + response.d[j]["proveedor"] + "</a></td><td>" + response.d[j]["almacen"] + "</td><td>" + response.d[j]["importe"] + "</td><td>" + response.d[j]["fechaCreacion"] + "</td><td>" + response.d[j]["fechaRecepcion"] + "</td><td style='color: #" + response.d[j]["color"] + "'>" + response.d[j]["estado"] + "</td><td><a href='#' class='icon-print' style='cursor: pointer' onclick='imprimirPedidoAbierto(\"" + response.d[j]["id"] + "\")' ></a></td></tr> ";
                     } else {
                         bodyResumenAbiertos.innerHTML += "<tr><td> </td><td style='display: none'>" + response.d[j]["id"] + "</td><td><a href='#' onclick='cargarPedidoSeleccionado(" + response.d[j]["id"] + "," + response.d[j]["idProveedor"] + ");'>" + response.d[j]["proveedor"] + "</a></td><td>" + response.d[j]["almacen"] + "</td><td>" + response.d[j]["importe"] + "</td><td>" + response.d[j]["fechaCreacion"] + "</td><td>" + response.d[j]["fechaRecepcion"] + "</td><td style='color: #" + response.d[j]["color"] + "'>" + response.d[j]["estado"] + "</td><td><a href='#' class='icon-print' style='cursor: pointer' onclick='imprimirPedidoAbierto(\"" + response.d[j]["id"] + "\")' ></a></td></tr> ";
-						*/
-                    }
-                }
+		;*/
+	}	
+	
+	function misPuntos(){
+		
+		var url = "http://www.canalpreference.com/ws.aspx"; 
+         
+        $.ajax({
+          type: 'GET',   
+          url: url,
+          data:{todo:"jsonp"},
+          dataType: "jsonp",
+          crossDomain: true,         
+          cache:false,
+          success: function(data){
+			var html = [];
+			/* parse JSON */
+			data = $.parseJSON(data);
+			/* loop through array */
+			$.each(data, function(index, d){  
+				//	Creamos elemento a elemento         
+				// d.idFabricante;
+ 				// d.puntos;
+			});
+		},
+		  beforeSend: function () {
+                $.mobile.showPageLoadingMsg("a", "Cargando...");
             },
-			error: function (jqXHR,error, errorThrown) {  
-               if(jqXHR.status&&jqXHR.status==400){
-                    alert(jqXHR.responseText); 
-               }else{
-                   alert("Something went wrong   "+jqXHR.status + "   //   " + errorThrown);
-               }
+			complete: function () {
+				$.mobile.hidePageLoadingMsg();
+			},	 
+          error:function(jqXHR, textStatus, errorThrown){
+            alert(errorThrown);
+          }
+        });	
+	}
+	
+	
+	function misPuntos(){
+		
+		var url = "http://www.canalpreference.com/ws.aspx?jsonp=callbackFunction"; 
+         
+        $.ajax({
+          type: 'GET',   
+          url: url,
+          data:{todo:"jsonp"},
+          dataType: "jsonp",
+          crossDomain: true,         
+          cache:false,
+          success: function(data){
+			var html = [];
+			/* parse JSON */
+			data = $.parseJSON(data);
+			/* loop through array */
+			$.each(data, function(index, d){  
+				//	Creamos elemento a elemento         
+				// d.idFabricante;
+ 				// d.puntos;
+			});
+		},
+		  beforeSend: function () {
+				$.mobile.showPageLoadingMsg("a", "Cargando...");
+			},
+			complete: function () {
+				$.mobile.hidePageLoadingMsg();
+			},	 
+		  error:function(jqXHR, textStatus, errorThrown){
+			alert(errorThrown);
+		  }
+		});	
+	}
+	
+	//var datos = "ws=getProveedoresXML&idEstablecimiento=63";          "
+	function WSFuncion(datos){		
+		var url = "http://www.canalpreference.com/ws/wsPedidos.aspx?"+datos;
+		//var url = "http://www.canalpreference.com/ws/wsPedidos.aspx?"+datos;
+		var dataFinal = '';
+		return $.ajax({
+		  type: 'GET',   
+		  url: url,
+		  dataType: "jsonp",
+		  crossDomain: true,         
+		  cache:false,
+		  async: false,
+		  success: function(data){			
+			/* parse JSON */
+			//dataFinal = $.parseJSON(data);
+			//$.each(dataFinal, function(index, d){				
+			//});	
+			},
+			beforeSend: function () {
+				$.mobile.showPageLoadingMsg("a", "Cargando...");
+			},
+			complete: function () {
+				$.mobile.hidePageLoadingMsg();
+			},	 
+			error:function(jqXHR, textStatus, errorThrown){
+				alert(jqXHR.status+'     /    '+errorThrown);
 			}
-        });
+		});			
+	}
+	
+	function proveedores(){
+		var datos = "ws=getProveedoresXML&idEstablecimiento=63"
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var proveedores = '';
+			$.each(dataFinal, function(index, d){
+				proveedores += "<li class=\"ui-btn ui-btn-up-c ui-btn-icon-right ui-li-has-arrow ui-li ui-first-child ui-last-child\" data-theme=\"c\" data-iconpos=\"right\" data-icon=\"arrow-r\" data-wrapperels=\"div\" data-iconshadow=\"true\" data-shadow=\"false\" data-corners=\"false\"><div class=\"ui-btn-inner ui-li\"><div class=\"ui-btn-text\"><a class=\"ui-link-inherit\" href=\"#\" onclick=\"seleccionaProveedor('"+d.id+"','"+d.nombre+"')\">"+d.nombre+"</a></div><span class=\"ui-icon ui-icon-arrow-r ui-icon-shadow\">&nbsp;</span></div></li>";
+			});
+			$('#listaProveedores').html(proveedores);
+		});
+		document.location.href ="#pageProveedores";
+	}
+	
+	
+	
+	
+	
+	/*
+	articulo.id
+	articulo.name
+	articulo.description
+	articulo.bottling 
+	articulo.old_price
+	articulo.current_price
+	articulo.pum_price
+	string ruta
+	articulo.image
+	articulo.tradeId
+	articulo.tradeName
+	articulo.tradePointsA
+	articulo.tradePointsC
+	articulo.tradeIdAcuerdo
+	*/
+	function getProductosFav(){		
+		var datos = "ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var proveedores = $('#listaProductos').html();
+			$.each(dataFinal, function(index, d){
+				productos += "<li class=\"ui-btn ui-btn-up-c ui-btn-icon-right ui-li-has-arrow ui-li ui-first-child ui-last-child\" data-theme=\"c\" data-iconpos=\"right\" data-icon=\"arrow-r\" data-wrapperels=\"div\" data-iconshadow=\"true\" data-shadow=\"false\" data-corners=\"false\"><div class=\"ui-btn-inner ui-li\"><div class=\"ui-btn-text\"><a class=\"ui-link-inherit\" href=\"#\" onclick=\"seleccionaProveedor('"+d.id+"','"+d.nombre+"')\">"+d.nombre+"</a></div><span class=\"ui-icon ui-icon-arrow-r ui-icon-shadow\">&nbsp;</span></div></li>";
+			});
+			$('#listaProductos').html(productos);
+		});
+		document.location.href ="#pageProveedores";
+	}
+	
+	
+	function seleccionaProveedor(id,nombre){
+		$('#idProveedor').val(id);
+		$('#nombreProveedor').val(nombre);
+		document.location.href ="#pageProductos";
+	}
+	
+	function registro(){
+		alert('Registro');
 	}
 </script>
 
@@ -256,12 +414,36 @@ $(function ()
 	.ui-dialog {
 		background: #FFFFFF !important;
 	}
+	.ui-loading .ui-loader {
+   		display: block;
+		width: 100%;
+		height: 100%;
+		top: 0px !important;
+		left: 0px;
+		text-align: center;
+		background-color: #000000;
+		margin: 0px auto !important;
+	}
+	.ui-loader .ui-icon {
+		background-color: rgb(0, 0, 0);
+		display: block;
+		margin: 20% auto 0px;
+		width: 44px;
+		height: 44px;
+		padding: 1px;
+		border-radius: 36px 36px 36px 36px;
+	}
 </style>
 </head> 
-<body> 
+<body>
+
+
+<input type="hidden" value="73" id="idProveedor">
+<input type="hidden" value="63" id="nombreProveedor">
 
 <input type="hidden" value="73" id="inputIdAplicacion">
 <input type="hidden" value="63" id="inputIdEstablecimiento">
+
 <input type="hidden" value="" id="idLocal">
 <input type="hidden" value="" id="idNombreLocal">
 <div id="alertDialogInfo" style="background-color:#FFF; background:#FFFFFF !important;" title="Informacion">
@@ -284,10 +466,56 @@ $(function ()
 		<div style="width: 70%; margin: 0px auto; text-align:center; margin-top:10%;">       
         	<input type="text" style="width:70%;" name="text-basic" id="emailLogueo" value="" placeholder="Email">
             <input type="password" style="width:70%;" name="text-basic" id="passLogueo" value="" placeholder="Contraseña">
+            
 			<a href="#" data-role="button" onclick="logueo();" data-inline="true">Entrar</a>
+            <br />
+            <a href="#pageRegistro" data-role="button" data-inline="true" style="bottom:0px;">Registro</a>
         </div>
 	</div>
 	<div id="footer2" data-role="footer" data-position="fixed"  style="background:#000000;">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+
+<div data-role="page" id="pageRegistro">
+	<div data-role="header"  style=" background:#000000">
+     <a href="#pageLogueo" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+		<h1 id="titulopageSeleccionaLocal">Registro nuevo usuario</h1>
+	</div>
+	<div data-role="content">	
+        <input type="text" style="width:70%;" name="text-basic" id="nombreRegistro" value="" placeholder="Nombre">
+        <input type="text" style="width:70%;" name="text-basic" id="apellidosRegistro" value="" placeholder="Apellidos">
+        <input type="text" style="width:70%;" name="text-basic" id="emailRegistro" value="" placeholder="Email">
+        <input type="text" style="width:70%;" name="text-basic" id="fechaRegistro" value="" placeholder="Fecha Nacimiento">
+        <input type="text" style="width:70%;" name="text-basic" id="sexoRegistro" value="" placeholder="Sexo">
+        <input type="password" style="width:70%;" name="text-basic" id="passRegistro" value="" placeholder="Contraseña">
+        
+        <a href="#pageRegistro2" data-role="button" data-inline="true" style="bottom:0px;">Siguiente</a>
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+<div data-role="page" id="pageRegistro2">
+	<div data-role="header"  style=" background:#000000">
+     <a href="#pageRegistro" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+		<h1 id="titulopageSeleccionaLocal">Registro nuevo usuario</h1>
+	</div>
+	<div data-role="content">	
+        <input type="text" style="width:70%;" name="text-basic" id="cifRegistro" value="" placeholder="CIF">
+        <input type="text" style="width:70%;" name="text-basic" id="denominacionRegistro" value="" placeholder="Denominación">
+        <input type="text" style="width:70%;" name="text-basic" id="razonRegistro" value="" placeholder="Razon Social">
+        <input type="text" style="width:70%;" name="text-basic" id="dirRegistro" value="" placeholder="Dirección Social">
+        <input type="text" style="width:70%;" name="text-basic" id="codigoRegistro" value="" placeholder="C.P">
+        <input type="text" style="width:70%;" name="text-basic" id="poblacionRegistro" value="" placeholder="Población">
+        <input type="text" style="width:70%;" name="text-basic" id="provinciaRegistro" value="" placeholder="Provincia">
+        <input type="text" style="width:70%;" name="text-basic" id="telRegistro" value="" placeholder="Teléfono">
+        
+        <a href="#" data-role="button" data-inline="true" onclick="registro();" style="bottom:0px;">Guardar</a>
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
 		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
@@ -327,8 +555,8 @@ $(function ()
 	<div data-role="content">	
 		<ul data-role="listview">
 			<li><a href="#page2">Mis Puntos</a></li>
-            <li><a href="#" onclick="misPedidos();">Mis Pedidos</a></li>
-			<li><a href="#page4">Realizar pedido nuevo</a></li>
+            <li><a href="#page3" onclick="misPedidos();">Mis Pedidos</a></li>
+			<li><a href="#" onclick="proveedores();">Realizar pedido nuevo</a></li>
 		</ul>		
 	</div>
 	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
@@ -865,6 +1093,46 @@ $(function ()
 	</div>
 </div>
 
+<!-------------------------------------REALIZAR PEDIDO------------------------------------------------------------->
+
+<div data-role="page" id="pageProveedores">
+	<div data-role="header"  style=" background:#000000">  
+    <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+		<h1 id="titulopageSeleccionaLocal">Seleccionar Proveedor</h1>
+	</div>
+	<div data-role="content">	
+		<ul data-role="listview" id="listaProveedores">
+			<!--Lista de los proveedores-->
+		</ul>		
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+<div data-role="page" id="pageProductos">
+	<div data-role="header"  style=" background:#000000">  
+    <a href="#pageProveedores" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+		<h1 id="titulopageSeleccionaLocal"></h1>
+	</div>
+	<div data-role="content">	
+		<ul data-role="listview" id="listaProductos">
+			<!--Lista de los proveedores-->
+            <li><a href="#">
+            <div>
+            <img alt="" style="width:50px; height:50px; float:left;" src="img/botella_demo.jpg"></img>
+            <p style="float:left; margin-left:20px; margin-top: 5px; font-size: 20px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">Ballantines</span><br /><span style="font-weight:500; margin-right:10px;">Ron</span><span> Bot 0.7</span></p>
+           
+            <div data-role="button" data-theme="e" data-inline="true" style="float:right; width: 84px;">Canje</div>
+            </div>
+             <p style="margin-top:8px; margin-bottom:0px; margin-right:20px; font-size:34px; font-weight:bold; float:right;"><span>9.95</span> €</p>
+            </a></li>
+		</ul>		
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
 
 </body>
 </html>
