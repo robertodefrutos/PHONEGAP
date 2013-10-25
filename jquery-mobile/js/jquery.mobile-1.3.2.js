@@ -6787,7 +6787,7 @@ $.mobile.document.bind( "pagecreate create", function( e ) {
 (function( $, undefined ) {
 
 $.mobile.listview.prototype.options.filter = false;
-$.mobile.listview.prototype.options.filterPlaceholder = "Filter items...";
+$.mobile.listview.prototype.options.filterPlaceholder = "Filtrar productos";
 $.mobile.listview.prototype.options.filterTheme = "c";
 $.mobile.listview.prototype.options.filterReveal = false;
 // TODO rename callback/deprecate and default to the item itself as the first argument
