@@ -5,8 +5,8 @@
 <title>DrinkBo</title>
 
 <!--<link href="jquery-mobile/jquery.mobile-1.0.min.css" rel="stylesheet" type="text/css"/>-->
-<!--<link href="bootstrap/bootstrap.css" rel="stylesheet" type="text/css"/>
--->
+<link href="bootstrap/bootstrap.css" rel="stylesheet" type="text/css"/>
+
 <!--
 -->
 <link href="bootstrap/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css"/>
@@ -23,6 +23,11 @@
 <script src="jquery-mobile/js/jquery.mobile-1.3.2.js"></script>
 <script src="bootstrap/js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
 
+
+<link rel="stylesheet" type="text/css" href="http://dev.jtsage.com/cdn/datebox/latest/jqm-datebox.min.css" /> 
+<script type="text/javascript" src="http://dev.jtsage.com/cdn/datebox/latest/jqm-datebox.core.min.js"></script>
+<script type="text/javascript" src="http://dev.jtsage.com/cdn/datebox/latest/jqm-datebox.mode.calbox.min.js"></script>
+<script type="text/javascript" src="http://dev.jtsage.com/cdn/datebox/i18n/jquery.mobile.datebox.i18n.es-ES.utf8.js"></script>
 <script>
 
 function ocultarElemento(elemento){
@@ -119,10 +124,8 @@ function detallesCesta(objeto){
 	$('#alertDialog').dialog('open');
 }
 
-$(function ()
-{
-	
-		
+	$(function ()
+	{		
 		$('#alertUnidadesProducto').dialog({
             autoOpen: false,
             width: 300,
@@ -130,10 +133,33 @@ $(function ()
 			{
                 "Aceptar": function ()
 				{
-                    $(this).dialog("close");					
+                    aceptarUnidades('#alertUnidadesProducto');					
                 },
-                "Borrar": function () {
+                "Cancelar": function () {
                     $(this).dialog("close");
+                }
+            },
+            show: "fade",
+            hide: "drop",
+            draggable: true,
+            resizable: false,
+            modal: true
+        });
+		
+		$('#alertUnidadesProductoPedido').dialog({
+            autoOpen: false,
+            width: 500,
+            buttons:
+			{
+                "Aceptar": function ()
+				{
+                    aceptarUnidades('#alertUnidadesProductoPedido')			
+                },
+                "Cancelar": function () {
+                    $(this).dialog("close");
+                },
+				"Borrar": function () {
+                     borrarProducto();	
                 }
             },
             show: "fade",
@@ -197,28 +223,7 @@ $(function ()
 			textoDialog.innerHTML = "La contraseña debe completarse.";			
 			$('#alertDialogInfo').dialog('open');
 		}else{
-			/*
-			$.ajax({
-				type: "POST",
-				url: "http://www.drinkbo.com/wsMovil/returnSocio.aspx?MAI=roberto.frutos@drinkbo.net&PAS=123456",
-				data: "{ idPedido: '" + idPedido + "'}",
-				contentType: "application/json; charset=utf-8",
-				dataType: "json",
-				beforeSend: function () {
-					//var fondo = document.getElementById('fondoModal');
-					// fondo.style.visibility = 'visible';
-				},
-				complete: function () {
-					//var fondo = document.getElementById('fondoModal');
-					//fondo.style.visibility = 'hidden';
-				},
-				success: function (response) {
-					alert(response);
-					alert(JSON.stringify(response.d));
-				}
-			});*/
-			//Si la respuesta son más de un local vamos a pageSeleccionaLocal, 
-			//si no vamos a page2 con el único local seleccionado
+	
 			document.location.href ="#pageSeleccionaLocal";
 		}
 	}
@@ -228,81 +233,177 @@ $(function ()
 		$('#idNombreLocal').val(nombre)
 		$('#tituloPage').html(nombre);
 	}
-			
-	function misPedidos(){
-		
-		var url = "http://www.canalpreference.com/ws.aspx";         
-        var success = function(data){
-            var html = [];
-            /* parse JSON */
-            data = $.parseJSON(data);
-            /* loop through array */
-            $.each(data, function(index, d){           
-                html.push("Manufacturer : ", d.Manufacturer, ", ",
-                          "Sold : ", d.Sold, ", ",
-                          "Month : ", d.Month, "<br>");
-            }); 			
-            $("#tituloPage").html(html.join('')).css("background-color", "orange");
-        };
-         
-        $.ajax({
-          type: 'GET',   
-          url: url,
-          data: "{ws:''}",
-          dataType: "jsonp",
-          crossDomain: true,         
-          cache:false,
-          success: success,
-		  beforeSend: function () {
-                $.mobile.showPageLoadingMsg("a", "Cargando...");
-            },
-			complete: function () {
-				$.mobile.hidePageLoadingMsg();
-			},	 
-          error:function(jqXHR, textStatus, errorThrown){
-            alert(errorThrown);
-          }
-        });		
-		/*    
-                       /* bodyResumenAbiertos.innerHTML += "<tr><td><img alt='' src='img/del.png' onclick='borrarPedidoAbierto(\"" + response.d[j]["id"] + "\")' /></td><td style='display: none'>" + response.d[j]["id"] + "</td><td><a href='#' onclick='cargarPedidoSeleccionado(" + response.d[j]["id"] + "," + response.d[j]["idProveedor"] + ");'>" + response.d[j]["proveedor"] + "</a></td><td>" + response.d[j]["almacen"] + "</td><td>" + response.d[j]["importe"] + "</td><td>" + response.d[j]["fechaCreacion"] + "</td><td>" + response.d[j]["fechaRecepcion"] + "</td><td style='color: #" + response.d[j]["color"] + "'>" + response.d[j]["estado"] + "</td><td><a href='#' class='icon-print' style='cursor: pointer' onclick='imprimirPedidoAbierto(\"" + response.d[j]["id"] + "\")' ></a></td></tr> ";
-                    } else {
-                        bodyResumenAbiertos.innerHTML += "<tr><td> </td><td style='display: none'>" + response.d[j]["id"] + "</td><td><a href='#' onclick='cargarPedidoSeleccionado(" + response.d[j]["id"] + "," + response.d[j]["idProveedor"] + ");'>" + response.d[j]["proveedor"] + "</a></td><td>" + response.d[j]["almacen"] + "</td><td>" + response.d[j]["importe"] + "</td><td>" + response.d[j]["fechaCreacion"] + "</td><td>" + response.d[j]["fechaRecepcion"] + "</td><td style='color: #" + response.d[j]["color"] + "'>" + response.d[j]["estado"] + "</td><td><a href='#' class='icon-print' style='cursor: pointer' onclick='imprimirPedidoAbierto(\"" + response.d[j]["id"] + "\")' ></a></td></tr> ";
-		;*/
-	}	
 	
-	function misPuntos(){
+	
+	function actualizarIVA() {
+        var pedido = document.getElementById("listProductosDetalle");
+        var elementosTR = pedido.getElementsByTagName("LI");
+        if (elementosTR.length == 1) {
+            $('#listImpuestoDetalle').html('');
+			$('#tituloImpuestos').html('');
+        } else {
+			$('#tituloImpuestos').html('Desglose por impuestos');
+            var totalPrecio = "0";
+            var totalImpuestos = "0";
+            var totalBaseImponible = "0";
+
+            var numIvas = "";
+            var auxIva = "";
+
+            var ivaArray = new Array();
+            var tipoImpArray = new Array();
+            var baseImpArray = new Array();
+            var impuestoArray = new Array();
+            var importeImp = new Array();
+            var subTotalArray = new Array();
+            var contador = 0;
+            for (var i = 1; i < elementosTR.length; i++) {
+                var iva = elementosTR[i].getAttribute('data-valoriva');
+                var precio = elementosTR[i].getAttribute('data-precio');
+                var nombreiva = elementosTR[i].getAttribute('data-nombreiva');
+               
+				var precioComa = precio.replace(',', '.');
+				totalPrecio = parseFloat(totalPrecio) + parseFloat(precioComa);
+				var auxImpuestos = (parseFloat(iva) * parseFloat(precioComa)) / parseFloat(100);
+				totalImpuestos = parseFloat(totalImpuestos) + parseFloat(auxImpuestos);
+				var auxBase = parseFloat(precioComa) - parseFloat(auxImpuestos)
+				totalBaseImponible = parseFloat(totalBaseImponible) + parseFloat(auxBase);
+
+				if (numIvas.indexOf(iva) == -1) {
+					numIvas = numIvas + "" + iva + ";";
+					auxIva = iva;
+
+					ivaArray[contador] = iva;
+					tipoImpArray[contador] = nombreiva;
+					baseImpArray[contador] = 0;
+					importeImp[contador] = 0;
+					subTotalArray[contador] = 0;
+					contador++;
+				}
+				for (var j = 0; j < ivaArray.length; j++) {
+					if (iva == ivaArray[j]) {
+						baseImpArray[j] = parseFloat(baseImpArray[j]) + parseFloat(precioComa);
+						importeImp[j] = parseFloat(importeImp[j]) + parseFloat(auxImpuestos);
+						subTotalArray[j] = parseFloat(subTotalArray[j]) + parseFloat(auxImpuestos) + parseFloat(precioComa);
+					}
+				}
+            }
+
+			$('#listImpuestosDetalle').html('');
+			var titulosImpuestos = '<li class="ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" role="heading"> <div class="ui-grid-c"><div class="ui-block-a"><span>Tipo Impuesto</span></div><div class="ui-block-b"><span>Base Imp.</span></div><div class="ui-block-c"><span>Importe Impuesto</span></div><div class="ui-block-d"><span>SubTotal</span></div></div></li>';
+			var titulosImpuestos2 ='<li class="ui-li ui-li-divider ui-bar-e" data-role="list-divider" role="heading"><div class="ui-grid-b"><div class="ui-block-a"><span>Total Bases Imp.</span></div><div class="ui-block-b"><span>Total Impuestos</span></div><div class="ui-block-c"><span>TOTAL</span></div></div></li>';
+			var detallesImpuesto1 = '<li class="ui-li ui-li-static ui-btn-up-c"><div class="ui-grid-c"><div class="ui-block-a"><span>         IVA 21%</span></div><div class="ui-block-b"><span>173,35</span></div><div class="ui-block-c"><span>36,40</span></div><div class="ui-block-d"><span>209.75</span></div></div></li>';
+			var detallesImpuesto2 = '<li class="ui-li ui-li-static ui-btn-up-c ui-last-child"> <div class="ui-grid-b"><div class="ui-block-a"><span>173,35  </span> </div><div class="ui-block-b"> <span>36,40</span></div><div class="ui-block-c"><span>      209,75</span></div> </div></li>';
+
+			var totalDesgloseImpuestos = ''+titulosImpuestos;
+            for (var j = 0; j < ivaArray.length; j++) {
+                totalDesgloseImpuestos += '<li class="ui-li ui-li-static ui-btn-up-c"><div class="ui-grid-c"><div class="ui-block-a"><span>'+tipoImpArray[j]+' %</span></div><div class="ui-block-b"><span>'+ baseImpArray[j].toFixed(2) +' €</span></div><div class="ui-block-c"><span>'+ importeImp[j].toFixed(2) +' €</span></div><div class="ui-block-d"><span>'+ subTotalArray[j].toFixed(2) +' €</span></div></div></li>';
+			}
+			totalDesgloseImpuestos += titulosImpuestos2;
+            
+            var auxTOTAL = parseFloat(totalPrecio) + parseFloat(totalImpuestos);
+			totalDesgloseImpuestos += '<li class="ui-li ui-li-static ui-btn-up-c ui-last-child"> <div class="ui-grid-b"><div class="ui-block-a"><span>'+ totalPrecio.toFixed(2) +' €</span> </div><div class="ui-block-b"> <span>'+ totalImpuestos.toFixed(2) +' €</span></div><div class="ui-block-c"><span> '+ auxTOTAL.toFixed(2) +' €</span></div> </div></li>'
+            
+			$('#listImpuestosDetalle').html(totalDesgloseImpuestos);
+        }
+    }
 		
-		var url = "http://www.canalpreference.com/ws.aspx"; 
-         
-        $.ajax({
-          type: 'GET',   
-          url: url,
-          data:{todo:"jsonp"},
-          dataType: "jsonp",
-          crossDomain: true,         
-          cache:false,
-          success: function(data){
-			var html = [];
-			/* parse JSON */
-			data = $.parseJSON(data);
-			/* loop through array */
-			$.each(data, function(index, d){  
-				//	Creamos elemento a elemento         
-				// d.idFabricante;
- 				// d.puntos;
+	function verPedido(idPedido, idProveedor, color){
+		$.mobile.showPageLoadingMsg("a", "Cargando...");
+		$('#idTituloDetallePedido').html('Nº PEDIDO '+idPedido);
+		$('#inputPedidoAbierto').val(idPedido);
+		$('#inputProveedor').val(idProveedor);		
+		
+		var datos = "ws=getPedidoXML&idPedido="+$('#inputPedidoAbierto').val();
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			
+			$('#estadoPedidoDetalle').html(dataFinal.estado);
+			$('#estadoPedidoDetalle').css("color",'#'+color);
+			
+			$('#descriocionDetalle').html(dataFinal.descripcion);
+			$('#descriocionProveedor').html(dataFinal.proveedor);
+			$('#descriocionAlmacen').html(dataFinal.almacen);
+			$('#descriocionFormaPago').html(dataFinal.formaPago);	
+			$('#descriocionFechaPedido').html(dataFinal.fechaPedido);
+			$('#descriocionFechaRecepcion').html(dataFinal.fechaRecepcion);
+			$('#descriocionFechaEntrega').html(dataFinal.fechaEntrega);
+			$('#descriocionComentarios').html(dataFinal.comentario);
+			$('#detalleTotal').html('TOTAL: '+dataFinal.importe);
+						
+			if (dataFinal.idEstado == "2") {
+				$('#botonSolicitarPedido').css('display', 'block');
+				$('#botonCancelarPedido').css('display', 'block');
+				$('#botonAceptarPedido').css('display', 'none');
+			}
+			else if (dataFinal.idEstado == "8") {
+				$('#botonSolicitarPedido').css('display', 'none');
+				$('#botonCancelarPedido').css('display', 'none');
+				$('#botonAceptarPedido').css('display', 'block');
+			}
+			else {
+				$('#botonSolicitarPedido').css('display', 'none');
+				$('#botonCancelarPedido').css('display', 'none');
+				$('#botonAceptarPedido').css('display', 'none');
+			}
+		});
+		var inicioListas = '<li class="ui-grid-b ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px;" role="heading"><div class="ui-block-a"> <span>Producto</span></div><div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>Unidades</span></div></div><div class="ui-block-c"><div class="ui-block-b" style=" width:50%;text-align:center;"><span> Total </span> </div></div></li>'
+		
+		$('#listProductosCanjeDetalle').html();
+		$('#listProductosDetalle').html();
+		
+		var datos = "ws=getArticulosPedidoXML&idPedido="+idPedido;
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var productosPedido = '';
+			$.each(dataFinal, function(index, d){
+				productosPedido += '<li data-precio="'+d.importe+'" data-valoriva="'+d.impuestoValor+'" data-nombreiva="'+d.impuestoValor+'" class="ui-grid-b ui-li ui-li-static ui-btn-up-c" style="height:30px;">  <div class="ui-block-a"><span>'+d.producto+'</span></div> <div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>'+d.numUnidades+'</span> </div></div><div class="ui-block-c"> <div class="ui-block-b" style=" width:50%;text-align:center;"><span>'+d.importe+' €</span> </div></div></li>';	
+				//alert(d.impuestoValor+'     '+d.importeNeto);					
 			});
-		},
-		  beforeSend: function () {
-                $.mobile.showPageLoadingMsg("a", "Cargando...");
-            },
-			complete: function () {
-				$.mobile.hidePageLoadingMsg();
-			},	 
-          error:function(jqXHR, textStatus, errorThrown){
-            alert(errorThrown);
-          }
-        });	
+			$('#listProductosDetalle').html(inicioListas+productosPedido);
+			actualizarIVA();
+		});
+		
+		
+		var datos = "ws=getArticulosPedidoCanjeXML&idPedido="+idPedido;
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data2){
+			dataFinal = $.parseJSON(data2);
+			var productosPedido = '';
+			if(dataFinal.length < 1){
+				$('#listProductosCanjeDetalle').html('');
+				$('#tituloProductosCanje').html('');
+			}else{
+				$.each(dataFinal, function(index, d){
+					productosPedido += '<li class="ui-grid-b ui-li ui-li-static ui-btn-up-c" style="height:30px;">  <div class="ui-block-a"><span>'+d.articulo+'</span></div> <div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>'+d.unidades+'</span> </div></div><div class="ui-block-c"> <div class="ui-block-b" style=" width:50%;text-align:center;"><span>'+d.canje+' puntos</span> </div></div></li>';		
+				});
+				$('#listProductosCanjeDetalle').html(inicioListas+productosPedido);
+				$('#tituloProductosCanje').html('Productos de canje');
+			}
+		});		
+		$.mobile.hidePageLoadingMsg();
+		document.location.href = "#detallePedido";
 	}
+		
+	function misPedidos(){
+		var htmlPedidos = '<li class="ui-grid-c ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px" role="heading"><span class="ui-block-a">Fecha</span><span class="ui-block-b" style="; text-align:center">Total</span><span class="ui-block-c">Proveedor </span><span class="ui-block-d" style=" text-align:right">Estado</span></li>';
+		$.mobile.showPageLoadingMsg("a", "Cargando...");
+		var datos = "ws=getPedidosAbiertosXML&idAplicacion="+$('#inputIdAplicacion').val()+"&idEstablecimiento="+$('#inputIdEstablecimiento').val();
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var pedidos = '';
+			$.each(dataFinal, function(index, d){
+				pedidos += '<li name="unPedido" onclick="verPedido(\''+d.id+'\',\''+d.idProveedor+'\',\''+d.color+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" style="height:30px" href="#"><div class="ui-grid-c"><span class="ui-block-a">'+d.fechaCreacion+'</span><span class="ui-block-b" style=" text-align:center">'+d.importe+' </span><span class="ui-block-c">'+d.proveedor+'</span><span class="ui-block-d" style=" text-align:right"><span style="color:#'+d.color+'">'+d.estado+'</span></span></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>'				
+			});
+			$('#listPedidos').html(htmlPedidos+pedidos);
+		});
+		document.location.href ="#pageMisPedidos";
+		$.mobile.hidePageLoadingMsg();
+	}	
+
 	
 	
 	function misPuntos(){
@@ -370,6 +471,7 @@ $(function ()
 	}
 	
 	function proveedores(){
+		$.mobile.showPageLoadingMsg("a", "Cargando...");
 		var datos = "ws=getProveedoresXML&idEstablecimiento=63"
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
@@ -381,52 +483,430 @@ $(function ()
 			$('#listaProveedores').html(proveedores);
 		});
 		document.location.href ="#pageProveedores";
+		$.mobile.hidePageLoadingMsg();
 	}
-	
-	
-	
-	/*
-	articulo.id
-	articulo.name
-	articulo.description
-	articulo.bottling 
-	articulo.old_price
-	articulo.current_price
-	articulo.pum_price
-	string ruta
-	articulo.image
-	articulo.tradeId
-	articulo.tradeName
-	articulo.tradePointsA
-	articulo.tradePointsC
-	articulo.tradeIdAcuerdo
-	*/
+		
 	function seleccionaProveedor(id,nombre){	
+
+		$.mobile.showPageLoadingMsg("a", "Cargando...");
+	
+		<!-- GUARDAMOS PROVEEDOR SELECCIONADO -->
+		$('#inputPedidoAbierto').val();
 		$('#idProveedor').val(id);
 		$('#nombreUndProducto').val(nombre);
+		$('#nombreUndProducto2').val(nombre);
 			
+		<!-- CARGAMOS PRODUCTOS FAVORITOS -->
 		var datos = "ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
 			var productos = '';
 			$.each(dataFinal, function(index, d){
-				productos += '<li id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+d.id+'\',\''+d.name+'\', \''+d.description+' '+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\');" href="#" style="height:57px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>'+d.current_price+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+				productos += '<li id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:57px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>'+parseFloat(d.current_price).toFixed(2)+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
 			});
 			$('#listaProductos').html(productos);
-		});		
+		});
+		
+		cargarCategoriasPadre();
+		
 		document.location.href ="#pageProductos";
+		$.mobile.hidePageLoadingMsg();
 	}
 	
-	function seleccionarProducto(id,name,description,bottling,current_price,tradeId,tradeName,tradePointsA,tradePointsC,tradeIdAcuerdo){		
-		$('#nombreUndProducto').html(name);
-		$('#descrpUndProducto').html(description+'  '+ bottling);
-		$('#alertUnidadesProducto').dialog('open');
-		$('#unidadesProducto').val($('#undCompra').html());
+	function cargarCategoriasPadre(){
+		<!-- CARGAMOS CATEGORIAS -->
+		$('#listCategorias').html('');
+		var datos = "ws=getCategoriasPadreXML"
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var categorias = '';
+			$.each(dataFinal, function(index, d){
+				categorias += '<div id="'+d.id+'CategoriasPadre" onclick="seleccionarCategoria(\''+d.id+'\',\''+d.nombre+'\')" class="ui-collapsible ui-collapsible-inset ui-collapsible-themed-content ui-collapsible-collapsed" data-role="collapsible"><h3 class="ui-collapsible-heading ui-li-heading ui-collapsible-heading-collapsed"><a data-theme="c" data-iconpos="left" data-icon="plus" data-wrapperels="span" data-iconshadow="true" data-shadow="false" data-corners="false" href="#" class="ui-collapsible-heading-toggle ui-btn ui-btn-icon-left ui-btn-up-c"><span class="ui-btn-inner"><span class="ui-btn-text">'+d.nombre+'<span class="ui-collapsible-heading-status"> </span></span><span class="ui-icon ui-icon-shadow ui-icon-plus">&nbsp;</span></span></a></h3><div aria-hidden="false" class="ui-collapsible-content ui-body-d ui-collapsible-content-collapsed" id="'+d.id+'CatHija"><ul class="ui-listview" data-divider-theme="d" data-filter-theme="c" data-filter="true" data-role="listview" id="'+d.id+'CatHijaUL"></ul></div></div>';				 
+				 /*categorias += '<li id="'+d.id+'" onclick="seleccionarCategoria(\''+d.id+'\',\''+d.nombre+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">'+d.nombre+'</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';*/
+			});
+			$('#listCategorias').html(categorias);
+		});
 	}
+	
+	
+	function seleccionarCategoria(id, nombre){
 		
+		$.mobile.showPageLoadingMsg("a", "Cargando...");
+		
+		<!-- CARGAMOS CATEGORIAS HIJO -->
+		var datos = "ws=getCategoriasHijoXML&idCategoria="+id
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var categorias = '';
+			$.each(dataFinal, function(index, d){
+				categorias += '<li id="'+d.id+'CatHijaReal" onclick="seleccionarCategoriaHija(\''+id+'\',\''+d.id+'\',\''+d.nombre+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">'+d.nombre+'</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
+			});
+			$('#'+id+'CatHijaUL').html('');
+			$('#'+id+'CatHijaUL').html(categorias);
+			$('#'+id+'CatHija').removeClass('ui-collapsible-content-collapsed');
+			
+			if(dataFinal.length == 1){
+				seleccionarCategoriaHija(id,dataFinal[0].id,dataFinal[0].nombre);
+			}else if(dataFinal.length == 0){
+				seleccionarCategoriaHija(id,id,nombre);
+			}
+		});
+		
+		document.location.href ="#pageProductos";
+		$.mobile.hidePageLoadingMsg();
+	}
+	
+	function seleccionarCategoriaHija(idPadre,id,nombre){		
+		$('#listaProductos').html('');		
+		var datos = "ws=getArticulosByCategoriaXML&idCategoria="+id+"&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var productos = '';
+			$.each(dataFinal, function(index, d){
+				productos += '<li id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:57px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>'+d.current_price+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+			});
+			if(dataFinal.length == 0){
+				productos = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">No hay articulos para esta categoria</a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>'
+			}
+			$('#listaProductos').html(productos);
+		});
+		$( "#panelProductos" ).panel( "close" );
+		cargarCategoriasPadre();		
+	}
+	
+	function buscar(){
+		$('#listaProductos').html('');		
+		var datos = "ws=getArticulosByCategoriaXML&idCategoria=0&texto="+$('#buscador').val()+"&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var productos = '';
+			$.each(dataFinal, function(index, d){
+				productos += '<li id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:57px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>'+d.current_price+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+			});
+			if(dataFinal.length == 0){
+				productos = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">No hay articulos para esta categoria</a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>'
+			}
+			$('#listaProductos').html(productos);
+		});
+		$( "#panelProductos" ).panel( "close" );
+		cargarCategoriasPadre();
+		$('#buscador').val('')	
+	}
+	
+	function misFavoritos(){
+		seleccionaProveedor($('#idProveedor').val(),$('#nombreUndProducto').val());
+		$( "#panelProductos" ).panel( "close" );
+	}
+	
+	function seleccionarProducto(image,id,name,description,bottling,current_price,tradeId,tradeName,tradePointsA,tradePointsC,tradeIdAcuerdo,idAlert,precioIVA){		
+		$('#nombreUndProducto').html(name+'<br />'+description+'   '+bottling);
+		$('#descrpUndProducto').html('Precio: '+parseFloat(current_price).toFixed(2)+' €');
+		$('#nombreUndProducto2').html(name+'<br />'+description+'   '+bottling);
+		$('#descrpUndProducto2').html('Precio: '+parseFloat(current_price).toFixed(2)+' €');
+		$('#'+idAlert).dialog('open');
+		
+		var antUnidades = $('#'+id+'undCompra').html();
+		if(antUnidades != 0){
+			$('#unidadesProducto').val(antUnidades);
+			$('#unidadesProducto2').val(antUnidades);
+		}else{
+			$('#unidadesProducto').val(1);
+			$('#unidadesProducto2').val(1);
+		}
+		
+		soloNumeros("#unidadesProducto");
+		soloNumeros("#unidadesProducto2");
+		
+		$('#'+idAlert).attr('data-image', image);
+		$('#'+idAlert).attr('data-id', id);
+		$('#'+idAlert).attr('data-name', name);
+		$('#'+idAlert).attr('data-description', description);
+		$('#'+idAlert).attr('data-bottling', bottling);
+		$('#'+idAlert).attr('data-current_price', current_price);
+		$('#'+idAlert).attr('data-tradeId', tradeId);
+		$('#'+idAlert).attr('data-tradeName', tradeName);
+		$('#'+idAlert).attr('data-tradePointsA', tradePointsA);
+		$('#'+idAlert).attr('data-tradePointsC', tradePointsC);
+		$('#'+idAlert).attr('data-tradeIdAcuerdo', tradeIdAcuerdo);
+		$('#'+idAlert).attr('data-precioIVA', precioIVA);
+	}
+	
+	function menos(){
+		var cantidad = $('#unidadesProducto').val();
+		var cantidad2 = $('#unidadesProducto2').val();
+		if(cantidad - 1 >= 0){		
+			$('#unidadesProducto').val(cantidad-1);
+		}
+		if(cantidad2 - 1 >= 0){		
+			$('#unidadesProducto2').val(cantidad2-1);
+		}
+	}
+	
+	function mas(){
+		var cantidad = $('#unidadesProducto').val();
+		$('#unidadesProducto').val(parseInt(cantidad)+1);
+		var cantidad2 = $('#unidadesProducto2').val();
+		$('#unidadesProducto2').val(parseInt(cantidad)+1);
+	}
+	
+	function existe(id){		
+		var pedido = $('#listaPedido li');
+		var existe = false;
+		pedido.each(function(index, element) {
+            if(id+'PEDIDO' == element.id){
+				existe = true;
+				return existe;
+			}			
+        });
+		return existe;
+	}
+	
+	function aceptarUnidades(idAlert){
+		if(idAlert == '#alertUnidadesProductoPedido'){
+			var unidades = $('#unidadesProducto2').val();
+		}else{
+			var unidades = $('#unidadesProducto').val();
+		}
+		
+		var id = $(idAlert).attr('data-id');
+		//Comprobamos si existe en el pedido
+		var esta = existe(id);
+		if(!esta){
+			var name = $(idAlert).attr('data-name');
+			var description = $(idAlert).attr('data-description');
+			var bottling = $(idAlert).attr('data-bottling');
+			var current_price = $(idAlert).attr('data-current_price');
+			var tradeId = $(idAlert).attr('data-tradeId');
+			var tradeName = $(idAlert).attr('data-tradeName');
+			var tradePointsA = $(idAlert).attr('data-tradePointsA');
+			var tradePointsC = $(idAlert).attr('data-tradePointsC');
+			var tradeIdAcuerdo = $(idAlert).attr('data-tradeIdAcuerdo');
+			var image = $(idAlert).attr('data-image');
+			var precioIVA = $(idAlert).attr('data-precioIVA');
+			
+			var total = (current_price * unidades).toFixed(2);	
+			var totalIVA = (precioIVA * unidades).toFixed(2);					
+			
+			var pedidoHTML = $('#listaPedido').html();
+			if(pedidoHTML.split('PEDIDO').length < 2){
+				pedidoHTML = '';
+			}
+			
+			pedidoHTML += '<li name="productoPedido" id="'+id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="'+unidades+'" data-image="'+image+'" data-id="'+id+'" data-name="'+name+'" data-description="'+description+'" data-bottling="'+bottling+'" data-current_price="'+current_price+'" data-tradeId="'+tradeId+'" data-tradeName="'+tradeName+'" data-tradePointsA="'+tradePointsA+'" data-tradePointsC="'+tradePointsC+'" data-tradeIdAcuerdo="'+tradeIdAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+image+'\',\''+id+'\',\''+name+'\', \''+description+'\', \''+bottling+'\',\''+current_price+'\',\''+tradeId+'\',\''+tradeName+'\',\''+tradePointsA+'\',\''+tradePointsC+'\',\''+tradeIdAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:57px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+description+'</span><span>'+bottling+'</span></p><p class="ui-li-desc" style="margin-top:0px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+id+'TOTAL">'+totalIVA+'</span>€<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span></p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+id+'undCompraPEDIDO">'+unidades+'</span></span><span style="margin-left:15px;"><span>'+current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+			
+			$('#listaPedido').html(pedidoHTML);
+			$('#'+id+'undCompra').html(unidades);
+			
+			totalizar();
+			
+			$(idAlert).dialog("close");
+		}else{
+			var current_price = $(idAlert).attr('data-current_price');
+			var total = (current_price * unidades).toFixed(2);
+			$('#'+id+'PEDIDO').attr('data-unidades',unidades);
+			$('#'+id+'undCompraPEDIDO').html(unidades);
+			$('#'+id+'undCompra').html(unidades);
+			$('#'+id+'TOTAL').html(total);
+			
+			totalizar();
+			
+			$(idAlert).dialog("close");
+		}	
+	}
+	
+	function totalizar(){
+		var pedido = $('#listaPedido li');
+		var existe = false;
+		var total = 0;
+		var totalIVA = 0;
+		pedido.each(function(index, element) {
+			var id = element.id;
+			var unidades = $('#'+id).attr('data-unidades');
+			var current_price = $('#'+id).attr('data-current_price');
+			var precioIVA = $('#'+id).attr('data-precioIVA');
+			var totalLinea = (current_price * unidades).toFixed(2);	
+			var totalLineaIVA = (precioIVA * unidades).toFixed(2);	
+			total = (parseFloat(total) + parseFloat(totalLinea)).toFixed(2);
+			totalIVA = (parseFloat(totalIVA) + parseFloat(totalLineaIVA)).toFixed(2);
+        });
+		$('#contadorArticulos').html(parseFloat(total).toFixed(2));
+		$('#contadorPedido').html(parseFloat(totalIVA).toFixed(2));
+	}
+	
+	function mostrarPedido(){
+		document.location.href = "#pagePedido";
+		setTimeout(function(){
+			$("[name='divP']").removeClass();
+			$("[name='divP']").addClass('ui-btn-inner ui-li');
+			$("[name='productoPedido']").removeClass();
+			$("[name='productoPedido']").addClass('ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c');
+			},100);
+	}
+	
+	function soloNumeros(id){
+		$(id).keydown(function(event) {
+		if(event.shiftKey)
+		{
+			event.preventDefault();
+		}
+		if (event.keyCode == 46 || event.keyCode == 8){
+		}
+		else {
+			if (event.keyCode < 95) {
+			  if (event.keyCode < 48 || event.keyCode > 57) {
+					event.preventDefault();
+			  }
+			} 
+			else {
+			  if (event.keyCode < 96 || event.keyCode > 105) {
+				  event.preventDefault();
+			  }
+			}
+		  }
+		});
+	}
+
 	function registro(){
 		alert('Registro');
+	}
+	
+	function cerrarPedido(metodo){
+		if(metodo == 1){
+			//Al proveedor
+			enviarPedido();
+			document.location.href = "#pageSolicita";
+		}else{
+			//Borrador
+			enviarPedido();
+		}
+	}
+	
+	function solicitarYA(){
+		 var fechaSelec = $('#fechaRecepcion').val();
+		// var idSocio = $('#inputSocio').val().split(';')[0];
+		 var idSocio = '99CCFC50-B60E-4EFB-A81D-9234E56580E8';
+		if(fechaSelec == ''){
+			alert('Tienes que seleccionar una fecha para la recepción del pedido.');
+		}else{
+			var datos = "ws=solicitarPedidoString&idPedido="+$('#inputPedidoAbierto').val()+"&fechaSeleccionada="+fechaSelec+"&observacionesRecepcion="+$('#instrucciones').val()+"&idSocio="+idSocio;
+			var dataFinal = WSFuncion(datos);
+			dataFinal.success(function (data){
+				if(data.split('#Error;').length == 1){ 
+					//Guardado Correctamente
+					$('#alertDialogInfoText').html('Pedido solicitado correctamente');
+					$('#alertDialogInfo').dialog('open');
+				} else {
+					//Error
+					$('#alertDialogInfoText').html(data.split('#Error;')[1]);
+					$('#alertDialogInfo').dialog('open');
+				}
+			});
+			document.location.href = "#page";
+		}
+	}
+	
+	 function enviarPedido(){
+		var pedidoTotalCanje = "";
+		var pedidoTotalAcumula = "";
+		var listaPedido = document.getElementById("listaPedido");  
+		var filas = listaPedido.getElementsByTagName('li');   
+		var canjeActivo = 0;
+		for(var i = 0; i< filas.length; i++){
+			canjeActivo = 0;
+			var id = filas[i].getAttribute('data-id');
+			if($('#'+id+'undCanjePEDIDO').html() != 0){
+				var idCanje = id;
+				id = idCanje[1];
+				canjeActivo = 1;
+			}						
+			var cantidad = filas[i].getAttribute('data-unidades');
+			var precio = filas[i].getAttribute('data-current_price');			
+			var puntos = filas[i].getAttribute('data-tradepointsa');			
+			var puntosC = filas[i].getAttribute('data-tradepointsc');
+			var puntosA = filas[i].getAttribute('data-tradepointsa');
+			var fabricante = filas[i].getAttribute('data-tradeid');
+			var acuerdo = filas[i].getAttribute('data-tradeidacuerdo');
+			if(canjeActivo == 1){
+				pedidoTotalCanje = pedidoTotalCanje+id+'/'+cantidad+'/'+fabricante+'/'+acuerdo+'/'+puntos+';p;';
+			}else{
+				pedidoTotalAcumula = pedidoTotalAcumula+id+'/'+cantidad+'/'+fabricante+'/'+acuerdo+'/'+puntos+';p;';
+			}        
+		}
+		var idProveedor = $('#idProveedor').val();
+		var idPedido = $('#inputPedidoAbierto').val();
+		var idEstablecimiento = $('#inputIdEstablecimiento').val();
+		//Mandamos pedidoTotalAcumula, pedidoTotalCanje, idPedido, idProveedor
+		$('#listaPedido').html("");
+		totalizar();
+		//LLAMAR AL WEBSERVICE PARA ACTUALIZAR LOS PRODUCTOS A CERO
+		
+		var datos = "ws=crearPedidoString&articulosAcumula="+pedidoTotalAcumula+"&articulosCanje="+pedidoTotalCanje+"&idPedido="+idPedido+"&idProveedor="+idProveedor+"&idEstablecimiento="+idEstablecimiento;
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			if(data.split('#Error;').length == 1){ 
+				//Guardado Correctamente
+				$('#alertDialogInfoText').html('Pedido guardado como borrador correctamente');
+				$('#alertDialogInfo').dialog('open');				
+				$('#inputPedidoAbierto').val(data);
+			} else {
+				//Error
+				$('#alertDialogInfoText').html(data.split('#Error;')[1]);
+				$('#alertDialogInfo').dialog('open');
+			}
+		});
+		document.location.href = "#page";
+	 }
+	
+	function borrarProducto(){
+		var idLI = $('#alertUnidadesProductoPedido').attr('data-id');
+		$('#'+idLI+'PEDIDO').remove();	
+		$('#alertUnidadesProductoPedido').dialog('close');
+		totalizar();
+	}
+	
+	function solicitarPedido(){
+		document.location.href = "#pageSolicita";
+	}
+	function cancelarPedido(){
+		//Borrar pedido
+		var datos = "ws=eliminarPedidoString&idPedido="+$('#inputPedidoAbierto').val();
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){			
+			if(data.split('#Error;').length == 1){ 
+				//Guardado Correctamente
+				$('#alertDialogInfoText').html('Pedido eliminado correctamente');
+				$('#alertDialogInfo').dialog('open');				
+				$('#inputPedidoAbierto').val(data);
+			} else {
+				//Error
+				$('#alertDialogInfoText').html(data.split('#Error;')[1]);
+				$('#alertDialogInfo').dialog('open');
+			}
+			misPedidos();
+		});
+	}
+	function aceptarPedido(){
+		//Recibir pedido (ciclo completo)
+		var datos = "ws=recibirPedidoString&idPedido="+$('#inputPedidoAbierto').val();
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){			
+			if(data.split('#Error;').length == 1){ 
+				//Guardado Correctamente
+				$('#alertDialogInfoText').html('Pedido eliminado correctamente');
+				$('#alertDialogInfo').dialog('open');				
+				$('#inputPedidoAbierto').val(data);
+			} else {
+				//Error
+				$('#alertDialogInfoText').html(data.split('#Error;')[1]);
+				$('#alertDialogInfo').dialog('open');
+			}
+			misPedidos();
+		});		
 	}
 </script>
 
@@ -460,9 +940,10 @@ $(function ()
 </head> 
 <body>
 
+<input type="hidden" value="" id="inputPedidoAbierto">
 
-<input type="hidden" value="73" id="idProveedor">
-<input type="hidden" value="63" id="nombreProveedor">
+<input type="hidden" value="" id="idProveedor">
+<input type="hidden" value="" id="nombreProveedor">
 
 <input type="hidden" value="73" id="inputIdAplicacion">
 <input type="hidden" value="63" id="inputIdEstablecimiento">
@@ -470,19 +951,33 @@ $(function ()
 <input type="hidden" value="" id="idLocal">
 <input type="hidden" value="" id="idNombreLocal">
 <div id="alertDialogInfo" style="background-color:#FFF; background:#FFFFFF !important;" title="Informacion">
-    <h3 id="alertDialogInfo">Texo informativo aquí ...</h3>    
+    <h3 id="alertDialogInfoText">Texo informativo aquí ...</h3>    
 </div>   
 
 <div id="alertDialog" style="background-color:#FFF;" title="Informacion">
     <h3 id="textoDialog">Texo informativo aquí ...</h3>
-    <input id="unidades" style="height:60px; width:100%;text-align:center;" placeholder="10" type="text" autofocus>
+    <input id="unidades" style="height:60px; width:100px; text-align:center; font-size:45px" value="1" type="text" autofocus>
 </div> 
 
-<div id="alertUnidadesProducto" style="background-color:#FFF;" title="Informacion">
-    <h3 id="nombreUndProducto">Texo informativo aquí ...</h3>
-     <h5 id="descrpUndProducto">Texo informativo aquí ...</h5>
-    <input id="unidadesProducto" style="height:60px; width:100%;text-align:center;" placeholder="10" type="text" autofocus>
-</div>   	
+<div id="alertUnidadesProducto" style="background-color:#FFF;" title="Seleccionar unidades">
+    <h2 style="margin-top: -5px;" id="nombreUndProducto">Texo informativo aquí ...</h2>
+     <h3 style="margin-top: -5px;" id="descrpUndProducto">Texo informativo aquí ...</h3>
+    <input id="unidadesProducto" style="float:left; height:60px; width:100px; text-align:center; font-size:45px" value="1" type="number" autofocus>
+	 <div style="float:left; margin-left:10px; margin-top:-1px;" data-init-selector=":jqmData(role='controlgroup')" data-exclude-invisible="true" data-corners="true" data-shadow="false" data-disabled="false" aria-disabled="false" class="ui-corner-all ui-controlgroup ui-controlgroup-vertical ui-mini" data-role="controlgroup" data-type="vertical" data-mini="true"><div class="ui-controlgroup-controls">
+    <a onclick="mas();" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-icon-notext ui-first-child ui-btn-up-b" title="Más" data-wrapperels="span" data-iconshadow="true" data-shadow="true" data-corners="true" href="#" data-role="button" data-iconpos="notext" data-icon="arrow-u" data-theme="b"><span class="ui-btn-inner"><span class="ui-btn-text">Más</span><span class="ui-icon ui-icon-arrow-u ui-icon-shadow">&nbsp;</span></span></a>
+    <a onclick="menos();" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-icon-notext ui-last-child ui-focus ui-btn-up-b" title="Menos" data-wrapperels="span" data-iconshadow="true" data-shadow="true" data-corners="true" href="#" data-role="button" data-iconpos="notext" data-icon="arrow-d" data-theme="b"><span class="ui-btn-inner"><span class="ui-btn-text">Menos</span><span class="ui-icon ui-icon-arrow-d ui-icon-shadow">&nbsp;</span></span></a>
+</div></div>
+</div>  
+
+<div id="alertUnidadesProductoPedido" style="background-color:#FFF;" title="Seleccionar unidades">
+    <h2 style="margin-top: -5px;" id="nombreUndProducto2">Texo informativo aquí ...</h2>
+     <h3 style="margin-top: -5px;" id="descrpUndProducto2">Texo informativo aquí ...</h3>
+    <input id="unidadesProducto2" style="float:left; height:60px; width:100px; text-align:center; font-size:45px" value="1" type="number" autofocus>
+	 <div style="float:left; margin-left:10px; margin-top:-1px;" data-init-selector=":jqmData(role='controlgroup')" data-exclude-invisible="true" data-corners="true" data-shadow="false" data-disabled="false" aria-disabled="false" class="ui-corner-all ui-controlgroup ui-controlgroup-vertical ui-mini" data-role="controlgroup" data-type="vertical" data-mini="true"><div class="ui-controlgroup-controls">
+    <a onclick="mas();" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-icon-notext ui-first-child ui-btn-up-b" title="Más" data-wrapperels="span" data-iconshadow="true" data-shadow="true" data-corners="true" href="#" data-role="button" data-iconpos="notext" data-icon="arrow-u" data-theme="b"><span class="ui-btn-inner"><span class="ui-btn-text">Más</span><span class="ui-icon ui-icon-arrow-u ui-icon-shadow">&nbsp;</span></span></a>
+    <a onclick="menos();" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-icon-notext ui-last-child ui-focus ui-btn-up-b" title="Menos" data-wrapperels="span" data-iconshadow="true" data-shadow="true" data-corners="true" href="#" data-role="button" data-iconpos="notext" data-icon="arrow-d" data-theme="b"><span class="ui-btn-inner"><span class="ui-btn-text">Menos</span><span class="ui-icon ui-icon-arrow-d ui-icon-shadow">&nbsp;</span></span></a>
+</div></div>
+</div>   	 	
 
 <div data-role="page" class="pagina" data-position="fixed" id="pageLogueo">
 	<div data-role="header" data-fullscreen="true" style="background:#000000">    
@@ -584,7 +1079,7 @@ $(function ()
 	<div data-role="content">	
 		<ul data-role="listview">
 			<li><a href="#page2">Mis Puntos</a></li>
-            <li><a href="#page3" onclick="misPedidos();">Mis Pedidos</a></li>
+            <li><a href="#" onclick="misPedidos();">Mis Pedidos</a></li>
 			<li><a href="#" onclick="proveedores();">Realizar pedido nuevo</a></li>
 		</ul>		
 	</div>
@@ -623,42 +1118,17 @@ $(function ()
 	</div>
 </div> 
 
-<div data-role="page" id="page3">
+<div data-role="page" id="pageMisPedidos">
 	<div data-role="header" data-position="fixed"  style="background:#000000">
     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Mis Pedidos</h1>
 	</div>
 	<div data-role="content">	
         
-        <ul data-role="listview" data-inset="true" data-divider-theme="e">
-            <li style="height:30px" class="ui-grid-c" data-role="list-divider">
-            	<span  class="ui-block-a">Fecha</span>
-                <span style="; text-align:center" class="ui-block-b">Total</span>
-                <span  class="ui-block-c">Proveedor</span>
-                <span style=" text-align:right" class="ui-block-d">Estado</span>
-            </li>
-             <li>
-             <a  href="#detallePedido1" style="height:30px">
-             	<div  class="ui-grid-c">
-            	<span  class="ui-block-a">Sin fecha</span>
-                <span style=" text-align:center" class="ui-block-b">209.75€</span>
-                <span  class="ui-block-c">Asturianos</span>
-                <span style=" text-align:right" class="ui-block-d"><span style="color:#F00">B</span></span>
-                  </div>
-                </a>
-            </li>
-             <li>
-            	<a href="#detallePedido2" style="height:30px">
-                	<div  class="ui-grid-c">
-                    <span  class="ui-block-a">19/07/2013</span>
-                    <span style=" text-align:center" class="ui-block-b">366.63€</span>
-                    <span  class="ui-block-c">Asturianos</span>
-                    <span style=" text-align:right" class="ui-block-d"><span  style="color:#090">S</span></span>
-                    </div>
-                </a>
-            </li>
+        <ul data-role="listview" id="listPedidos" data-inset="true" data-divider-theme="e">
+            
         </ul>
-       <!-- <div class="ui-grid-a">
+      <!-- <div class="ui-grid-a">
             <div class="ui-block-a"><div class="ui-bar ui-bar-e" style="height:60px">Block A</div></div>
             <div class="ui-block-b"><div class="ui-bar ui-bar-e" style="height:60px">Block B</div></div>
         </div>-->
@@ -721,41 +1191,52 @@ $(function ()
 </div>
 
 
-<div data-role="page" id="detallePedido1">
+<div data-role="page" id="detallePedido">
+    <div data-role="panel" data-position="right" id="panelPedido">
+        <h1>DrinkBo</h1>        
+        <div style="text-align:left;">
+            <a href="#" data-theme="b" id="botonSolicitarPedido" onClick="solicitarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Solicitar pedido</a>
+            <a href="#" data-theme="b" id="botonCancelarPedido" onClick="cancelarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Cancelar pedido</a><br />
+            <a href="#" data-theme="b" id="botonAceptarPedido" onClick="aceptarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Recibir pedido</a><br />
+            </div>
+        </div>
 	<div data-role="header"  data-position="fixed" style="background:#000000">
-    <a href="#page3" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
-		<h1>Nº PEDIDO: 44</h1>
+    <a href="#pageMisPedidos" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
+    <a style="float:right;" href="#panelPedido" data-role="button" data-inline="true" data-iconpos="notext" data-icon="bars"></a>
+		<h1 id="idTituloDetallePedido">Nº PEDIDO: </h1>
 	</div>
 	<div data-role="content">	
-            <h1 style=" color:#F00;text-align:center;"> BORRADOR</h1>
+            <h1 style=" color:#F00;text-align:center;" id="estadoPedidoDetalle"> </h1>
             	<div class="ui-grid-a">
                     <div class="ui-block-a" style="text-align:right;">
                         <p>
                             <strong  >Descripción: &nbsp;&nbsp;&nbsp;</strong><br/>
                             <strong >Proveedor: &nbsp;&nbsp;&nbsp;</strong><br/>
                             <strong >Almacen: &nbsp;&nbsp;&nbsp;</strong><br/>
+                            <strong >Forma de pago: &nbsp;&nbsp;&nbsp;</strong><br/>
                             <strong >Fecha de Pedido: &nbsp;&nbsp;&nbsp;</strong><br/>
                             <strong >Fecha de recepción: &nbsp;&nbsp;&nbsp;</strong><br/>
                             <strong>Fecha de entrega: &nbsp;&nbsp;&nbsp;</strong><br/>
+                            <strong>Comentarios: &nbsp;&nbsp;&nbsp;</strong><br/>
                         </p>
                     </div>
                     <div class="ui-block-b" style="text-align:left">
                         <p>
-                            <span>---</span><br/>
-                            <span >Asturianos de Sanabria, S.L.</span><br/>
-                            <span > C/ Modesto Lafuente, 26</span><br/>
-                            <span >02/07/2013 10:48:36</span><br/>
-                            <span >Sin fecha para la recepción</span><br/>
-                            <span >Sin fecha de entrega</span><br/>
+                            <span id="descriocionDetalle">---</span><br/>
+                            <span id="descriocionProveedor"></span><br/>
+                            <span id="descriocionAlmacen"></span><br/>
+                            <span id="descriocionFormaPago"></span><br/>                            
+                            <span id="descriocionFechaPedido">6</span><br/>
+                            <span id="descriocionFechaRecepcion"></span><br/>
+                            <span id="descriocionFechaEntrega"></span><br/>
+                            <span id="descriocionComentarios"></span><br/>
                         </p>
                     </div>
-                </div><!-- /grid-a -->
-            
-        
-    
+                </div>
+                <!-- /grid-a -->
 		<h1 style="text-align:center">Productos del pedido</h1>
           
-      	<ul data-role="listview" data-inset="true" data-divider-theme="e">
+      	<ul data-role="listview" id="listProductosDetalle" data-inset="true" data-divider-theme="e">
             <li class="ui-grid-b" style="height:30px;" data-role="list-divider">
             	<div class="ui-block-a">
                    <span>Producto</span>
@@ -769,281 +1250,30 @@ $(function ()
                     <div class="ui-block-b" style=" width:50%;text-align:center;"><span>Total</span></div>
                 </div>               
             </li>
-            
-             <li  style="height:30px;"  class="ui-grid-b">
-            	<div class="ui-block-a">
-                     <span >Havana Club 3 años</span>
-                </div>
-                <div class="ui-block-b">
-                        <div class="ui-block-a" style=" width:50%;text-align:center;"><span>3,00</span></div>
-                </div>
-
-                <div class="ui-block-c">
-                    <div class="ui-block-b" style=" width:50%;text-align:center;"><span>32,85</span></div>
-                </div>
-
-            </li>
-             <li style="height:30px;"   class="ui-grid-b">
-            	<div class="ui-block-a">
-                    <span  >Havana Club 7 años</span>
-                </div>
-                <div class="ui-block-b">
-                        <div class="ui-block-a" style=" width:50%;text-align:center;"><span>10,00</span></div>
-                </div>
-
-                <div class="ui-block-c">
-                    <div class="ui-grid-a">
-                        <div class="ui-block-b" style=" width:50%;text-align:center;"><span>176,90</span></div>
-                    </div>
-                </div>
-            </li>
         </ul>
         
-        <h1  style="text-align:center">Desglose por impuestos</h1>
-        
-       <ul data-role="listview" data-inset="true" data-divider-theme="e">
-            <li data-role="list-divider">
-            
-            	<div class="ui-grid-c">
-                    <div class="ui-block-a">
-                     	<span >Tipo Impuesto</span>
-                    </div>
-                    <div class="ui-block-b">
-                    	<span >Base Imp.</span>
-                    </div>
-                    <div class="ui-block-c">
-                    	<span >Importe Impuesto</span>
-                    </div>
-                    <div class="ui-block-d">
-                    	<span >SubTotal</span>
-                    </div>
-                </div>
-
-            </li>
-             <li >
-            
-            	<div class="ui-grid-c">
-                    <div class="ui-block-a">
-                     	<span>IVA 21%</span>
-                    </div>
-                    <div class="ui-block-b">
-                    <span >173,35</span>
-                    </div>
-                  
-                    <div class="ui-block-c">
-                    <span >36,40</span>
-                    </div>
-                    <div class="ui-block-d">
-                    <span >209.75</span>
-                    </div>
-                </div>
-
-            </li>
-             <li data-role="list-divider">
-            
-            	<div class="ui-grid-b">
-                    <div class="ui-block-a">
-                     	<span >Total Bases Imp.</span>
-                    </div>
-                    <div class="ui-block-b">
-                    <span>Total Impuestos</span>
-                    </div>
-                    <div class="ui-block-c">
-                    <span>TOTAL</span>
-                    </div>
-                </div>
-
-            </li>
-            <li >
-            
-            	<div class="ui-grid-b">
-                    <div class="ui-block-a">
-                     	<span>173,35</span>
-                    </div>
-                    <div class="ui-block-b">
-                    <span >36,40</span>
-                    </div>
-                    <div class="ui-block-c">
-                    <span >209,75</span>
-                    </div>
-                </div>
-
-            </li>
-
+        <h1 style="text-align:center" id="tituloProductosCanje"></h1>
+        <ul data-role="listview" id="listProductosCanjeDetalle" data-inset="true" data-divider-theme="e">
         </ul>
         
+        <h1 id="tituloImpuestos" style="text-align:center">Desglose por impuestos</h1>
+        
+       <ul data-role="listview" id="listImpuestosDetalle" data-inset="true" data-divider-theme="e">
+        </ul>
+        <h1 id="detalleTotal"></h1>
       
 	</div>
 	<div data-role="footer"  data-position="fixed" style="background:#000000">
 		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
-
-<<div data-role="page" id="detallePedido2">
-	<div data-role="header"  data-position="fixed" style="background:#000000">
-    <a href="#page3" data-rel="back" data-inline="true" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
-		<h1>Nº PEDIDO: 44</h1>
-	</div>
-	<div data-role="content">	
-            <h1 style=" color:#090;text-align:center;"> SOLICITADO</h1>
-            	<div class="ui-grid-a">
-                    <div class="ui-block-a" style="text-align:right;">
-                        <p>
-                            <strong  >Descripción: &nbsp;&nbsp;&nbsp;</strong><br/>
-                            <strong >Proveedor: &nbsp;&nbsp;&nbsp;</strong><br/>
-                            <strong >Almacen: &nbsp;&nbsp;&nbsp;</strong><br/>
-                            <strong >Fecha de Pedido: &nbsp;&nbsp;&nbsp;</strong><br/>
-                            <strong >Fecha de recepción: &nbsp;&nbsp;&nbsp;</strong><br/>
-                            <strong>Fecha de entrega: &nbsp;&nbsp;&nbsp;</strong><br/>
-                        </p>
-                    </div>
-                    <div class="ui-block-b" style="text-align:left">
-                        <p>
-                            <span>---</span><br/>
-                            <span >Asturianos de Sanabria, S.L.</span><br/>
-                            <span > C/ Modesto Lafuente, 26</span><br/>
-                            <span >02/07/2013 10:48:36</span><br/>
-                            <span >Sin fecha para la recepción</span><br/>
-                            <span >Sin fecha de entrega</span><br/>
-                        </p>
-                    </div>
-                </div><!-- /grid-a -->
-            
-        
-    
-		<h1 style="text-align:center">Productos del pedido</h1>
-          
-      	<ul data-role="listview" data-inset="true" data-divider-theme="e">
-            <li class="ui-grid-b" style="height:30px;" data-role="list-divider">
-            	<div class="ui-block-a">
-                   <span>Producto</span>
-                </div>
-                <div class="ui-block-b">
-                        <div class="ui-block-a" style=" width:50%;text-align:center;"><span>Unidades</span></div>
-                    
-                </div>
-
-                <div class="ui-block-c">
-                    <div class="ui-block-b" style=" width:50%;text-align:center;"><span>Total</span></div>
-                </div>               
-            </li>
-            
-             <li  style="height:30px;"  class="ui-grid-b">
-            	<div class="ui-block-a">
-                     <span >Havana Club 3 años</span>
-                </div>
-                <div class="ui-block-b">
-                        <div class="ui-block-a" style=" width:50%;text-align:center;"><span>3,00</span></div>
-                </div>
-
-                <div class="ui-block-c">
-                    <div class="ui-block-b" style=" width:50%;text-align:center;"><span>32,85</span></div>
-                </div>
-
-            </li>
-             <li style="height:30px;"   class="ui-grid-b">
-            	<div class="ui-block-a">
-                    <span  >Havana Club 7 años</span>
-                </div>
-                <div class="ui-block-b">
-                        <div class="ui-block-a" style=" width:50%;text-align:center;"><span>10,00</span></div>
-                </div>
-
-                <div class="ui-block-c">
-                    <div class="ui-grid-a">
-                        <div class="ui-block-b" style=" width:50%;text-align:center;"><span>176,90</span></div>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        
-        <h1  style="text-align:center">Desglose por impuestos</h1>
-        
-       <ul data-role="listview" data-inset="true" data-divider-theme="e">
-            <li data-role="list-divider">
-            
-            	<div class="ui-grid-c">
-                    <div class="ui-block-a">
-                     	<span >Tipo Impuesto</span>
-                    </div>
-                    <div class="ui-block-b">
-                    	<span >Base Imp.</span>
-                    </div>
-                    <div class="ui-block-c">
-                    	<span >Importe Impuesto</span>
-                    </div>
-                    <div class="ui-block-d">
-                    	<span >SubTotal</span>
-                    </div>
-                </div>
-
-            </li>
-             <li >
-            
-            	<div class="ui-grid-c">
-                    <div class="ui-block-a">
-                     	<span>IVA 21%</span>
-                    </div>
-                    <div class="ui-block-b">
-                    <span >173,35</span>
-                    </div>
-                  
-                    <div class="ui-block-c">
-                    <span >36,40</span>
-                    </div>
-                    <div class="ui-block-d">
-                    <span >209.75</span>
-                    </div>
-                </div>
-
-            </li>
-             <li data-role="list-divider">
-            
-            	<div class="ui-grid-b">
-                    <div class="ui-block-a">
-                     	<span >Total Bases Imp.</span>
-                    </div>
-                    <div class="ui-block-b">
-                    <span>Total Impuestos</span>
-                    </div>
-                    <div class="ui-block-c">
-                    <span>TOTAL</span>
-                    </div>
-                </div>
-
-            </li>
-            <li >
-            
-            	<div class="ui-grid-b">
-                    <div class="ui-block-a">
-                     	<span>173,35</span>
-                    </div>
-                    <div class="ui-block-b">
-                    <span >36,40</span>
-                    </div>
-                    <div class="ui-block-c">
-                    <span >209,75</span>
-                    </div>
-                </div>
-
-            </li>
-
-        </ul>
-        
-      
-	</div>
-	<div data-role="footer"  data-position="fixed" style="background:#000000">
-		<h1>www.drinkbo.com</h1>
-	</div>
-</div>
-
 
 <div data-role="page" id="page4">
 	<div data-role="header"  data-position="fixed" style="background:#000000">
     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Realizar pedido</h1>
      	
-        <a id="botonPedido" style="display:none" onclick="irPedido();" data-role="button" data-icon="grid" data-iconpos="right"  data-theme="e" data-inline="true"><span id="contadorArticulos" class="ui-li-count" >0</span></a>
+        <a id="botonPedido" style="display:none" onclick="irPedido();" data-role="button" data-icon="grid" data-iconpos="right"  data-theme="e" data-inline="true"><span id="contadorArticulos2" class="ui-li-count" >0</span></a>
 	</div>
 	<div id="pedido1" data-role="content">	
 		
@@ -1142,43 +1372,98 @@ $(function ()
 <div data-role="page" id="pageProductos">
 	<div data-role="panel" data-position="right" id="panelProductos">
         <h1>DrinkBo</h1>        
-        <div style="text-align:center;">
-            <label for="search" style="text-align:left;">Busca productos por su nombre que no tengas añadidos en tus favoritos</label>
+        <div style="text-align:left;">
+        	<a href="#" data-theme="e" onClick="misFavoritos();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Mis articulos favoritos</a>
+            <label for="buscador" style="text-align:left;">Busca productos por su nombre que no tengas añadidos en tus favoritos</label>
             <div style="width:70%; float:left;">
-            	<input type="text" name="password" id="search"  value="" placeholder="Buscar productos...">
+            	<input type="text" name="buscador" id="buscador"  value="" placeholder="Buscar productos...">
             </div>
             <div style="width:30%; float:right;">
-            	<a href="#" data-role="button" data-icon="search" style="margin-top:12px;" data-iconpos="notext" data-theme="c" data-inline="true">Search</a>
+            	<a onclick="buscar();" href="#" data-role="button" data-icon="search" style="margin-top:12px;" data-iconpos="notext" data-theme="c" data-inline="true">Buscar</a>
             </div>
             <div style="clear:both;"></div>
-                <ul data-role="listview" data-inset="true">
-                    <li><a href="#">Acura</a></li>
-                    <li><a href="#">Audi</a></li>
-                    <li><a href="#">BMW</a></li>
-                    <li><a href="#">Cadillac</a></li>
-                    <li><a href="#">Ferrari</a></li>
-                </ul>       
+                <div id="listCategorias" class="ui-collapsible-set" data-role="collapsible-set" data-corners="false" data-theme="c" data-content-theme="d">
+                </div>  
             </div>
     	</div>
 	<div data-role="header" data-position="fixed" style=" background:#000000">  
     <a href="#pageProveedores" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
-    <a href="#panelProductos" data-role="button" data-inline="true" data-iconpos="notext" data-icon="bars"></a>
+     <a href="" onclick="mostrarPedido();" style="float:right; margin-right:30px;" id="botonPedido" data-role="button" data-icon="alert" data-iconpos="right"  data-theme="a" data-inline="true"><span id="contadorArticulos" class="ui-li-count" >0</span></a>
+    <a style="float:right;" href="#panelProductos" data-role="button" data-inline="true" data-iconpos="notext" data-icon="bars"></a>
 		<h1 id="titulopageSeleccionaLocal">Realizar pedido</h1>
 	</div>
 	<div data-role="content">	
 		<ul data-role="listview" id="listaProductos" data-filter="true">
-			<!--Lista de los proveedores-->
-            <li data-icon="plus" ><a style="height:57px;" href="#" onclick="seleccionarProducto('63','Ballantines', 'Ron Bot 0,7');">
-            <img alt="" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;" src="img/botella_demo.jpg"></img>
-            <p style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">Ballantines</span><br /><span style="font-weight:500; margin-right:10px;">Ron</span><span> Bot 0.7</span></p>
-             <p style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>9.95</span> €</p>
-             <div style="clear:both;"></div>
-             <p style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;">
-               <span> Unidades a canjear:<span> 0</span></span>
-               <span style="margin-left:15px;"> Unidades a comprar:<span> 0</span></span>
-               </p>
-            </a></li>
+			<!--Lista de los proveedores-->           
 		</ul>		
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+<div data-role="page" id="pagePedido">
+	<div data-role="panel" data-position="right" id="panelPedido">
+    <h1>DrinkBo</h1>        
+    <div style="text-align:left;">
+        <a href="#" data-theme="b" onClick="cerrarPedido('2');" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Guardar borrador</a>
+        <a href="#" data-theme="b" onClick="cerrarPedido('1');" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Enviar al proveedor</a><br />
+        <label for="buscador" style="text-align:left;">Si guardas el pedido como borrador, no se enviará al proveedor, hasta que tu lo solicites al proveedor.</label>
+            
+        </div>
+    </div>
+	<div data-role="header"  style=" background:#000000">  
+    <a href="#pageProductos" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+    <a href="" style="float:right; margin-right:30px;" id="botonPedido2" data-role="button" data-icon="alert" data-iconpos="right"  data-theme="a" data-inline="true"><span id="contadorPedido" class="ui-li-count" >0</span></a>
+    <a style="float:right;" href="#panelPedido" data-role="button" data-inline="true" data-iconpos="notext" data-icon="bars"></a>
+		<h1>Productos a comprar</h1>
+	</div>
+	<div data-role="content">  
+		<ul data-role="listview"  id="listaPedido">			
+		</ul>		
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+<div data-role="page" id="pageSolicita">
+	
+	<div data-role="header"  style=" background:#000000">  
+    <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+		<h1>Enviar al proveedor</h1>
+	</div>
+	<div data-role="content"> 
+     <div class="ui-bar ui-bar-e">
+            <h5>
+               Este pedido esta siendo solicitado.
+                </br>
+               Introduce la fecha de recepción para el pedido, e indica comentarios, o intrucciones que el proveedor deba saber.
+            </h5>
+            <a href="#" onclick="ocultarElemento(this);" style="float:right" data-role="button" data-icon="delete" data-inline="true" data-iconpos="notext">Dismiss</a>
+       	</div>
+    
+        <div style="width:80%">
+        <form class="form-horizontal">
+          <div class="control-group">
+          <label for="fechaRecepcion" class="col-lg-2 control-label">Fecha de recepción:</label>
+            <div class="controls">
+               <input name="fechaRecepcion"  id="fechaRecepcion" type="text" data-role="datebox" data-options='{"mode":"calbox", "useNewStyle":true}' />	
+            </div>
+          </div>
+          <div class="control-group">
+          <label for="intrucciones" class="col-lg-2 control-label">Instrucciones de entrega del pedido:</label>
+            <div class="controls">
+              <textarea cols="40" rows="20" name="intrucciones" id="intrucciones"></textarea>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls">
+              <a href="#" onclick="solicitarYA();" data-role="button" data-mini="true" data-inline="true" data-icon="check" data-theme="b">Solicitar ya</a>
+            </div>
+          </div>
+        </form>
+        </div>
 	</div>
 	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
 		<h1>www.drinkbo.com</h1>

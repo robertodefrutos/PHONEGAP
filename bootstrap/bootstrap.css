@@ -756,7 +756,7 @@ h6 small {
   line-height: 1;
   color: #999999;
 }
-
+/*
 h1,
 h2,
 h3 {
@@ -801,7 +801,7 @@ h3 small {
 
 h4 small {
   font-size: 14px;
-}
+}*/
 
 .page-header {
   padding-bottom: 9px;
