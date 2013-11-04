@@ -209,9 +209,19 @@ function detallesCesta(objeto){
             modal: true,
 			background: "#FFFFFF"
         });
+		
+		<!-- A -->		
+		var socio = cargarDatos('socio');
+		if(socio != '')
+		{
+			$('#emailLogueo').val(socio.split(';')[7]);	
+			$('#passLogueo').val(socio.split(';')[0]);
+			logueo();
+		}
 });
 
-	function logueo(){
+	function logueo()
+	{
 		var emailLogueo = $('#emailLogueo').val();
 		var passLogueo = $('#passLogueo').val();
 		if(emailLogueo == ""){		
@@ -223,15 +233,364 @@ function detallesCesta(objeto){
 			textoDialog.innerHTML = "La contraseña debe completarse.";			
 			$('#alertDialogInfo').dialog('open');
 		}else{
-	
-			document.location.href ="#pageSeleccionaLocal";
+			var datos = "wsSocios.aspx?ws=getSocioXML&mail=" + emailLogueo + "&pass=" + passLogueo;
+			var dataFinal = WSFuncion(datos);
+			dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);					
+			$('#emailLogueo').val('');
+			$('#passLogueo').val('');			
+			if(dataFinal.id != null)
+			{
+				soloNumeros('#telefonoPerfil');
+				soloNumeros('#movilPerfil');
+				soloNumeros('#codigoPostalPerfil');				
+				setDatosUsuario(dataFinal);				
+				irASeleccionLocal();
+			}
+			else
+			{
+				var textoDialog=document.getElementById("alertDialogInfo");
+				textoDialog.innerHTML = "El usuario o contraseña son incorrectos.";			
+				$('#alertDialogInfo').dialog('open');	
+			}
+		});
 		}
 	}
-	function seleccionaLocal(id,nombre){
-		//Guardamos el id del local seleccionado
+	
+	
+	function setDatosUsuario(dataFinal)
+	{
+		$('#inputSocio').val(dataFinal.id + ";" +dataFinal.nombre + ";" +dataFinal.apellidos + ";" +dataFinal.sexo + ";" +dataFinal.fechaNacimiento + ";" +dataFinal.movil + ";" +dataFinal.telefono + ";" +dataFinal.mail + ";" +dataFinal.direccion + ";" +dataFinal.codigoPostal + ";" +dataFinal.estado + ";" +dataFinal.cambioPass + ";");
+		guardarDatos('socio', $('#inputSocio').val().toString());
+		$('#usuarioMail').html(dataFinal.mail);
+		$('#usuarioNombre').html(dataFinal.nombre);
+		$('#usuarioApellidos').html(dataFinal.apellidos);
+		$('#usuarioSexo').html(dataFinal.sexo);
+		$('#usuarioFechaNacimiento').html(dataFinal.fechaNacimiento);
+		if(dataFinal.sexo == "Hombre")
+			$('#imgUsuario').attr("src", "img/Hombre.png");
+		else
+			$('#imgUsuario').attr("src", "img/Mujer.png");
+			
+		$('#nombrePerfil').val(dataFinal.nombre);
+		$('#apellidosPerfil').val(dataFinal.apellidos);
+		$('#emailPerfil').val(dataFinal.mail);
+		$('#fechaNacimientoPerfil').val(dataFinal.fechaNacimiento);
+		$('#sexoPerfil').val(dataFinal.sexo);
+		$('#direccionPerfil').val(dataFinal.direccion);
+		$('#codigoPostalPerfil').val(dataFinal.codigoPostal);
+		$('#movilPerfil').val(dataFinal.movil);
+		$('#telefonoPerfil').val(dataFinal.telefono);
+	}
+	
+	function irASeleccionLocal()
+	{
+		$('#listaEstablecimientos').html('');		
+		var datos = "wsSocios.aspx?ws=getEstablecimientosUsuarioXML&idSocio=" + $('#inputSocio').val().split(';')[0] + "&pass=" + $('#inputSocio').val().split(';')[0];
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var establecimiento = '';
+		$.each(dataFinal, function(index, d){
+			establecimiento += '<li onclick="seleccionaLocal(\'' + d.id + '\',\'' + d.nombre + '\', \'' + d.idAplicacion + '\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-last-child ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">' + d.nombre + '</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
+		});
+		if(dataFinal.length == 0){
+			establecimiento = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-last-child ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">No hay establecimientos para este usuario. Asocia a tu usuario un establecimiento para poder comprar</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
+		}else if(dataFinal.length == 1)
+		{
+			seleccionaLocal(dataFinal[0].id, dataFinal[0].nombre, dataFinal[0].idAplicacion);	
+		}
+		$('#listaEstablecimientos').html(establecimiento);
+		});
+		document.location.href ="#pageSeleccionaLocal";	
+	}
+	
+	function modificarContrasena()
+	{
+		if(($('#passN').val() == $('#passNR').val()) && $('#passNR').val() != "")
+		{
+			$('#listaEstablecimientos').html('');		
+			var datos = "wsSocios.aspx?ws=cambioPassString&idSocio=" + $('#inputSocio').val().split(';')[0] + "&vPass=" + $('#passV').val() + "&nPass=" + $('#passN').val();
+			var dataFinal = WSFuncion(datos);
+			dataFinal.success(function (data){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			if(data == "OK")			
+				textoDialog.innerHTML = "La contraseña se ha guardado correctamente.";					
+			else			
+				textoDialog.innerHTML = "La contraseña antigua no es correcta. Inténtalo de nuevo";				
+			$('#alertDialogInfo').dialog('open');				
+			});	
+		}
+		else		
+		{
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "Las contraseñas no coinciden o están vacías";
+			$('#alertDialogInfo').dialog('open');
+		}
+	}
+	
+	function recordarContrasena()
+	{
+		if($('#correoRecordar').val() != "")
+		{					
+			var datos = "wsSocios.aspx?ws=newPassString&mail=" + $('#correoRecordar').val() + "&procedencia=drinkbo";
+			var dataFinal = WSFuncion(datos);
+			dataFinal.success(function (data){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			if(data == "OK")			
+				textoDialog.innerHTML = "La contraseña se ha enviado correctamente.";					
+			else			
+				textoDialog.innerHTML = "Hubo un error al reenviar la contraseña. Inténtalo de nuevo";				
+			$('#alertDialogInfo').dialog('open');				
+			});	
+		}
+		else		
+		{
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El correo no puede estar vacío";
+			$('#alertDialogInfo').dialog('open');
+		}
+	}
+	
+	function modificarUsuario()
+	{		
+		if($('#nombrePerfil').val() == ""){		
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El nombre debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if ($('#apellidosPerfil').val() == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "Los apellidos deben completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else{
+			var nombrePerfil = $('#nombrePerfil').val();
+			var apellidosPerfil = $('#apellidosPerfil').val();
+			var emailPerfil = $('#emailPerfil').val();
+			var fechaNacimientoPerfil = $('#fechaNacimientoPerfil').val();
+			var sexoPerfil = $('#sexoPerfil').val();
+			var passPerfil = $('#inputSocio').val().split(';')[0];	
+			var movilPerfil = $('#movilPerfil').val();
+			var telefonoPerfil = $('#telefonoPerfil').val();
+			var direccionPerfil = $('#direccionPerfil').val();
+			var codigoPostalPerfil = $('#codigoPostalPerfil').val();
+			
+			$('#listaEstablecimientos').html('');		
+			var datos = "wsSocios.aspx?ws=setSocioString&idSocio=" + $('#inputSocio').val().split(';')[0] + "&nombre=" + nombrePerfil + "&apellidos=" + apellidosPerfil + "&mail=" + emailPerfil + "&pass=" + passPerfil + "&sexo=" + sexoPerfil + "&fechaNacimiento=" + fechaNacimientoPerfil + "&movil=" + movilPerfil + "&telefono=" + telefonoPerfil + "&direccion=" + direccionPerfil + "&codigoPostal=" + codigoPostalPerfil + "&idFacebook=";
+			var dataFinal = WSFuncion(datos);
+			dataFinal.success(function (data){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			if(data == "OK")
+			{			
+				textoDialog.innerHTML = "Los datos se han guardado correctamente.";
+				var datos = "wsSocios.aspx?ws=getSocioXML&mail=" + emailLogueo + "&pass=" + passLogueo;
+				var dataFinal = WSFuncion(datos);
+				dataFinal.success(function (data){
+				dataFinal = $.parseJSON(data);			
+				if(dataFinal.id != null)				
+					setDatosUsuario(dataFinal);				
+				});
+			}
+			else			
+				textoDialog.innerHTML = "Hubo un error al guardar los datos. Inténtalo de nuevo.";				
+			$('#alertDialogInfo').dialog('open');
+			});
+		}
+	}
+	
+	function seleccionaLocal(id,nombre,idAplicacion)
+	{
 		document.location.href ="#page";
-		$('#idNombreLocal').val(nombre)
+		$('#inputIdEstablecimiento').val(id);
+		$('#inputIdAplicacion').val(idAplicacion);		
+		$('#idNombreLocal').val(nombre);
 		$('#tituloPage').html(nombre);
+	}
+	
+	function preRegistro()
+	{
+		var nombreRegistro = $('#nombreRegistro').val();
+        var apellidosRegistro = $('#apellidosRegistro').val();
+        var emailRegistro = $('#emailRegistro').val();
+        var fechaRegistro = $('#diaRegistro').val() + "/" + $('#mesRegistro').val() + "/" + $('#anoRegistro').val();
+		var diaRegistro = $('#diaRegistro').val() ;
+		var mesRegistro = $('#mesRegistro').val();
+		var anoRegistro = $('#anoRegistro').val();
+        var sexoRegistro = $('#sexoRegistro').val();
+        var passRegistro = $('#passRegistro').val();
+		
+		if(nombreRegistro == ""){		
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El nombre debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (apellidosRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "Los apellidos deben completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (emailRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El email debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (diaRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La fecha de nacimiento debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (mesRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La fecha de nacimiento debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (anoRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La fecha de nacimiento debe completarse.";			
+			$('#alertDialogInfo').dialog('open');			
+		}else if (sexoRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El sexo debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (passRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La contraseña debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else{
+			soloNumeros('#codigoLocalRegistro');
+			soloNumeros('#telLocalRegistro');
+			document.location.href ="#pageRegistro2";		
+		}
+	}
+	
+	function registro()
+	{
+		var nombreRegistro = $('#nombreRegistro').val();
+        var apellidosRegistro = $('#apellidosRegistro').val();
+        var emailRegistro = $('#emailRegistro').val();
+        var fechaRegistro = $('#diaRegistro').val() + "/" + $('#mesRegistro').val() + "/" + $('#anoRegistro').val();
+		var diaRegistro = $('#diaRegistro').val() ;
+		var mesRegistro = $('#mesRegistro').val();
+		var anoRegistro = $('#anoRegistro').val();
+        var sexoRegistro = $('#sexoRegistro').val();
+        var passRegistro = $('#passRegistro').val();
+		
+		var cifLocalRegistro = $('#cifLocalRegistro').val();
+        var denominacionLocalRegistro = $('#denominacionLocalRegistro').val();
+        var razonLocalRegistro = $('#razonLocalRegistro').val();
+		var nombreLocalRegistro = $('#nombreLocalRegistro').val();
+		var dirLocalRegistro = $('#dirLocalRegistro').val() ;
+		var codigoLocalRegistro = $('#codigoLocalRegistro').val();
+		var poblacionLocalRegistro = $('#poblacionLocalRegistro').val();
+        var provinciaLocalRegistro = $('#provinciaLocalRegistro').val();
+        var telLocalRegistro = $('#telLocalRegistro').val();			
+		
+		if(cifLocalRegistro == ""){		
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El CIF/NIF debe completarse.";			
+			$('#alertDialogInfo').dialog('open');		
+		}else if (razonLocalRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La razón social debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (nombreLocalRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El nombre del local debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (dirLocalRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La dirección debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (codigoLocalRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El código postal debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (poblacionLocalRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La población debe completarse.";			
+			$('#alertDialogInfo').dialog('open');			
+		}else if (provinciaLocalRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "La provincia debe completarse.";			
+			$('#alertDialogInfo').dialog('open');		
+		}else if (denominacionLocalRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El tipo de local debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else if (telLocalRegistro == ""){
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El teléfono debe completarse.";			
+			$('#alertDialogInfo').dialog('open');
+		}else{
+			var datosRegistro = "wsSocios.aspx?ws=registerSocioString&nombre=" + nombreRegistro + "&apellidos=" + apellidosRegistro + "&mail=" + emailRegistro + "&pass=" + passRegistro + "&sexo=" + sexoRegistro + "&fechaNacimiento=" + fechaRegistro + "&movil=" + "" + "&telefono=" + "" + "&direccion=" + "" + "&codigoPostal=" + "" + "&idFacebook=" + "" + "&accesTokenFacebook=" + "" + "&linkFacebook=" + "" + "&userNameFacebook=" + "" + "&procedencia=" + "drinkbo";
+			var dataFinalRegistro = WSFuncion(datosRegistro);
+			dataFinalRegistro.success(function (dataRegistro){	
+			if(dataRegistro == "OK;")
+			{
+				var datosLogueo = "wsSocios.aspx?ws=getSocioXML&mail=" + emailRegistro + "&pass=" + passRegistro;
+				var dataFinalLogueo = WSFuncion(datosLogueo);
+				dataFinalLogueo.success(function (dataLogueo){
+				dataFinalLogueo = $.parseJSON(dataLogueo);
+				if(dataFinalLogueo.id != null)
+				{			
+					var datosEstablecimiento = "wsSocios.aspx?ws=registerLocalString&idSocio=" + dataFinalLogueo.id + "&asociadoRazonSocial=" + razonLocalRegistro + "&asociadoCIF=" + cifLocalRegistro + "&asociadoCodigoPostal=" + codigoLocalRegistro + "&asociadoDireccion=" + dirLocalRegistro + "&asociadoPoblacion=" + poblacionLocalRegistro + "&asociadoProvincia=" + provinciaLocalRegistro + "&establecimientoCodigoPostal=" + codigoLocalRegistro + "&establecimientoDireccion=" + dirLocalRegistro + "&establecimientoNombre=" + nombreLocalRegistro + "&establecimientoPoblacion=" + poblacionLocalRegistro + "&establecimientoProvincia=" + provinciaLocalRegistro + "&establecimientoTelefono=" + telLocalRegistro + "&establecimientoDato=" + denominacionLocalRegistro;				
+					var dataEstablecimiento = WSFuncion(datosEstablecimiento);
+					dataEstablecimiento.success(function (dataFinalEstablecimiento){
+					var textoDialog=document.getElementById("alertDialogInfo");
+					if(dataFinalEstablecimiento == "OK")	
+					{
+						setDatosUsuario(dataFinalLogueo);		
+						textoDialog.innerHTML = "Enhorabuena tu registro se ha completado correctamente. Se te ha enviado un email para que confirmes tu correo electrónico y nos pondremos en contacto contigo cuando validemos tu establecimiento";					
+					}
+					else					
+						textoDialog.innerHTML = "Hubo un problema al registrar el establecimiento. Inténtelo de nuevo";												
+						
+					$('#alertDialogInfo').dialog('open');	
+					});
+					
+					irASeleccionLocal();
+				}
+				else
+				{
+					var textoDialog=document.getElementById("alertDialogInfo");
+					textoDialog.innerHTML = "Hubo un problema al registrar el socio. Inténtelo de nuevo";			
+					$('#alertDialogInfo').dialog('open');	
+				}
+				});
+			}
+			else if(dataRegistro == "YA EXISTE;")
+			{
+				var textoDialog=document.getElementById("alertDialogInfo");
+				textoDialog.innerHTML = "El email introducido ya existe en nuestra plataforma. Entra en la aplicación para poder hacer tus compras.";
+				$('#alertDialogInfo').dialog('open');	
+				document.location.href ="#pageRegistro";
+			}
+			else
+			{
+				var textoDialog=document.getElementById("alertDialogInfo");
+				textoDialog.innerHTML = "Hubo un problema al registrar el socio. Inténtelo de nuevo";			
+				$('#alertDialogInfo').dialog('open');	
+			}
+		});
+		}
+	}
+	
+	function limpiarContrasena()
+	{
+		$('#passV').val("");
+		$('#passN').val("");
+		$('#passNR').val("");	
+		document.location.href ="#pageModificarContrasena";					
+	}
+	
+	function guardarDatos(key, valor)
+	{		
+		localStorage.setItem(key, valor);		
+	}
+	
+	function cargarDatos(key)
+	{		
+		return localStorage.getItem(key) || '';								
+	}
+	
+	function limpiarDatos()
+	{
+		localStorage.clear();	
+		document.location.href = '#pageLogueo';
 	}
 	
 	
@@ -312,9 +671,9 @@ function detallesCesta(objeto){
 		$.mobile.showPageLoadingMsg("a", "Cargando...");
 		$('#idTituloDetallePedido').html('Nº PEDIDO '+idPedido);
 		$('#inputPedidoAbierto').val(idPedido);
-		$('#inputProveedor').val(idProveedor);		
+		$('#idProveedor').val(idProveedor);		
 		
-		var datos = "ws=getPedidoXML&idPedido="+$('#inputPedidoAbierto').val();
+		var datos = "wsPedidos.aspx?ws=getPedidoXML&idPedido="+$('#inputPedidoAbierto').val();
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -336,16 +695,19 @@ function detallesCesta(objeto){
 				$('#botonSolicitarPedido').css('display', 'block');
 				$('#botonCancelarPedido').css('display', 'block');
 				$('#botonAceptarPedido').css('display', 'none');
+				$('#botonModificarPedido').css('display', 'block');
 			}
 			else if (dataFinal.idEstado == "8") {
 				$('#botonSolicitarPedido').css('display', 'none');
 				$('#botonCancelarPedido').css('display', 'none');
 				$('#botonAceptarPedido').css('display', 'block');
+				$('#botonModificarPedido').css('display', 'none');
 			}
 			else {
 				$('#botonSolicitarPedido').css('display', 'none');
 				$('#botonCancelarPedido').css('display', 'none');
 				$('#botonAceptarPedido').css('display', 'none');
+				$('#botonModificarPedido').css('display', 'none');
 			}
 		});
 		var inicioListas = '<li class="ui-grid-b ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px;" role="heading"><div class="ui-block-a"> <span>Producto</span></div><div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>Unidades</span></div></div><div class="ui-block-c"><div class="ui-block-b" style=" width:50%;text-align:center;"><span> Total </span> </div></div></li>'
@@ -353,7 +715,7 @@ function detallesCesta(objeto){
 		$('#listProductosCanjeDetalle').html();
 		$('#listProductosDetalle').html();
 		
-		var datos = "ws=getArticulosPedidoXML&idPedido="+idPedido;
+		var datos = "wsPedidos.aspx?ws=getArticulosPedidoXML&idPedido="+idPedido;
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -367,7 +729,7 @@ function detallesCesta(objeto){
 		});
 		
 		
-		var datos = "ws=getArticulosPedidoCanjeXML&idPedido="+idPedido;
+		var datos = "wsPedidos.aspx?ws=getArticulosPedidoCanjeXML&idPedido="+idPedido;
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data2){
 			dataFinal = $.parseJSON(data2);
@@ -390,7 +752,7 @@ function detallesCesta(objeto){
 	function misPedidos(){
 		var htmlPedidos = '<li class="ui-grid-c ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px" role="heading"><span class="ui-block-a">Fecha</span><span class="ui-block-b" style="; text-align:center">Total</span><span class="ui-block-c">Proveedor </span><span class="ui-block-d" style=" text-align:right">Estado</span></li>';
 		$.mobile.showPageLoadingMsg("a", "Cargando...");
-		var datos = "ws=getPedidosAbiertosXML&idAplicacion="+$('#inputIdAplicacion').val()+"&idEstablecimiento="+$('#inputIdEstablecimiento').val();
+		var datos = "wsPedidos.aspx?ws=getPedidosAbiertosXML&idAplicacion="+$('#inputIdAplicacion').val()+"&idEstablecimiento="+$('#inputIdEstablecimiento').val();
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -442,7 +804,7 @@ function detallesCesta(objeto){
 	
 	//var datos = "ws=getProveedoresXML&idEstablecimiento=63";          "
 	function WSFuncion(datos){		
-		var url = "http://www.canalpreference.com/ws/wsPedidos.aspx?"+datos;
+		var url = "http://www.canalpreference.com/ws/"+datos;
 		//var url = "http://www.canalpreference.com/ws/wsPedidos.aspx?"+datos;
 		var dataFinal = '';
 		return $.ajax({
@@ -472,7 +834,7 @@ function detallesCesta(objeto){
 	
 	function proveedores(){
 		$.mobile.showPageLoadingMsg("a", "Cargando...");
-		var datos = "ws=getProveedoresXML&idEstablecimiento=63"
+		var datos = "wsPedidos.aspx?ws=getProveedoresXML&idEstablecimiento=63"
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -497,7 +859,7 @@ function detallesCesta(objeto){
 		$('#nombreUndProducto2').val(nombre);
 			
 		<!-- CARGAMOS PRODUCTOS FAVORITOS -->
-		var datos = "ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+		var datos = "wsPedidos.aspx?ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -508,16 +870,35 @@ function detallesCesta(objeto){
 			$('#listaProductos').html(productos);
 		});
 		
+		//Cargamos las cateorias de productos
 		cargarCategoriasPadre();
+		
+		//Cargamos los puntos que tiene el local
+		cargarPuntosFabricantes();
 		
 		document.location.href ="#pageProductos";
 		$.mobile.hidePageLoadingMsg();
 	}
 	
+	function cargarPuntosFabricantes(){
+		//Puntos fabricantes
+		var datos = "wsPedidos.aspx?ws=getPuntosFabricanteXML&idEstablecimiento="+$('#inputIdEstablecimiento').val();
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var fabricante = '';
+			$.each(dataFinal, function(index, d){
+				alert(d.idFabricante);
+				fabricante += d.idFabricante+ ';' + d.puntos + ';p;';				
+			});
+			$('#inputPuntosFabricante').val(fabricante);
+		});
+	}
+	
 	function cargarCategoriasPadre(){
 		<!-- CARGAMOS CATEGORIAS -->
 		$('#listCategorias').html('');
-		var datos = "ws=getCategoriasPadreXML"
+		var datos = "wsPedidos.aspx?ws=getCategoriasPadreXML"
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -536,7 +917,7 @@ function detallesCesta(objeto){
 		$.mobile.showPageLoadingMsg("a", "Cargando...");
 		
 		<!-- CARGAMOS CATEGORIAS HIJO -->
-		var datos = "ws=getCategoriasHijoXML&idCategoria="+id
+		var datos = "wsPedidos.aspx?ws=getCategoriasHijoXML&idCategoria="+id
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -561,7 +942,7 @@ function detallesCesta(objeto){
 	
 	function seleccionarCategoriaHija(idPadre,id,nombre){		
 		$('#listaProductos').html('');		
-		var datos = "ws=getArticulosByCategoriaXML&idCategoria="+id+"&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+		var datos = "wsPedidos.aspx?ws=getArticulosByCategoriaXML&idCategoria="+id+"&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -580,7 +961,7 @@ function detallesCesta(objeto){
 	
 	function buscar(){
 		$('#listaProductos').html('');		
-		var datos = "ws=getArticulosByCategoriaXML&idCategoria=0&texto="+$('#buscador').val()+"&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+		var datos = "wsPedidos.aspx?ws=getArticulosByCategoriaXML&idCategoria=0&texto="+$('#buscador').val()+"&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
@@ -611,6 +992,9 @@ function detallesCesta(objeto){
 		$('#'+idAlert).dialog('open');
 		
 		var antUnidades = $('#'+id+'undCompra').html();
+		if(antUnidades == 'undefined'){
+			antUnidades = $('#'+id+'undCompraPEDIDO').html();
+		}		
 		if(antUnidades != 0){
 			$('#unidadesProducto').val(antUnidades);
 			$('#unidadesProducto2').val(antUnidades);
@@ -689,15 +1073,15 @@ function detallesCesta(objeto){
 			var image = $(idAlert).attr('data-image');
 			var precioIVA = $(idAlert).attr('data-precioIVA');
 			
-			var total = (current_price * unidades).toFixed(2);	
-			var totalIVA = (precioIVA * unidades).toFixed(2);					
+			var total = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);	
+			var totalIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);					
 			
 			var pedidoHTML = $('#listaPedido').html();
 			if(pedidoHTML.split('PEDIDO').length < 2){
 				pedidoHTML = '';
 			}
 			
-			pedidoHTML += '<li name="productoPedido" id="'+id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="'+unidades+'" data-image="'+image+'" data-id="'+id+'" data-name="'+name+'" data-description="'+description+'" data-bottling="'+bottling+'" data-current_price="'+current_price+'" data-tradeId="'+tradeId+'" data-tradeName="'+tradeName+'" data-tradePointsA="'+tradePointsA+'" data-tradePointsC="'+tradePointsC+'" data-tradeIdAcuerdo="'+tradeIdAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+image+'\',\''+id+'\',\''+name+'\', \''+description+'\', \''+bottling+'\',\''+current_price+'\',\''+tradeId+'\',\''+tradeName+'\',\''+tradePointsA+'\',\''+tradePointsC+'\',\''+tradeIdAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:57px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+description+'</span><span>'+bottling+'</span></p><p class="ui-li-desc" style=" margin-top:0px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+id+'TOTAL">'+totalIVA+'</span>€<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span></p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+id+'undCompraPEDIDO">'+unidades+'</span></span><span style="margin-left:15px;"><span>'+current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+			pedidoHTML += '<li name="productoPedido" id="'+id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="'+unidades+'" data-image="'+image+'" data-id="'+id+'" data-name="'+name+'" data-description="'+description+'" data-bottling="'+bottling+'" data-current_price="'+current_price+'" data-tradeId="'+tradeId+'" data-tradeName="'+tradeName+'" data-tradePointsA="'+tradePointsA+'" data-tradePointsC="'+tradePointsC+'" data-tradeIdAcuerdo="'+tradeIdAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+image+'\',\''+id+'\',\''+name+'\', \''+description+'\', \''+bottling+'\',\''+current_price+'\',\''+tradeId+'\',\''+tradeName+'\',\''+tradePointsA+'\',\''+tradePointsC+'\',\''+tradeIdAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+description+'</span><span>'+bottling+'</span></p><p class="ui-li-desc" style=" margin-top:0px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+id+'TOTAL">'+totalIVA+'</span>€<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span></p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:<span id="'+id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">A comprar:<span id="'+id+'undCompraPEDIDO">'+unidades+'</span></span><span style="margin-left:15px;"><span>'+current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
 			
 			$('#listaPedido').html(pedidoHTML);
 			$('#'+id+'undCompra').html(unidades);
@@ -707,11 +1091,14 @@ function detallesCesta(objeto){
 			$(idAlert).dialog("close");
 		}else{
 			var current_price = $(idAlert).attr('data-current_price');
-			var total = (current_price * unidades).toFixed(2);
+			var precioIVA = $(idAlert).attr('data-precioIVA');
+			var total = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);
+			var totalIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);
+			
 			$('#'+id+'PEDIDO').attr('data-unidades',unidades);
 			$('#'+id+'undCompraPEDIDO').html(unidades);
 			$('#'+id+'undCompra').html(unidades);
-			$('#'+id+'TOTAL').html(total);
+			$('#'+id+'TOTAL').html(totalIVA);
 			
 			totalizar();
 			
@@ -729,8 +1116,8 @@ function detallesCesta(objeto){
 			var unidades = $('#'+id).attr('data-unidades');
 			var current_price = $('#'+id).attr('data-current_price');
 			var precioIVA = $('#'+id).attr('data-precioIVA');
-			var totalLinea = (current_price * unidades).toFixed(2);	
-			var totalLineaIVA = (precioIVA * unidades).toFixed(2);	
+			var totalLinea = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);	
+			var totalLineaIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);	
 			total = (parseFloat(total) + parseFloat(totalLinea)).toFixed(2);
 			totalIVA = (parseFloat(totalIVA) + parseFloat(totalLineaIVA)).toFixed(2);
         });
@@ -793,7 +1180,7 @@ function detallesCesta(objeto){
 		if(fechaSelec == ''){
 			alert('Tienes que seleccionar una fecha para la recepción del pedido.');
 		}else{
-			var datos = "ws=solicitarPedidoString&idPedido="+$('#inputPedidoAbierto').val()+"&fechaSeleccionada="+fechaSelec+"&observacionesRecepcion="+$('#instrucciones').val()+"&idSocio="+idSocio;
+			var datos = "wsPedidos.aspx?ws=solicitarPedidoString&idPedido="+$('#inputPedidoAbierto').val()+"&fechaSeleccionada="+fechaSelec+"&observacionesRecepcion="+$('#instrucciones').val()+"&idSocio="+idSocio;
 			var dataFinal = WSFuncion(datos);
 			dataFinal.success(function (data){
 				if(data.split('#Error;').length == 1){ 
@@ -813,8 +1200,8 @@ function detallesCesta(objeto){
 	 function enviarPedido(){
 		var pedidoTotalCanje = "";
 		var pedidoTotalAcumula = "";
-		var listaPedido = document.getElementById("listaPedido");  
-		var filas = listaPedido.getElementsByTagName('li');   
+		var listaPedido = document.getElementById("listaPedido");
+		var filas = listaPedido.getElementsByTagName('li');
 		var canjeActivo = 0;
 		for(var i = 0; i< filas.length; i++){
 			canjeActivo = 0;
@@ -823,10 +1210,10 @@ function detallesCesta(objeto){
 				var idCanje = id;
 				id = idCanje[1];
 				canjeActivo = 1;
-			}						
+			}
 			var cantidad = filas[i].getAttribute('data-unidades');
-			var precio = filas[i].getAttribute('data-current_price');			
-			var puntos = filas[i].getAttribute('data-tradepointsa');			
+			var precio = filas[i].getAttribute('data-current_price');
+			var puntos = filas[i].getAttribute('data-tradepointsa');
 			var puntosC = filas[i].getAttribute('data-tradepointsc');
 			var puntosA = filas[i].getAttribute('data-tradepointsa');
 			var fabricante = filas[i].getAttribute('data-tradeid');
@@ -845,13 +1232,13 @@ function detallesCesta(objeto){
 		totalizar();
 		//LLAMAR AL WEBSERVICE PARA ACTUALIZAR LOS PRODUCTOS A CERO
 		
-		var datos = "ws=crearPedidoString&articulosAcumula="+pedidoTotalAcumula+"&articulosCanje="+pedidoTotalCanje+"&idPedido="+idPedido+"&idProveedor="+idProveedor+"&idEstablecimiento="+idEstablecimiento;
+		var datos = "wsPedidos.aspx?ws=crearPedidoString&articulosAcumula="+pedidoTotalAcumula+"&articulosCanje="+pedidoTotalCanje+"&idPedido="+idPedido+"&idProveedor="+idProveedor+"&idEstablecimiento="+idEstablecimiento;
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
-			if(data.split('#Error;').length == 1){ 
+			if(data.split('#Error;').length == 1){
 				//Guardado Correctamente
 				$('#alertDialogInfoText').html('Pedido guardado como borrador correctamente');
-				$('#alertDialogInfo').dialog('open');				
+				$('#alertDialogInfo').dialog('open');
 				$('#inputPedidoAbierto').val(data);
 			} else {
 				//Error
@@ -864,7 +1251,7 @@ function detallesCesta(objeto){
 	
 	function borrarProducto(){
 		var idLI = $('#alertUnidadesProductoPedido').attr('data-id');
-		$('#'+idLI+'PEDIDO').remove();	
+		$('#'+idLI+'PEDIDO').remove();
 		$('#alertUnidadesProductoPedido').dialog('close');
 		totalizar();
 	}
@@ -874,7 +1261,7 @@ function detallesCesta(objeto){
 	}
 	function cancelarPedido(){
 		//Borrar pedido
-		var datos = "ws=eliminarPedidoString&idPedido="+$('#inputPedidoAbierto').val();
+		var datos = "wsPedidos.aspx?ws=eliminarPedidoString&idPedido="+$('#inputPedidoAbierto').val();
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			if(data.split('#Error;').length == 1){
@@ -892,7 +1279,7 @@ function detallesCesta(objeto){
 	}
 	function aceptarPedido(){
 		//Recibir pedido (ciclo completo)
-		var datos = "ws=recibirPedidoString&idPedido="+$('#inputPedidoAbierto').val();
+		var datos = "wsPedidos.aspx?ws=recibirPedidoString&idPedido="+$('#inputPedidoAbierto').val();
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){			
 			if(data.split('#Error;').length == 1){ 
@@ -907,6 +1294,123 @@ function detallesCesta(objeto){
 			}
 			misPedidos();
 		});		
+	}
+	function volverProductos(){
+		document.location.href="#pageProductos";
+		setTimeout(function(){
+			$("[name='divP']").removeClass();
+			$("[name='divP']").addClass('ui-btn-inner ui-li');
+			$("[name='productoPedido']").removeClass();
+			$("[name='productoPedido']").addClass('ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c');
+		},100);
+	}
+	
+	function modificarPedido(){
+		//Modificar pedido, cargamos articulos pedido anterior
+		//Seleccionamos el proveedor y cargamos los productos		
+		var datos = "wsPedidos.aspx?ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento="+$('#inputIdEstablecimiento').val();
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+			dataFinal = $.parseJSON(data);
+			var productos = '';
+			$.each(dataFinal, function(index, d){
+				productos += '<li name="productoPedido" id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;  max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style=" max-width: 80% !important; white-space: pre-wrap !important; float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;;"><span>'+parseFloat(d.current_price).toFixed(2)+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+			});
+			$('#listaProductos').html(productos);
+			
+		});
+		
+		var datos = "wsPedidos.aspx?ws=getArticulosPedidoXML&idPedido="+$('#inputPedidoAbierto').val();
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){			
+			dataFinal = $.parseJSON(data);
+			var productos = '';
+			$.each(dataFinal, function(index, d){
+				var unidades = d.numUnidades.split(',')[0];
+				var id = d.idProdProve;
+				var name = d.producto;
+				var description = "";
+				var bottling = "";
+				var current_price = d.precio;
+				var tradeId = d.idFabricante;
+				var tradeName = d.idFabricante;
+				var tradePointsA = d.puntosA;
+				var tradePointsC = d.puntosC;
+				var tradeIdAcuerdo = d.idAcuerdo;
+				var image = "/img/productoSinImagen.jpg";
+				var precioIVA = d.precio;
+				var impuesto = d.impuesto;
+				var impuestoValor = d.impuestoValor;
+				var impuestoAplicado = (parseFloat(current_price) * parseFloat(impuestoValor))/100;
+				precioIVA = parseFloat(precioIVA) + parseFloat(impuestoAplicado);
+				
+				var total = (parseFloat(current_price) * unidades).toFixed(2);	
+				var totalIVA = (parseFloat(precioIVA) * unidades).toFixed(2);	
+				
+				var pedidoHTML = $('#listaPedido').html();
+				if(pedidoHTML.split('PEDIDO').length < 2){
+					pedidoHTML = '';
+				}			
+				pedidoHTML += '<li name="productoPedido" id="'+id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="'+unidades+'" data-image="'+image+'" data-id="'+id+'" data-name="'+name+'" data-description="'+description+'" data-bottling="'+bottling+'" data-current_price="'+current_price+'" data-tradeId="'+tradeId+'" data-tradeName="'+tradeName+'" data-tradePointsA="'+tradePointsA+'" data-tradePointsC="'+tradePointsC+'" data-tradeIdAcuerdo="'+tradeIdAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" onclick="seleccionarProducto(\''+image+'\',\''+id+'\',\''+name+'\', \''+description+'\', \''+bottling+'\',\''+current_price+'\',\''+tradeId+'\',\''+tradeName+'\',\''+tradePointsA+'\',\''+tradePointsC+'\',\''+tradeIdAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+description+'</span><span>'+bottling+'</span></p><p class="ui-li-desc" style=" margin-top:0px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+id+'TOTAL">'+totalIVA+'</span>€<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span></p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:<span id="'+id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">A comprar:<span id="'+id+'undCompraPEDIDO">'+unidades+'</span></span><span style="margin-left:15px;"><span>'+current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+				
+				$('#listaPedido').html(pedidoHTML);
+				$('#'+id+'undCompra').html(unidades);
+				$('#'+id+'undCompraPEDIDO').html(unidades);
+				$('#unidadesProducto2').val(unidades)
+				$('#unidadesProducto').val(unidades)
+				
+				totalizar();
+			});
+		});
+		document.location.href = "#pagePedido";
+		
+		/*
+		$.ajax({
+        type: "POST",
+        url: $('#inputDireccion').val()+"ws/wsPedidos.asmx/getArticulosPedidoCanjeXML",
+        data: "{ idPedido: '" + $('#inputPedidoAbierto').val() + "'}",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        beforeSend: function () {
+            var fondo = document.getElementById('fondoModal');
+            // fondo.style.visibility = 'visible';
+        },
+        complete: function () {
+            var fondo = document.getElementById('fondoModal');
+            fondo.style.visibility = 'hidden';
+        },
+        success: function (response) {
+            for (var j = 0; j < response.d.length; j++) {                         
+                 $('#bodyComprando').append($('<li/>', {   
+                    'class': 'draggable2',
+                    'id': 'CCC'+response.d[j]["id"],
+                    'data-cantidad': response.d[j]["unidades"].replace(',','.').split('.')[0],
+                    'data-unidad': response.d[j]["unidad"],
+                    'data-canje': 1,
+                    'data-precio': 0,
+                    'data-puntos': response.d[j]["puntos"],
+                    'data-fabricante': response.d[j]["idFabricante"],
+                    'data-puntosA': response.d[j]["puntosA"],
+                    'data-puntosC': response.d[j]["puntosC"],
+                    'data-acuerdo': response.d[j]["idAcuerdo"],
+                }).append($('<div/>', {
+                    'class': 'celda12',
+                    'text': response.d[j]["unidades"].replace(',','.').split('.')[0]
+                }))
+                .append($('<div/>', { 
+                    'class': 'celda22',
+                    'text': response.d[j]["articulo"]
+                 }))
+                .append($('<div/>', { 
+                    'class': 'celda32',
+                    'text': '',
+                    'onclick':'borrar("'+response.d[j]["id"]+'")'
+                })));          
+            }
+           precioTotal();
+        }
+    });*/
+		
 	}
 </script>
 
@@ -939,6 +1443,8 @@ function detallesCesta(objeto){
 </style>
 </head> 
 <body>
+
+<input type="hidden" value="" id="inputPuntosFabricante">
 
 <input type="hidden" value="" id="inputPedidoAbierto">
 
@@ -979,43 +1485,239 @@ function detallesCesta(objeto){
 </div></div>
 </div>   	 	
 
+
+
+
+
+<!-- A-->
 <div data-role="page" class="pagina" data-position="fixed" id="pageLogueo">
 	<div data-role="header" data-fullscreen="true" style="background:#000000">    
 		<h1>DrinkBo</h1>
 	</div>
-	<div data-role="content">
+	<div data-role="content" style="width: 100%; padding: 0px">
     	<div style="text-align:center; margin-top:10%;">
         	<img alt="" style="width:70%;" src="img/logoBL.png" />
     	</div>
-		<div style="width: 70%; margin: 0px auto; text-align:center; margin-top:10%;">       
-        	<input type="text" style="width:70%;" name="text-basic" id="emailLogueo" value="" placeholder="Email">
-            <input type="password" style="width:70%;" name="text-basic" id="passLogueo" value="" placeholder="Contraseña">
-            
-			<a href="#" data-role="button" onclick="logueo();" data-inline="true">Entrar</a>
-            <br />
-            <a href="#pageRegistro" data-role="button" data-inline="true" style="bottom:0px;">Registro</a>
+        <div style="width: 100%; padding-bottom: 15px;">
+            <div style="width:70%; margin: 0px auto; padding-top: 15px; text-align:center; margin-top:10%;">       
+                <input type="text" name="text-basic" id="emailLogueo" value="" placeholder="Tu email">
+                <input type="password" name="text-basic" id="passLogueo" value="" placeholder="Tu contraseña">           
+                <a href="#" data-role="button" onclick="logueo();" data-theme="c" data-inline="true" style="background: #FF6500; text-shadow: 0px 0px 0px rgb(255, 255, 255)">Entrar</a>
+                <br>
+                <a href="#pageRecordarContrasena" data-inline="true" style="font-size: 13px; color: rgb(36, 137, 206); text-shadow: 0px 0px 0px rgb(36, 137, 206)">Olvidé mi contraseña</a>              
+            </div>
         </div>
+        <div style="margin: 0px auto; text-align:center; padding-bottom: 15px;">            
+        	<div style="padding-top: 15px;">            	
+	        	<span style="color:white; font-size: 25px">¿Nuevo en Drinkbo?</span>
+            </div>
+            <a href="#pageRegistro" data-role="button" data-theme="e" data-inline="true" style="bottom:0px; background: #FF6500; text-shadow: 0px 0px 0px rgb(255, 255, 255)">Crea una nueva cuenta</a>                      
+        </div>
+        <input type="hidden" id="inputSocio" value="" >
+        <input type="hidden" id="inputIdEstablecimiento" value="" >
+        <input type="hidden" id="inputIdAplicacion" value="" >
 	</div>
 	<div id="footer2" data-role="footer" data-position="fixed"  style="background:#000000;">
 		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
-
 <div data-role="page" id="pageRegistro">
 	<div data-role="header"  style=" background:#000000">
      <a href="#pageLogueo" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
 		<h1 id="titulopageSeleccionaLocal">Registro nuevo usuario</h1>
 	</div>
-	<div data-role="content">	
-        <input type="text" style="width:70%;" name="text-basic" id="nombreRegistro" value="" placeholder="Nombre">
-        <input type="text" style="width:70%;" name="text-basic" id="apellidosRegistro" value="" placeholder="Apellidos">
-        <input type="text" style="width:70%;" name="text-basic" id="emailRegistro" value="" placeholder="Email">
-        <input type="text" style="width:70%;" name="text-basic" id="fechaRegistro" value="" placeholder="Fecha Nacimiento">
-        <input type="text" style="width:70%;" name="text-basic" id="sexoRegistro" value="" placeholder="Sexo">
-        <input type="password" style="width:70%;" name="text-basic" id="passRegistro" value="" placeholder="Contraseña">
-        
-        <a href="#pageRegistro2" data-role="button" data-inline="true" style="bottom:0px;">Siguiente</a>
+	<div data-role="content">
+    	<div style="width: 100%;">
+            <div style="width:70%;">      	
+            	<form class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label" for="nombreRegistro">Nombre</label>
+                        <div class="controls">
+                        	<input type="text" name="text-basic" id="nombreRegistro" value="" placeholder="Nombre">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                    	<label class="control-label" for="apellidosRegistro">Password</label>
+                        <div class="controls">
+                        	<input type="text" name="text-basic" id="apellidosRegistro" value="" placeholder="Apellidos">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                    	<label class="control-label" for="emailRegistro">Email</label>
+                        <div class="controls">
+                        	<input type="text" name="text-basic" id="emailRegistro" value="" placeholder="Email">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                    	<label class="control-label" for="">Fecha nacimiento</label>
+                        <div class="controls">
+                        	<div data-role="fieldcontain" style="width:60%;">
+                                <div style="width:30%; display:inline-block">
+                                    <select name="dropdown" id="diaRegistro">
+                                        <option value="">-- Día --</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                        <option value="22">22</option>
+                                        <option value="23">23</option>
+                                        <option value="24">24</option>
+                                        <option value="25">25</option>
+                                        <option value="26">26</option>
+                                        <option value="27">27</option>
+                                        <option value="28">28</option>
+                                        <option value="29">29</option>
+                                        <option value="30">30</option>
+                                        <option value="31">31</option>
+                                    </select>
+                                </div>
+                                <div style="width:30%; display:inline-block">
+                                    <select name="dropdown" id="mesRegistro">
+                                        <option value="">-- Mes --</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                </div>
+                                <div style="width:30%; display:inline-block">
+                                    <select name="dropdown" id="anoRegistro">
+                                        <option value="">-- Año --</option>
+                                        <option value="1996">1996</option>
+                                        <option value="1995">1995</option>
+                                        <option value="1994">1994</option>
+                                        <option value="1993">1993</option>
+                                        <option value="1992">1992</option>
+                                        <option value="1991">1991</option>
+                                        <option value="1990">1990</option>
+                                        <option value="1989">1989</option>
+                                        <option value="1988">1988</option>
+                                        <option value="1987">1987</option>
+                                        <option value="1986">1986</option>
+                                        <option value="1985">1985</option>
+                                        <option value="1984">1984</option>
+                                        <option value="1983">1983</option>
+                                        <option value="1982">1982</option>
+                                        <option value="1981">1981</option>
+                                        <option value="1980">1980</option>
+                                        <option value="1979">1979</option>
+                                        <option value="1978">1978</option>
+                                        <option value="1977">1977</option>
+                                        <option value="1976">1976</option>
+                                        <option value="1975">1975</option>
+                                        <option value="1974">1974</option>
+                                        <option value="1973">1973</option>
+                                        <option value="1972">1972</option>
+                                        <option value="1971">1971</option>
+                                        <option value="1970">1970</option>
+                                        <option value="1969">1969</option>
+                                        <option value="1968">1968</option>
+                                        <option value="1967">1967</option>
+                                        <option value="1966">1966</option>
+                                        <option value="1965">1965</option>
+                                        <option value="1964">1964</option>
+                                        <option value="1963">1963</option>
+                                        <option value="1962">1962</option>
+                                        <option value="1961">1961</option>
+                                        <option value="1960">1960</option>
+                                        <option value="1959">1959</option>
+                                        <option value="1958">1958</option>
+                                        <option value="1957">1957</option>
+                                        <option value="1956">1956</option>
+                                        <option value="1955">1955</option>
+                                        <option value="1954">1954</option>
+                                        <option value="1953">1953</option>
+                                        <option value="1952">1952</option>
+                                        <option value="1951">1951</option>
+                                        <option value="1950">1950</option>
+                                        <option value="1949">1949</option>
+                                        <option value="1948">1948</option>
+                                        <option value="1947">1947</option>
+                                        <option value="1946">1946</option>
+                                        <option value="1945">1945</option>
+                                        <option value="1944">1944</option>
+                                        <option value="1943">1943</option>
+                                        <option value="1942">1942</option>
+                                        <option value="1941">1941</option>
+                                        <option value="1940">1940</option>
+                                        <option value="1939">1939</option>
+                                        <option value="1938">1938</option>
+                                        <option value="1937">1937</option>
+                                        <option value="1936">1936</option>
+                                        <option value="1935">1935</option>
+                                        <option value="1934">1934</option>
+                                        <option value="1933">1933</option>
+                                        <option value="1932">1932</option>
+                                        <option value="1931">1931</option>
+                                        <option value="1930">1930</option>
+                                        <option value="1929">1929</option>
+                                        <option value="1928">1928</option>
+                                        <option value="1927">1927</option>
+                                        <option value="1926">1926</option>
+                                        <option value="1925">1925</option>
+                                        <option value="1924">1924</option>
+                                        <option value="1923">1923</option>
+                                        <option value="1922">1922</option>
+                                        <option value="1921">1921</option>
+                                        <option value="1920">1920</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                    	<label class="control-label" for="">Sexo</label>
+                        <div class="controls">
+                        	<div data-role="fieldcontain" style="width:40%;">
+                                <select name="dropdown" id="sexoRegistro">
+                                    <option value="">-- Seleccionar sexo --</option>
+                                    <option value="Hombre">Hombre</option>
+                                    <option value="Mujer">Mujer</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                    	<label class="control-label" for="passRegistro">Contraseña</label>
+                        <div class="controls">
+                        	<input type="password" style="width:70%;" name="text-basic" id="passRegistro" value="" placeholder="Contraseña">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                    	<label class="control-label" for=""></label>
+                        <div class="controls">
+                        	<a href="#" data-role="button" onclick="preRegistro();" data-theme="e" data-inline="true" style="bottom:0px; background: #FF6500; text-shadow: 0px 0px 0px rgb(255, 255, 255)">Siguiente</a>
+                        </div>
+                    </div>
+                </form>                 	                                               
+            </div>
+    	</div>
 	</div>
 	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
 		<h1>www.drinkbo.com</h1>
@@ -1025,35 +1727,172 @@ function detallesCesta(objeto){
 <div data-role="page" id="pageRegistro2">
 	<div data-role="header"  style=" background:#000000">
      <a href="#pageRegistro" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
-		<h1 id="titulopageSeleccionaLocal">Registro nuevo usuario</h1>
+		<h1 id="titulopageSeleccionaLocal">Registro nuevo local</h1>
 	</div>
 	<div data-role="content">	
-        <input type="text" style="width:70%;" name="text-basic" id="cifRegistro" value="" placeholder="CIF">
-        <input type="text" style="width:70%;" name="text-basic" id="denominacionRegistro" value="" placeholder="Denominación">
-        <input type="text" style="width:70%;" name="text-basic" id="razonRegistro" value="" placeholder="Razon Social">
-        <input type="text" style="width:70%;" name="text-basic" id="dirRegistro" value="" placeholder="Dirección Social">
-        <input type="text" style="width:70%;" name="text-basic" id="codigoRegistro" value="" placeholder="C.P">
-        <input type="text" style="width:70%;" name="text-basic" id="poblacionRegistro" value="" placeholder="Población">
-        <input type="text" style="width:70%;" name="text-basic" id="provinciaRegistro" value="" placeholder="Provincia">
-        <input type="text" style="width:70%;" name="text-basic" id="telRegistro" value="" placeholder="Teléfono">
-        
-        <a href="#" data-role="button" data-inline="true" onclick="registro();" style="bottom:0px;">Guardar</a>
+    	<div style="width: 100%;">
+            <div style="width:70%;">      	
+            	<form class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label" for="cifLocalRegistro">CIF/NIF</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="cifLocalRegistro" value="" placeholder="CIF/NIF">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="razonLocalRegistro">Razón Social</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="razonLocalRegistro" value="" placeholder="Razón Social">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="nombreLocalRegistro">Nombre local</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="nombreLocalRegistro" value="" placeholder="Nombre local">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="dirLocalRegistro">Dirección Social</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="dirLocalRegistro" value="" placeholder="Dirección Social">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="codigoLocalRegistro">C.P.</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="codigoLocalRegistro" value="" placeholder="C.P.">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="poblacionLocalRegistro">Población</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="poblacionLocalRegistro" value="" placeholder="Población">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="">Provincia</label>
+                        <div class="controls">
+                        	<div data-role="fieldcontain" style="width:40%;">
+                                <select name="dropdown" id="provinciaLocalRegistro">
+                                    <option selected="selected" value="">-- Seleccionar provincia --</option>
+                                    <option value="1">Álava</option>
+                                    <option value="2">Albacete</option>
+                                    <option value="3">Alicante</option>
+                                    <option value="4">Almería</option>
+                                    <option value="33">Asturias</option>
+                                    <option value="5">Ávila</option>
+                                    <option value="6">Badajoz</option>
+                                    <option value="7">Baleares</option>
+                                    <option value="8">Barcelona</option>
+                                    <option value="9">Burgos</option>
+                                    <option value="10">Cáceres</option>
+                                    <option value="11">Cádiz</option>
+                                    <option value="39">Cantabria</option>
+                                    <option value="12">Castellón</option>
+                                    <option value="51">Ceuta</option>
+                                    <option value="13">Ciudad Real</option>
+                                    <option value="14">Córdoba</option>
+                                    <option value="16">Cuenca</option>
+                                    <option value="17">Gerona</option>
+                                    <option value="18">Granada</option>
+                                    <option value="19">Guadalajara</option>
+                                    <option value="20">Guipúzcoa</option>
+                                    <option value="21">Huelva</option>
+                                    <option value="22">Huesca</option>
+                                    <option value="23">Jaén</option>
+                                    <option value="15">La Coruña</option>
+                                    <option value="26">La Rioja</option>
+                                    <option value="35">Las Palmas</option>
+                                    <option value="24">León</option>
+                                    <option value="25">Lérida</option>
+                                    <option value="27">Lugo</option>
+                                    <option value="28">Madrid</option>
+                                    <option value="29">Málaga</option>
+                                    <option value="52">Melilla</option>
+                                    <option value="30">Murcia</option>
+                                    <option value="31">Navarra</option>
+                                    <option value="32">Orense</option>
+                                    <option value="34">Palencia</option>
+                                    <option value="36">Pontevedra</option>
+                                    <option value="38">S.C. Tenerife</option>
+                                    <option value="37">Salamanca</option>
+                                    <option value="40">Segovia</option>
+                                    <option value="41">Sevilla</option>
+                                    <option value="42">Soria</option>
+                                    <option value="43">Tarragona</option>
+                                    <option value="44">Teruel</option>
+                                    <option value="45">Toledo</option>
+                                    <option value="46">Valencia</option>
+                                    <option value="47">Valladolid</option>
+                                    <option value="48">Vizcaya</option>
+                                    <option value="49">Zamora</option>
+                                    <option value="50">Zaragoza</option>
+                                </select>
+                            </div>  
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="">Tipo local</label>
+                        <div class="controls">
+                        	<div data-role="fieldcontain" style="width:40%;">
+                                <select name="dropdown" id="denominacionLocalRegistro">
+                                    <option selected="selected" value="">-- Seleccionar tipo de local --</option>
+                                    <option value="5">Bar / Cafetería</option>
+                                    <option value="6">Bar de copas</option>
+                                    <option value="15">Bar de copas y Restaurante</option>
+                                    <option value="24">Bar de tapas</option>
+                                    <option value="17">Casino</option>
+                                    <option value="4">Cervecería</option>
+                                    <option value="16">Cibercafé</option>
+                                    <option value="8">Coctelería</option>
+                                    <option value="7">Discoteca</option>
+                                    <option value="19">Flamenco / Bar de copas</option>
+                                    <option value="20">Heladería</option>
+                                    <option value="21">Jazz &amp; Blues</option>
+                                    <option value="13">Karaoke</option>
+                                    <option value="11">Local con Actuaciones</option>
+                                    <option value="12">Local de Ambiente</option>
+                                    <option value="14">Lounge</option>
+                                    <option value="9">Pub Irlandés</option>
+                                    <option value="1">Restaurante Cocina Internacional</option>
+                                    <option value="3">Restaurante Cocina Temática</option>
+                                    <option value="2">Restaurante Cocina Tradicional</option>
+                                    <option value="22">Sala de conciertos</option>
+                                    <option value="23">Sala de fiestas</option>
+                                    <option value="18">Tablao Flamenco</option>
+                                    <option value="25">Terraza Bar</option>
+                                    <option value="10">Terraza Copas</option>
+                                </select>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="telLocalRegistro">Teléfono contacto</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="telLocalRegistro" value="" placeholder="Teléfono contacto">  
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for=""></label>
+                        <div class="controls">
+                        	<a href="#" data-role="button" data-theme="e" data-inline="true" style="bottom:0px; background: #FF6500; text-shadow: 0px 0px 0px rgb(255, 255, 255);" onclick="registro();">Guardar</a>
+                        </div>
+                    </div>
+                </form>
+			</div>
+        </div>        
 	</div>
 	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
 		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
-
 <div data-role="page" id="pageSeleccionaLocal">
 	<div data-role="header"  style=" background:#000000">     
 		<h1 id="titulopageSeleccionaLocal">DrinkBo</h1>
 	</div>
-	<div data-role="content">	
-		<ul data-role="listview">
-			<li><a href="#" onclick="seleccionaLocal('1','Local Demo')">Local Demo</a></li>
-            <li><a href="#" onclick="seleccionaLocal('2','Local Demo2')">Local Demo 2</a></li>
-			<li><a href="#" onclick="seleccionaLocal('3','Local Demo3')">Local Demo 3</a></li>
+	<div data-role="content">
+		<ul data-role="listview" id="listaEstablecimientos">			
 		</ul>		
 	</div>
 	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
@@ -1061,15 +1900,202 @@ function detallesCesta(objeto){
 	</div>
 </div>
 
+<div data-role="page" id="pageModificarPerfil">
+	<div data-role="header"  style=" background:#000000">
+     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+		<h1 id="titulopageSeleccionaLocal">Modificar mi perfil</h1>
+	</div>
+	<div data-role="content">	
+    	<div style="width: 100%;">
+            <div style="width:70%;">      	
+            	<form class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label" for="nombrePerfil">Nombre</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="nombrePerfil" value="" placeholder="Nombre">        
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="apellidosPerfil">Apellidos</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="apellidosPerfil" value="" placeholder="Apellidos">        
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="emailPerfil">Email</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="emailPerfil" value="" placeholder="Email" disabled="disabled">        
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="fechaNacimientoPerfil">Fecha nacimiento</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="fechaNacimientoPerfil" value="" placeholder="Fecha nacimiento" disabled="disabled" >        
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="sexoPerfil">Sexo</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="sexoPerfil" value="" placeholder="Sexo" disabled="disabled">        
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="direccionPerfil">Dirección</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="direccionPerfil" value="" placeholder="Dirección" >                
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="codigoPostalPerfil">C.P.</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="codigoPostalPerfil" value="" placeholder="C.P." >        
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="movilPerfil">Móvil</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="movilPerfil" value="" placeholder="Móvil" >        
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="telefonoPerfil">Teléfono</label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="telefonoPerfil" value="" placeholder="Teléfono" >                                       
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for=""></label>
+                        <div class="controls">
+                        	 <a href="#" data-role="button" data-theme="e" data-inline="true" style="bottom:0px; background: #FF6500; text-shadow: 0px 0px 0px rgb(255, 255, 255)" onclick="modificarUsuario();">Guardar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+	    </div>
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+<div data-role="page" id="pageModificarContrasena">
+	<div data-role="header"  style=" background:#000000">
+     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+		<h1 id="titulopageSeleccionaLocal">Cambiar contraseña</h1>
+	</div>
+	<div data-role="content">
+    	<div style="width: 100%;">
+            <div style="width:70%;">      	
+            	<form class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label" for="passV">Contraseña antigua</label>
+                        <div class="controls">
+                        	<input type="password" style="width:70%;" name="text-basic" id="passV" value="" placeholder="Contraseña antigua">        
+                        </div>
+                    </div>	
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="passN">Contraseña nueva</label>
+                        <div class="controls">
+                        	<input type="password" style="width:70%;" name="text-basic" id="passN" value="" placeholder="Contraseña nueva">       
+                        </div>
+                    </div>	
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for="passNR">Repetir contraseña nueva</label>
+                        <div class="controls">
+                        	<input type="password" style="width:70%;" name="text-basic" id="passNR" value="" placeholder="Repetir contraseña nueva">      
+                        </div>
+                    </div>	
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for=""></label>
+                        <div class="controls">
+                        	<a href="#" data-role="button" data-theme="e" data-inline="true" style="bottom:0px; background: #FF6500; text-shadow: 0px 0px 0px rgb(255, 255, 255)" onclick="modificarContrasena();">Cambiar contraseña</a>       
+                        </div>
+                    </div>	        
+                </form>
+            </div>
+	    </div>                        
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+
+<div data-role="page" id="pageRecordarContrasena">
+	<div data-role="header"  style=" background:#000000">
+     <a href="#pageLogueo" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+		<h1 id="titulopageSeleccionaLocal">Recordar contraseña</h1>
+	</div>
+	<div data-role="content">
+    	<div style="width: 100%;">
+            <div style="width:70%;">                  	                	
+            	<form class="form-horizontal">  
+                	<div class="control-group">
+                        <label class="control-label" for=""></label>
+                        <div class="controls">
+                        	<h3>
+                                <img src="img/interrogacion.png">¿Has olvidado tu contraseña?
+                            </h3>
+                            <p>
+                                Introduce tu dirección de correo para restablecer tu contraseña. Si no te llega el correo, comprueba tu carpeta de spam y agrega a tus contactos la dirección de correo no-reply@drinkbo.com.
+                            </p>
+                        </div>
+                    </div>                  
+                    <div class="control-group">
+                        <label class="control-label" for="correoRecordar"></label>
+                        <div class="controls">
+                        	<input type="text" style="width:70%;" name="text-basic" id="correoRecordar" value="" placeholder="Correo electrónico">      
+                        </div>
+                    </div>	
+                    <div class="control-group" style="margin-top: -20px">
+                        <label class="control-label" for=""></label>
+                        <div class="controls">
+                        	<a href="#" data-role="button" data-theme="e" data-inline="true" style="bottom:0px; background: #FF6500; text-shadow: 0px 0px 0px rgb(255, 255, 255)" onclick="recordarContrasena();">Recordar contraseña</a>       
+                        </div>
+                    </div>	        
+                </form>
+            </div>
+	    </div>                        
+	</div>
+	<div id="footer" data-role="footer" data-position="fixed"  style="background:#000000">
+		<h1>www.drinkbo.com</h1>
+	</div>
+</div>
+<!-- A-->
 
 <div data-role="page" id="page">
-    <div data-role="panel" id="defaultpanel">
-		<h1>DrinkBo</h1>
-        <h3>Aplicación de administración de tu local, con la que podrás realizar tus pedidos desde el movil, ver el estado de los mismos.</h3>
-        <div style="text-align:center;">
-        <a href="#pageLogueo"  data-role="button" data-theme="a"  data-inline="true">Logout</a>
-        <a href="#pageSeleccionaLocal"  data-role="button" data-theme="a"  data-inline="true">Cambiar local</a>
+    <div data-role="panel" id="defaultpanel" style="background: #000; color: #FFF; text-shadow: 0px 0px 0px rgb(0, 0, 0)">
+    	<h1>DrinkBo</h1>
+        <h3>Aplicación de administración de tu local, con la que podrás realizar tus pedidos desde el móvil y ver/cambiar el estado de los mismos.</h3>
+        <img id="imgUsuario" src=""></img>
+        <h5><span id="usuarioMail"></span></h5>
+        <div style="float: left">
+        	<h5>
+            	<span id="usuarioNombre" style="float: left"></span>
+                <br>
+                <span id="usuarioSexo" style="float: left"></span>
+        	</h5>
         </div>
+        <div style="float:right">
+        	<h5>
+            	<span id="usuarioApellidos" style="float: right"></span>
+                <br>
+                <span id="usuarioFechaNacimiento" style="float: right"></span>
+            </h5>
+        </div>
+        <div style="float:left; padding-top: 25px">
+            <div>                    
+                <a href="#pageSeleccionaLocal" style="color: #FFF"><img src="img/flechas.png" style="width: 50px; height: 50px">Cambiar local</a>                    
+            </div>
+            <div>                    
+                <a href="#pageModificarPerfil" style="color: #FFF"><img src="img/usuario.png" style="width: 50px; height: 50px">Modificar perfil</a>                    
+            </div>
+            <div>                    
+                <a href="#" style="color: #FFF" onClick="limpiarContrasena();"><img src="img/llave.png" style="width: 50px; height: 50px">Modificar contraseña</a>                    
+            </div>
+            <div>                    
+                <a href="#" style="color: #FFF" onClick="limpiarDatos();"><img src="img/candado.png" style="width: 50px; height: 50px">Logout</a>                   
+            </div>
+        </div>		
 	</div>
     
 	<div data-role="header"  style=" background:#000000">
@@ -1193,6 +2219,7 @@ function detallesCesta(objeto){
     <div data-role="panel" data-position="right" id="panelPedido">
         <h1>DrinkBo</h1>        
         <div style="text-align:left;">
+        	<a href="#" data-theme="b" id="botonModificarPedido" onClick="modificarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Modificar pedido</a>
             <a href="#" data-theme="b" id="botonSolicitarPedido" onClick="solicitarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Solicitar pedido</a>
             <a href="#" data-theme="b" id="botonCancelarPedido" onClick="cancelarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Cancelar pedido</a><br />
             <a href="#" data-theme="b" id="botonAceptarPedido" onClick="aceptarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Recibir pedido</a><br />
@@ -1411,7 +2438,7 @@ function detallesCesta(objeto){
         </div>
     </div>
 	<div data-role="header"  style=" background:#000000">  
-    <a href="#pageProductos" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
+    <a href="#" onclick="volverProductos();" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
     <a href="" style="float:right; margin-right:30px;" id="botonPedido2" data-role="button" data-icon="alert" data-iconpos="right"  data-theme="a" data-inline="true"><span id="contadorPedido" class="ui-li-count" >0</span></a>
     <a style="float:right;" href="#panelPedido" data-role="button" data-inline="true" data-iconpos="notext" data-icon="bars"></a>
 		<h1>Productos a comprar</h1>

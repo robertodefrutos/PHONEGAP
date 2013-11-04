@@ -267,6 +267,10 @@ $(function ()
 		if(dataFinal.length == 0){
 			establecimiento = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-last-child ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">No hay establecimientos para este usuario. Asocia a tu usuario un establecimiento para poder comprar</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
 		}
+		else if(dataFinal.length == 1)
+		{
+			seleccionaLocal(dataFinal[0].id, dataFinal[0].nombre, dataFinal[0].idAplicacion);	
+		}
 		$('#listaEstablecimientos').html(establecimiento);
 		});
 		document.location.href ="#pageSeleccionaLocal";	
