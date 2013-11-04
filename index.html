@@ -267,11 +267,13 @@ function detallesCesta(objeto){
 		$('#usuarioApellidos').html(dataFinal.apellidos);
 		$('#usuarioSexo').html(dataFinal.sexo);
 		$('#usuarioFechaNacimiento').html(dataFinal.fechaNacimiento);
-		if(dataFinal.sexo == "Hombre")
-			$('#imgUsuario').attr("src", "img/Hombre.png");
-		else
-			$('#imgUsuario').attr("src", "img/Mujer.png");
-			
+		if(dataFinal.sexo == "Hombre"){
+			$('#imgUsuarioH').css('display', 'block');
+			$('#imgUsuarioM').css('display', 'none');
+		}else{
+			$('#imgUsuarioM').css('display', 'block');
+			$('#imgUsuarioH').css('display', 'none');
+		}		
 		$('#nombrePerfil').val(dataFinal.nombre);
 		$('#apellidosPerfil').val(dataFinal.apellidos);
 		$('#emailPerfil').val(dataFinal.mail);
@@ -751,8 +753,27 @@ function detallesCesta(objeto){
 		$.mobile.hidePageLoadingMsg();
 		document.location.href = "#detallePedido";
 	}
+	
+	
+	function checkConnection() {
+		$(document).bind("deviceReady", function()
+		{
+			var networkState = navigator.network.connection.type;
+
+			var states = {};
+			states[Connection.UNKNOWN]  = 'Conexión desconocida';
+			states[Connection.ETHERNET] = 'Conexión ethernet';
+			states[Connection.WIFI]     = 'Conexión WiFi';
+			states[Connection.CELL_2G]  = 'Conexión movil 2G';
+			states[Connection.CELL_3G]  = 'Conexión movil 3G';
+			states[Connection.CELL_4G]  = 'Conexión movil 4G';
+			states[Connection.NONE]     = 'Sin conexión';
+			
+			alert('Tipo de conexión: ' + states[networkState]);		
+		});
+    }
 		
-	function misPedidos(){
+	function misPedidos(){		
 		var htmlPedidos = '<li class="ui-grid-c ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px" role="heading"><span class="ui-block-a">Fecha</span><span class="ui-block-b" style="; text-align:center">Total</span><span class="ui-block-c">Proveedor </span><span class="ui-block-d" style=" text-align:right">Estado</span></li>';
 		$.mobile.showPageLoadingMsg("a", "Cargando...");
 		var datos = "wsPedidos.aspx?ws=getPedidosAbiertosXML&idAplicacion="+$('#inputIdAplicacion').val()+"&idEstablecimiento="+$('#inputIdEstablecimiento').val();
@@ -817,6 +838,7 @@ function detallesCesta(objeto){
 		  crossDomain: true,         
 		  cache:false,
 		  async: false,
+		  timeout:	10000,
 		  success: function(data){			
 			/* parse JSON */
 			//dataFinal = $.parseJSON(data);
@@ -830,7 +852,8 @@ function detallesCesta(objeto){
 				$.mobile.hidePageLoadingMsg();
 			},	 
 			error:function(jqXHR, textStatus, errorThrown){
-				alert(jqXHR.status+'     /    '+errorThrown);
+				//alert(jqXHR.status+'     /    '+errorThrown);
+				alert('Sin conexión');
 			}
 		});			
 	}
@@ -1488,17 +1511,10 @@ function detallesCesta(objeto){
 </div></div>
 </div>   	 	
 
-
-
-
-
 <!-- A-->
-<div data-role="page" class="pagina" data-position="fixed" id="pageLogueo">
-	<div data-role="header" data-fullscreen="true" data-position="fixed" style="background:#000000">    
-		<h1>DrinkBo</h1>
-	</div>
+<div data-role="page" class="pagina" data-position="fixed" id="pageLogueo">	
 	<div data-role="content" style="width: 100%; padding: 0px">
-    	<div style="text-align:center; margin-top:10%;">
+    	<div style="text-align:center; margin-top:5%;">
         	<img alt="" style="width:70%;  max-height:500px; max-width:500px;" src="img/logoBL.png" />
     	</div>
         <div style="width: 100%; padding-bottom: 15px;">
@@ -1519,9 +1535,6 @@ function detallesCesta(objeto){
         <input type="hidden" id="inputSocio" value="" >
         <input type="hidden" id="inputIdEstablecimiento" value="" >
         <input type="hidden" id="inputIdAplicacion" value="" >
-	</div>
-	<div id="footer2" data-role="footer" data-position="fixed"  style="background:#000000;">
-		<h1>www.drinkbo.com</h1>
 	</div>
 </div>
 
@@ -2069,7 +2082,8 @@ function detallesCesta(objeto){
     <div data-role="panel" id="defaultpanel" style="background: #000; color: #FFF; text-shadow: 0px 0px 0px rgb(0, 0, 0)">
     	<h1>DrinkBo</h1>
         <h3>Aplicación de administración de tu local, con la que podrás realizar tus pedidos desde el móvil y ver/cambiar el estado de los mismos.</h3>
-        <img id="imgUsuario" src=""></img>
+        <img id="imgUsuarioH" src="img/Hombre.png"></img>
+        <img id="imgUsuarioM" src="img/Hombre.png"></img>
         <h5><span id="usuarioMail"></span></h5>
         <div style="float: left">
         	<h5>
@@ -2463,8 +2477,7 @@ function detallesCesta(objeto){
 	</div>
 </div>
 
-<div data-role="page" id="pageSolicita">
-	
+<div data-role="page" id="pageSolicita">	
 	<div data-role="header"  style=" background:#000000">  
     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
 		<h1>Enviar al proveedor</h1>
