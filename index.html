@@ -696,18 +696,21 @@ function detallesCesta(objeto){
 				$('#botonCancelarPedido').css('display', 'block');
 				$('#botonAceptarPedido').css('display', 'none');
 				$('#botonModificarPedido').css('display', 'block');
+				$('#SinOpciones').css('display', 'none');				
 			}
 			else if (dataFinal.idEstado == "8") {
 				$('#botonSolicitarPedido').css('display', 'none');
 				$('#botonCancelarPedido').css('display', 'none');
 				$('#botonAceptarPedido').css('display', 'block');
 				$('#botonModificarPedido').css('display', 'none');
+				$('#SinOpciones').css('display', 'none')
 			}
 			else {
 				$('#botonSolicitarPedido').css('display', 'none');
 				$('#botonCancelarPedido').css('display', 'none');
 				$('#botonAceptarPedido').css('display', 'none');
 				$('#botonModificarPedido').css('display', 'none');
+				$('#SinOpciones').css('display', 'block')
 			}
 		});
 		var inicioListas = '<li class="ui-grid-b ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px;" role="heading"><div class="ui-block-a"> <span>Producto</span></div><div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>Unidades</span></div></div><div class="ui-block-c"><div class="ui-block-b" style=" width:50%;text-align:center;"><span> Total </span> </div></div></li>'
@@ -1491,15 +1494,15 @@ function detallesCesta(objeto){
 
 <!-- A-->
 <div data-role="page" class="pagina" data-position="fixed" id="pageLogueo">
-	<div data-role="header" data-fullscreen="true" style="background:#000000">    
+	<div data-role="header" data-fullscreen="true" data-position="fixed" style="background:#000000">    
 		<h1>DrinkBo</h1>
 	</div>
 	<div data-role="content" style="width: 100%; padding: 0px">
     	<div style="text-align:center; margin-top:10%;">
-        	<img alt="" style="width:70%;" src="img/logoBL.png" />
+        	<img alt="" style="width:70%;  max-height:500px; max-width:500px;" src="img/logoBL.png" />
     	</div>
         <div style="width: 100%; padding-bottom: 15px;">
-            <div style="width:70%; margin: 0px auto; padding-top: 15px; text-align:center; margin-top:10%;">       
+            <div style="width:70%;margin: 0px auto; padding-top: 15px; text-align:center; margin-top:10%;">       
                 <input type="text" name="text-basic" id="emailLogueo" value="" placeholder="Tu email">
                 <input type="password" name="text-basic" id="passLogueo" value="" placeholder="Tu contraseña">           
                 <a href="#" data-role="button" onclick="logueo();" data-theme="c" data-inline="true" style="background: #FF6500; text-shadow: 0px 0px 0px rgb(255, 255, 255)">Entrar</a>
@@ -1523,7 +1526,7 @@ function detallesCesta(objeto){
 </div>
 
 <div data-role="page" id="pageRegistro">
-	<div data-role="header"  style=" background:#000000">
+	<div data-role="header" data-position="fixed"  style=" background:#000000">
      <a href="#pageLogueo" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
 		<h1 id="titulopageSeleccionaLocal">Registro nuevo usuario</h1>
 	</div>
@@ -1725,7 +1728,7 @@ function detallesCesta(objeto){
 </div>
 
 <div data-role="page" id="pageRegistro2">
-	<div data-role="header"  style=" background:#000000">
+	<div data-role="header" data-position="fixed"  style=" background:#000000">
      <a href="#pageRegistro" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
 		<h1 id="titulopageSeleccionaLocal">Registro nuevo local</h1>
 	</div>
@@ -1888,7 +1891,7 @@ function detallesCesta(objeto){
 </div>
 
 <div data-role="page" id="pageSeleccionaLocal">
-	<div data-role="header"  style=" background:#000000">     
+	<div data-role="header" data-position="fixed"  style=" background:#000000">     
 		<h1 id="titulopageSeleccionaLocal">DrinkBo</h1>
 	</div>
 	<div data-role="content">
@@ -1901,7 +1904,7 @@ function detallesCesta(objeto){
 </div>
 
 <div data-role="page" id="pageModificarPerfil">
-	<div data-role="header"  style=" background:#000000">
+	<div data-role="header" data-position="fixed"  style=" background:#000000">
      <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
 		<h1 id="titulopageSeleccionaLocal">Modificar mi perfil</h1>
 	</div>
@@ -1979,7 +1982,7 @@ function detallesCesta(objeto){
 </div>
 
 <div data-role="page" id="pageModificarContrasena">
-	<div data-role="header"  style=" background:#000000">
+	<div data-role="header" data-position="fixed"  style=" background:#000000">
      <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
 		<h1 id="titulopageSeleccionaLocal">Cambiar contraseña</h1>
 	</div>
@@ -2021,7 +2024,7 @@ function detallesCesta(objeto){
 </div>
 
 <div data-role="page" id="pageRecordarContrasena">
-	<div data-role="header"  style=" background:#000000">
+	<div data-role="header" data-position="fixed"  style=" background:#000000">
      <a href="#pageLogueo" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>   
 		<h1 id="titulopageSeleccionaLocal">Recordar contraseña</h1>
 	</div>
@@ -2098,7 +2101,7 @@ function detallesCesta(objeto){
         </div>		
 	</div>
     
-	<div data-role="header"  style=" background:#000000">
+	<div data-role="header" data-position="fixed"  style=" background:#000000">
      <a href="#defaultpanel" data-role="button" data-inline="true" data-iconpos="notext" data-icon="bars"></a>
 		<h1 id="tituloPage">DrinkBo</h1>
 	</div>
@@ -2115,7 +2118,7 @@ function detallesCesta(objeto){
 </div>
 
 <div data-role="page" data-position="fixed" id="page2">
-	<div data-role="header"  style="background:#000000">
+	<div data-role="header" data-position="fixed"  style="background:#000000">
     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Mis Puntos</h1>
 	</div>
@@ -2143,7 +2146,7 @@ function detallesCesta(objeto){
 </div> 
 
 <div data-role="page" id="pageMisPedidos">
-	<div data-role="header" data-position="fixed"  style="background:#000000">
+	<div data-role="header" data-position="fixed" data-position="fixed"  style="background:#000000">
     <a href="#page" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="c" data-inline="true">Arrow left</a>
 		<h1>Mis Pedidos</h1>
 	</div>
@@ -2219,10 +2222,18 @@ function detallesCesta(objeto){
     <div data-role="panel" data-position="right" id="panelPedido">
         <h1>DrinkBo</h1>        
         <div style="text-align:left;">
+           	Desde este panel de administración podrás modificarel estado de tus pedido, y añadir nuevos articulos en el.     
         	<a href="#" data-theme="b" id="botonModificarPedido" onClick="modificarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Modificar pedido</a>
             <a href="#" data-theme="b" id="botonSolicitarPedido" onClick="solicitarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Solicitar pedido</a>
             <a href="#" data-theme="b" id="botonCancelarPedido" onClick="cancelarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Cancelar pedido</a><br />
             <a href="#" data-theme="b" id="botonAceptarPedido" onClick="aceptarPedido();" style="margin-left: 0px;" data-role="button" data-icon="star" data-iconpos="left" data-inline="true">Recibir pedido</a><br />
+            
+             <div id="SinOpciones" class="ui-bar ui-bar-a">
+                <h5>
+                    El estado del pedido no permite realizar modificaciones sobre el.
+                </h5>
+            </div>
+        
             </div>
         </div>
 	<div data-role="header"  data-position="fixed" style="background:#000000">
