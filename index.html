@@ -827,34 +827,34 @@ function detallesCesta(objeto){
 	}
 	
 	//var datos = "ws=getProveedoresXML&idEstablecimiento=63";          "
-	function WSFuncion(datos){		
+	function WSFuncion(datos){
 		var url = "http://www.canalpreference.com/ws/"+datos;
-		//var url = "http://www.canalpreference.com/ws/wsPedidos.aspx?"+datos;
 		var dataFinal = '';
 		return $.ajax({
-		  type: 'GET',   
+		  type: 'GET',
 		  url: url,
 		  dataType: "jsonp",
 		  crossDomain: true,         
 		  cache:false,
-		  timeout:	10000,
-		  success: function(data){			
+		  timeout:	5000,
+		  success: function(data){
 			/* parse JSON */
 			//dataFinal = $.parseJSON(data);
-			//$.each(dataFinal, function(index, d){				
-			//});	
+			//$.each(dataFinal, function(index, d){
+			//});
 			},
 			beforeSend: function () {
 				$.mobile.showPageLoadingMsg("a", "Cargando...");
 			},
 			complete: function () {
 				$.mobile.hidePageLoadingMsg();
-			},	 
+			},
 			error:function(jqXHR, textStatus, errorThrown){
 				//alert(jqXHR.status+'     /    '+errorThrown);
-				alert('Sin conexión');
+				$('#alertDialogInfoText').html('No hay conexión con el servidor, comprueba la conexión a internet e intentalo de nuevo más tarde.');
+				$('#alertDialogInfo').dialog('open');
 			}
-		});			
+		});
 	}
 	
 	function proveedores(){
@@ -873,8 +873,7 @@ function detallesCesta(objeto){
 		$.mobile.hidePageLoadingMsg();
 	}
 		
-	function seleccionaProveedor(id,nombre){	
-
+	function seleccionaProveedor(id,nombre){
 		$.mobile.showPageLoadingMsg("a", "Cargando...");
 	
 		<!-- GUARDAMOS PROVEEDOR SELECCIONADO -->
@@ -937,8 +936,7 @@ function detallesCesta(objeto){
 	}
 	
 	
-	function seleccionarCategoria(id, nombre){
-		
+	function seleccionarCategoria(id, nombre){		
 		$.mobile.showPageLoadingMsg("a", "Cargando...");
 		
 		<!-- CARGAMOS CATEGORIAS HIJO -->
