@@ -580,10 +580,8 @@ function atrasPedido(){
             var totalPrecio = "0";
             var totalImpuestos = "0";
             var totalBaseImponible = "0";
-
             var numIvas = "";
             var auxIva = "";
-
             var ivaArray = new Array();
             var tipoImpArray = new Array();
             var baseImpArray = new Array();
@@ -606,7 +604,6 @@ function atrasPedido(){
 				if (numIvas.indexOf(iva) == -1) {
 					numIvas = numIvas + "" + iva + ";";
 					auxIva = iva;
-
 					ivaArray[contador] = iva;
 					tipoImpArray[contador] = nombreiva;
 					baseImpArray[contador] = 0;
@@ -754,8 +751,7 @@ function atrasPedido(){
 		$.mobile.changePage( "#pageMisPedidos", { transition: "slide" });
 		$.mobile.hidePageLoadingMsg();
 	}
-	
-	
+		
 	//var datos = "ws=getProveedoresXML&idEstablecimiento=63";          "
 	function WSFuncion(datos){
 		var url = "http://www.canalpreference.com/ws/"+datos;
@@ -1331,7 +1327,7 @@ function atrasPedido(){
 		}
 	}
 	
-	 function enviarPedido(){
+	function enviarPedido(){
 		var pedidoTotalCanje = "";
 		var pedidoTotalAcumula = "";
 		var listaPedido = document.getElementById("listaPedido");
@@ -1503,29 +1499,24 @@ function atrasPedido(){
 		});
 		//document.location.href = "#pagePedido";
 		$.mobile.changePage( "#pagePedido", { transition: "slide" });
-		
 		var datos = "wsPedidos.aspx?ws=getArticulosPedidoCanjeXML&idPedido="+$('#inputPedidoAbierto').val();
 		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){			
+		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
 			var pedidoHTML = $('#listaPedido').html();
 			$.each(dataFinal, function(index, d){
-				//RRRR
 				if(existe(d.id)){
 					//Si existe, solo modificamos datos de CANJE
 					$('#'+d.id+'undCanjePEDIDO').html(d.unidades);
 					$('#'+d.id+'undCanje').html(d.unidades);
 				}else{
-					
 					var impuesto = d.impuesto;
 					var impuestoValor = d.impuestoValor;
 					var impuestoAplicado = (parseFloat(d.precio) * parseFloat(impuestoValor))/100;
 					var precioIVA = d.precio;
 					precioIVA = parseFloat(precioIVA) + parseFloat(impuestoAplicado);
-					
-					var total = (parseFloat(current_price) * unidades).toFixed(2);	
-					var totalIVA = (parseFloat(precioIVA) * unidades).toFixed(2);		
-					
+					var total = (parseFloat(current_price) * unidades).toFixed(2);
+					var totalIVA = (parseFloat(precioIVA) * unidades).toFixed(2);					
 					//No existe, añadimos producto entero con CANJE
 					pedidoHTML += '<li name="productoPedido" id="'+d.id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="0" data-image="'+d.image+'" data-id="'+d.id+'" data-name="'+d.articulo+'" data-description="'+d.description+'" data-bottling="'+d.bottling+'" data-current_price="'+d.precio+'" data-tradeId="'+d.idFabricante+'" data-tradeName="'+d.idFabricante+'" data-tradePointsA="'+d.puntosA+'" data-tradePointsC="'+d.puntosC+'" data-tradeIdAcuerdo="'+d.idAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.articulo+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.precio+'\',\''+d.idFabricante+'\',\''+d.idFabricante+'\',\''+d.puntosA+'\',\''+d.puntosC+'\',\''+d.idAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+d.articulo+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style=" margin-top:0px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+d.id+'TOTAL">'+totalIVA+'</span>€<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span></p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:'+d.unidades+'<span id="'+d.id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">A comprar:<span id="'+d.id+'undCompraPEDIDO">0</span></span><span style="margin-left:15px;"><span>'+d.current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
 				}
@@ -1559,9 +1550,9 @@ function atrasPedido(){
 		var dataFinal = WSFuncion(datos);
 		var puntos = '';
 		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);			
+			dataFinal = $.parseJSON(data);
 			$.each(dataFinal, function(index, d){
-					puntos += '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-count ui-first-child ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"> <div class="ui-btn-text"> <a data-transition=\"slide\" class="ui-link-inherit" data-inline="true" data-transition="slide" href="#fabricante1">'+d.nombre+' <span class="ui-li-count ui-btn-up-c ui-btn-corner-all">'+d.puntos+' puntos</span>   </a>    </div>   <span class="ui-icon ui-icon-arrow-r ui-icon-shadow">  </span> </div></li>';	
+					puntos += '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-count ui-first-child ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"> <div class="ui-btn-text"> <a data-transition=\"slide\" class="ui-link-inherit" data-inline="true" data-transition="slide" href="#fabricante1">'+d.nombre+' <span class="ui-li-count ui-btn-up-c ui-btn-corner-all">'+d.puntos+' puntos</span>   </a>    </div>   <span class="ui-icon ui-icon-arrow-r ui-icon-shadow">  </span> </div></li>';
 			});
 			$('#listPuntos').html(puntos);
 		});
@@ -1633,28 +1624,25 @@ function atrasPedido(){
 	.ui-page { -webkit-backface-visibility: hidden; }
 	
 </style>
-</head> 
+</head>
 <body>
 
 <input type="hidden" value="" id="inputPuntosFabricante">
-
 <input type="hidden" value="" id="inputPedidoAbierto">
-
 <input type="hidden" value="" id="idProveedor">
 <input type="hidden" value="" id="nombreProveedor">
-
 <input type="hidden" value="73" id="inputIdAplicacion">
 <input type="hidden" value="63" id="inputIdEstablecimiento">
-
 <input type="hidden" value="" id="idLocal">
 <input type="hidden" value="" id="idNombreLocal">
+
 <div id="alertDialogInfo" style="background-color:#FFF; background:#FFFFFF !important;" title="Informacion">
-    <h3 id="alertDialogInfoText">Texo informativo aquí ...</h3>    
-</div>   
+    <h3 id="alertDialogInfoText"></h3>
+</div>
 
 <div id="alertDialog" style="background-color:#FFF;" title="Informacion">
-    <h3 id="textoDialog">Texo informativo aquí ...</h3>
-</div> 
+    <h3 id="textoDialog"></h3>
+</div>
 
 <div id="alertUnidadesProducto" style="background-color:#FFF;" title="Seleccionar unidades">
     <h2 style="margin-top: -5px;" id="nombreUndProducto">Texo informativo aquí ...</h2>
