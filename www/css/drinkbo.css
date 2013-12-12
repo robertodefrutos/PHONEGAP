@@ -1,0 +1,332 @@
+
+
+@media all and (min-width: 768px){
+	.ui-content{
+		padding-top: 5px;
+	}
+}
+
+@media all and (min-width: 1020px){
+	.ui-content{
+		padding-top: 10px;
+	}
+}
+
+
+/* Modificar las esquinas de los botones*/
+.ui-btn-corner-all {
+    -moz-border-radius:             .3em;
+    -webkit-border-radius:          .3em;
+    border-radius:                  .3em;
+}​
+
+
+.ui-btn-up-a {
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #ffffff /*{a-bup-background-start}*/), to( #f1f1f1 /*{a-bup-background-end}*/)); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient( #ffffff /*{a-bup-background-start}*/, #f1f1f1 /*{a-bup-background-end}*/); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient( #ffffff /*{a-bup-background-start}*/, #f1f1f1 /*{a-bup-background-end}*/); /* FF3.6 */
+	background-image:     -ms-linear-gradient( #ffffff /*{a-bup-background-start}*/, #f1f1f1 /*{a-bup-background-end}*/); /* IE10 */
+	background-image:      -o-linear-gradient( #ffffff /*{a-bup-background-start}*/, #f1f1f1 /*{a-bup-background-end}*/); /* Opera 11.10+ */
+	background-image:         linear-gradient( #ffffff /*{a-bup-background-start}*/, #f1f1f1 /*{a-bup-background-end}*/);
+}
+.ui-btn-up-a:visited,
+.ui-btn-up-a a.ui-link-inherit {
+	
+}
+/*
+.ui-btn-hover-a,.ui-btn-down-a,.ui-btn-active {
+	
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #ff9e0f /*{a-bhover-background-start}*/), to( #ff9e0f /*{a-bhover-background-end}*/)); /* Saf4+, Chrome */
+	/*background-image: -webkit-linear-gradient( #ff9e0f /*{a-bhover-background-start}*/, #ff9e0f /*{a-bhover-background-end}*/); /* Chrome 10+, Saf5.1+ */
+	/*background-image:    -moz-linear-gradient( #ff9e0f /*{a-bhover-background-start}*/, #ff9e0f /*{a-bhover-background-end}*/); /* FF3.6 */
+	/*background-image:     -ms-linear-gradient( #ff9e0f /*{a-bhover-background-start}*/, #ff9e0f /*{a-bhover-background-end}*/); /* IE10 */
+	/*background-image:      -o-linear-gradient( #ff9e0f /*{a-bhover-background-start}*/, #ff9e0f /*{a-bhover-background-end}*/); /* Opera 11.10+ */
+	/*background-image:         linear-gradient( #ff9e0f /*{a-bhover-background-start}*/, #ff9e0f /*{a-bhover-background-end}*/);
+/*}*/
+.ui-btn-hover-a:visited,
+.ui-btn-hover-a:hover,
+.ui-btn-hover-a a.ui-link-inherit {
+	color: #ffffff /*{a-bhover-color}*/;
+}
+
+.ui-btn-down-a:visited,
+.ui-btn-down-a:hover,
+.ui-btn-down-a a.ui-link-inherit {
+	color: #ffffff /*{a-bdown-color}*/;
+	
+}
+
+/*********/
+.ui-btn:focus, .ui-link-inherit:focus {
+	outline: 0;
+}
+.ui-btn.ui-focus {
+	z-index: 1;
+}
+
+.ui-focus,
+.ui-btn:focus {
+	-moz-box-shadow: inset 0 0 3px #fe822f /*{global-active-background-color}*/, 0 0 0px #fe822f /*{global-active-background-color}*/;
+	-webkit-box-shadow: inset 0 0 3px #fe822f /*{global-active-background-color}*/, 0 0 0px #fe822f /*{global-active-background-color}*/;
+	box-shadow: inset 0 0 3px #fe822f /*{global-active-background-color}*/, 0 0 0px #fe822f /*{global-active-background-color}*/;
+}
+
+.ui-li-count.ui-btn-corner-all {
+	
+	background: red; 
+	color:#ffffff;
+	border: red;
+    -moz-border-radius:             1em;
+    -webkit-border-radius:          1em;
+    border-radius:                  1em;
+}
+
+
+/*
+#home-navbar a.ui-btn {
+	height: 50px;
+}
+
+#home-navbar .span{
+	height: 10px
+}
+*/
+
+/*Estilo para los paneles laterales flotantes*/
+
+#panelPedido-popup{
+    right: 0 !important;
+    left: auto !important;
+    position:fixed !important;
+    -webkit-backface-visibility: hidden;
+	overflow: auto;
+	overflow-y:hidden;
+}
+#popupPanel-popup{
+	right: 0 !important;
+    left: auto !important;
+   	/*position:fixed !important;*/
+    -webkit-backface-visibility: hidden;
+	overflow-y: hidden;
+}
+#popupPanel, #panelPedido{
+    width: 250px;
+    border: 1px solid #000;
+    border-right: none;
+    background: rgba(100,100,100,.9);
+    margin: -1px 0;
+}
+
+#panelProductos-popup{    
+   	/*position:fixed !important;*/
+	left:0px !important;
+	width:100% !important;
+	max-width:100% !important;
+    -webkit-backface-visibility: hidden;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+#panelProductos {
+    width: 100%;
+    border: 1px solid #000;
+    border-right: none;
+    background: rgba(100,100,100,.9);
+    margin: -1px 0;
+}
+
+#panelPedido2-popup{    
+   	/*position:fixed !important;*/
+	left:0px !important;
+	width:100% !important;
+	max-width:100% !important;
+    -webkit-backface-visibility: hidden;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+#panelPedido2 {
+    width: 100%;
+    border: 1px solid #000;
+    border-right: none;
+    background: rgba(100,100,100,.9);
+    margin: -1px 0;
+}
+
+#popupPanel .ui-btn {
+    margin: 2em 15px;
+}
+
+
+/* First breakpoint is 768px. 3 column layout. Tiles 250x250 pixels at the breakpoint. */
+/* Todos los medios con un ancho mínimo de 768 pixeles. Díseño de 3 columnas para los productos 
+ * de 250x250
+ */
+@media all and (min-width: 768px){
+	
+	div[drinkbo="grid"]  {
+		padding: 9px;
+	}
+	
+	div[drinkbo="grid"] .ui-listview .ui-li.ui-btn {
+		float: left;
+		width: 30.9333%; /* 33.3333% incl. 2 x 1.2% margin */
+		height: 232px;
+		margin: 9px 1.2%;
+		border-width: 0; /* The 1px border would break the layout so we set it on .ui-btn-inner instead. */
+	}
+		
+	/* If you don't want a border at all, just set "border: none;" here to negate the semi white top border */
+	div[drinkbo="grid"] .ui-listview .ui-li.ui-btn-inner {
+		border: inherit;
+		border-width: 1px;
+		margin: -1px;
+	}
+	
+	div[drinkbo="grid"] .ui-listview .ui-btn-inner,
+	div[drinkbo="grid"] .ui-listview .ui-btn-text,
+	div[drinkbo="grid"] .ui-listview .ui-link-inherit,
+	div[drinkbo="grid"] .ui-listview .ui-li-thumb {
+		width: 100%;
+		height: 100%;
+		display: block;
+		overflow: hidden;
+	}
+	
+	div[drinkbo="grid"] .ui-listview .ui-link-inherit {
+		padding: 0 !important;
+		position: relative;
+	}
+	
+	/* Inherit the border-radius from the UL that has class .ui-corner-all in case of an inset listview. */
+	div[drinkbo="grid"] .ui-listview .ui-li,
+	div[drinkbo="grid"] .ui-listview .ui-btn-text,
+	div[drinkbo="grid"] .ui-listview .ui-link-inherit,
+	div[drinkbo="grid"] .ui-listview .ui-li-thumb {
+		-webkit-border-radius: inherit;
+		border-radius: inherit;
+	}
+	
+	div[drinkbo="grid"] .ui-listview .ui-li-thumb {
+		height: auto; /* To keep aspect ratio. */
+		max-width: 100%;
+		max-height: none;
+		margin: 0;
+		left: 0;
+		z-index: -1;
+	}
+	
+	/* Hide the icon */
+	div[drinkbo="grid"] .ui-listview .ui-icon {
+		display: none;
+	}
+	
+	/* Make text wrap. */
+	div[drinkbo="grid"] .ui-listview .ui-li-heading,
+	div[drinkbo="grid"] .ui-listview .ui-li-desc {
+		white-space: normal;
+		overflow: visible;
+		position: absolute;
+		left: 0;
+		right: 0;
+	}
+	
+	/* Text position */
+	div[drinkbo="grid"] .ui-listview .ui-li-heading {
+		margin: 0;
+		padding: 20px;
+		bottom: 50%;
+	}
+	div[drinkbo="grid"] .ui-listview .ui-li-desc {
+		margin: 0;
+		padding: 0 20px;
+		min-height: 50%;
+		bottom: 0;
+		line-height: 1.5;
+	}
+	/* Semi transparent background and different position if there is a thumb */
+	div[drinkbo="grid"] .ui-listview .ui-li-has-thumb .ui-li-heading,
+	div[drinkbo="grid"] .ui-listview .ui-li-has-thumb .ui-li-desc {
+		background: #111;
+		background: rgba(0,0,0,.8);
+		-webkit-background-clip: padding;
+		background-clip: padding-box;
+	}
+	
+	div[drinkbo="grid"] .ui-listview .ui-li-has-thumb .ui-li-heading {
+		padding: 10px;
+		bottom: 20%;
+	}
+	
+	div[drinkbo="grid"] .ui-listview .ui-li-has-thumb .ui-li-desc {
+		padding: 0 10px;
+		min-height: 20%;
+		-webkit-border-bottom-left-radius: inherit;
+		border-bottom-left-radius: inherit;
+		-webkit-border-bottom-right-radius: inherit;
+		border-bottom-right-radius: inherit;
+	}
+	
+	/* ui-li-aside has class .ui-li-desc as well so we have to override some things. */
+	div[drinkbo="grid"] .ui-listview .ui-li-desc.ui-li-aside {
+		padding: 2px 10px;
+		width: auto;
+		min-height: 0;
+		top: 0;
+		left: auto;
+		bottom: auto;
+		/* Custom styling. */
+		background: #fe822f;
+		color: #ffffff;
+		background: rgba(254,130,47,.85);
+		-webkit-border-top-right-radius: inherit;
+		border-top-right-radius: inherit;
+		-webkit-border-bottom-left-radius: inherit;
+		border-bottom-left-radius: inherit;
+		-webkit-border-bottom-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+	
+	/* If you want to add shadow, don't kill the focus style. */ 
+	div[drinkbo="grid"]  .ui-listview .ui-btn:not(.ui-focus) {
+		-moz-box-shadow: 0px 0px 9px #111;
+		-webkit-box-shadow: 0px 0px 9px #111;
+		box-shadow: 0px 0px 9px #111;
+	}
+	/* Images mask the hover bg color so we give desktop users feedback by applying the focus style on hover as well. */
+	div[drinkbo="grid"] .ui-listview .ui-btn:hover {
+		-moz-box-shadow: 0px 0px 12px #fe822f;
+		-webkit-box-shadow: 0px 0px 12px #fe822f;
+		box-shadow: 0px 0px 12px #fe822f;
+	}
+	/* Animate focus and hover style, and resizing. */ 
+	div[drinkbo="grid"] .ui-listview .ui-btn {
+		-webkit-transition: all 500ms ease;
+		-moz-transition: all 500ms ease;
+		-o-transition: all 500ms ease;
+		-ms-transition: all 500ms ease;
+		transition: all 500ms ease;	
+	}
+	
+	
+}
+
+/* Second breakpoint. 4 column layout. Tiles will be 250x250 pixels again at the breakpoint. */
+@media all and (min-width: 1020px){
+	[role='grid'] .ui-content {
+		padding: 100px;
+	}
+	/* Set a max-width for the last breakpoint to prevent too much stretching on large screens.
+	By setting the max-width equal to the breakpoint width minus padding we keep square tiles. */
+	div[drinkbo="grid"] .ui-listview {
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+	/* Because of the 1000px max-width the width will always be 230px (and margin left/right 10px),
+	but we stick to percentage values for demo purposes. */
+	div[drinkbo="grid"] .ui-listview .ui-li.ui-btn {
+		width: 23%;
+		height: 230px;
+		margin: 10px 1%;
+	}
+	
+	
+}

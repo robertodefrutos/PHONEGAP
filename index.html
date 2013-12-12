@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>DrinkBo</title>
 
 <!--<link href="jquery-mobile/jquery.mobile-1.0.min.css" rel="stylesheet" type="text/css"/>-->
@@ -100,441 +101,425 @@ function atrasPedido(){
 	document.getElementById("botonPedido").style.display = 'block';	
 }
 
-	$(function ()
-	{		
-		$('#alertUnidadesProducto').dialog({
-            autoOpen: false,
-            width: 300,
-            buttons:
-			{
-                "Aceptar": function ()
-				{
-                    aceptarUnidades('#alertUnidadesProducto');					
-                },
-                "Cancelar": function () {
-                    $(this).dialog("close");
-                }
-            },
-            show: "fade",
-            hide: "drop",
-            draggable: true,
-            resizable: false,
-            modal: true
-        });
-		
-		$('#alertUnidadesProductoPedido').dialog({
-            autoOpen: false,
-            width: 500,
-            buttons:
-			{
-                "Aceptar": function ()
-				{
-                    aceptarUnidades('#alertUnidadesProductoPedido')			
-                },
-                "Cancelar": function () {
-                    $(this).dialog("close");
-                },
-				"Borrar": function () {
-                     borrarProducto();	
-                }
-            },
-            show: "fade",
-            hide: "drop",
-            draggable: true,
-            resizable: false,
-            modal: true
-        });
-	
-	 	// Error Dialog
-        $('#alertDialog').dialog({
-            autoOpen: false,
-            width: 300,
-            buttons:
-			{
-                "Aceptar": function ()
-				{
-                    $(this).dialog("close");
-					$('#listaPedido').html('');
-					totalizar();
-					var idProveedor = $('#idProveedor').val();
-					var nombreProveedor = $('#nombreProveedor').val();
-					$('#idProveedor').val('');
-					$('#nombreProveedor').val('');
-					seleccionaProveedor(idProveedor,nombreProveedor)
-                },
-                "Cancelar": function () {
-                    $(this).dialog("close");
-                }
-            },
-            show: "fade",
-            hide: "drop",
-            draggable: true,
-            resizable: false,
-            modal: true
-        });
-		
-		
-		$('#alertDialogInfo').dialog({
-            autoOpen: false,
-            width: 300,
-            buttons:
-			{
-                "Aceptar": function ()
-				{
-                    $(this).dialog("close");					
-                }
-            },
-            show: "fade",
-            hide: "drop",
-            draggable: true,
-            resizable: false,
-            modal: true,
-			background: "#FFFFFF"
-        });
-		
-		<!-- A -->		
-		var socio = cargarDatos('socio');
-		if(socio != '')
+$(function ()
+{		
+	$('#alertUnidadesProducto').dialog({
+		autoOpen: false,
+		width: 300,
+		buttons:
 		{
-			$('#emailLogueo').val(socio.split(';')[7]);	
-			$('#passLogueo').val(socio.split(';')[0]);
-			logueo();
-		}
+			"Aceptar": function ()
+			{
+				aceptarUnidades('#alertUnidadesProducto');					
+			},
+			"Cancelar": function () {
+				$(this).dialog("close");
+			}
+		},
+		show: "fade",
+		hide: "drop",
+		draggable: true,
+		resizable: false,
+		modal: true
+	});
+	
+	$('#alertUnidadesProductoPedido').dialog({
+		autoOpen: false,
+		width: 500,
+		buttons:
+		{
+			"Aceptar": function ()
+			{
+				aceptarUnidades('#alertUnidadesProductoPedido')			
+			},
+			"Cancelar": function () {
+				$(this).dialog("close");
+			},
+			"Borrar": function () {
+				 borrarProducto();	
+			}
+		},
+		show: "fade",
+		hide: "drop",
+		draggable: true,
+		resizable: false,
+		modal: true
 	});
 
-	function logueo()
+	// Error Dialog
+	$('#alertDialog').dialog({
+		autoOpen: false,
+		width: 300,
+		buttons:
+		{
+			"Aceptar": function ()
+			{
+				$(this).dialog("close");
+				$('#listaPedido').html('');
+				totalizar();
+				var idProveedor = $('#idProveedor').val();
+				var nombreProveedor = $('#nombreProveedor').val();
+				$('#idProveedor').val('');
+				$('#nombreProveedor').val('');
+				seleccionaProveedor(idProveedor,nombreProveedor)
+			},
+			"Cancelar": function () {
+				$(this).dialog("close");
+			}
+		},
+		show: "fade",
+		hide: "drop",
+		draggable: true,
+		resizable: false,
+		modal: true
+	});
+	
+	
+	$('#alertDialogInfo').dialog({
+		autoOpen: false,
+		width: 300,
+		buttons:
+		{
+			"Aceptar": function ()
+			{
+				$(this).dialog("close");					
+			}
+		},
+		show: "fade",
+		hide: "drop",
+		draggable: true,
+		resizable: false,
+		modal: true,
+		background: "#FFFFFF"
+	});
+	
+	<!-- A -->		
+	var socio = cargarDatos('socio');
+	if(socio != '')
 	{
-		var emailLogueo = $('#emailLogueo').val();
-		var passLogueo = $('#passLogueo').val();
-		if(emailLogueo == ""){		
+		$('#emailLogueo').val(socio.split(';')[7]);	
+		$('#passLogueo').val(socio.split(';')[0]);
+		logueo();
+	}
+});
+
+function logueo()
+{
+	var emailLogueo = $('#emailLogueo').val();
+	var passLogueo = $('#passLogueo').val();
+	if(emailLogueo == ""){		
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El email debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (passLogueo == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "La contraseña debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else{
+		var datos = "wsSocios.aspx?ws=getSocioXML&mail=" + emailLogueo + "&pass=" + passLogueo;
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);					
+		$('#emailLogueo').val('');
+		$('#passLogueo').val('');			
+		if(dataFinal.id != null)
+		{
+			soloNumeros('#telefonoPerfil');
+			soloNumeros('#movilPerfil');
+			soloNumeros('#codigoPostalPerfil');				
+			setDatosUsuario(dataFinal);				
+			irASeleccionLocal();
+		}
+		else
+		{
 			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El email debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (passLogueo == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "La contraseña debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else{
+			textoDialog.innerHTML = "El usuario o contraseña son incorrectos.";			
+			$('#alertDialogInfo').dialog('open');	
+		}
+	});
+	}
+}
+
+
+function setDatosUsuario(dataFinal)
+{
+	$('#inputSocio').val(dataFinal.id + ";" +dataFinal.nombre + ";" +dataFinal.apellidos + ";" +dataFinal.sexo + ";" +dataFinal.fechaNacimiento + ";" +dataFinal.movil + ";" +dataFinal.telefono + ";" +dataFinal.mail + ";" +dataFinal.direccion + ";" +dataFinal.codigoPostal + ";" +dataFinal.estado + ";" +dataFinal.cambioPass + ";");
+	guardarDatos('socio', $('#inputSocio').val().toString());
+	$('#usuarioMail').html(dataFinal.mail);
+	$('#usuarioNombre').html(dataFinal.nombre);
+	$('#usuarioApellidos').html(dataFinal.apellidos);
+	$('#usuarioSexo').html(dataFinal.sexo);
+	$('#usuarioFechaNacimiento').html(dataFinal.fechaNacimiento);
+	if(dataFinal.sexo == "Hombre"){
+		$('#imgUsuarioH').css('display', 'block');
+		$('#imgUsuarioM').css('display', 'none');
+	}else{
+		$('#imgUsuarioM').css('display', 'block');
+		$('#imgUsuarioH').css('display', 'none');
+	}		
+	$('#nombrePerfil').val(dataFinal.nombre);
+	$('#apellidosPerfil').val(dataFinal.apellidos);
+	$('#emailPerfil').val(dataFinal.mail);
+	$('#fechaNacimientoPerfil').val(dataFinal.fechaNacimiento);
+	$('#sexoPerfil').val(dataFinal.sexo);
+	$('#direccionPerfil').val(dataFinal.direccion);
+	$('#codigoPostalPerfil').val(dataFinal.codigoPostal);
+	$('#movilPerfil').val(dataFinal.movil);
+	$('#telefonoPerfil').val(dataFinal.telefono);
+}
+
+function irASeleccionLocal()
+{
+	$('#listaEstablecimientos').html('');		
+	var datos = "wsSocios.aspx?ws=getEstablecimientosUsuarioXML&idSocio=" + $('#inputSocio').val().split(';')[0] + "&pass=" + $('#inputSocio').val().split(';')[0];
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+	dataFinal = $.parseJSON(data);
+	var establecimiento = '';
+	$.each(dataFinal, function(index, d){
+		establecimiento += '<li onclick="seleccionaLocal(\'' + d.id + '\',\'' + d.nombre + '\', \'' + d.idAplicacion + '\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-last-child ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">' + d.nombre + '</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
+	});
+	if(dataFinal.length == 0){
+		establecimiento = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-last-child ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">No hay establecimientos para este usuario. Asocia a tu usuario un establecimiento para poder comprar</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
+	}else if(dataFinal.length == 1)
+	{
+		seleccionaLocal(dataFinal[0].id, dataFinal[0].nombre, dataFinal[0].idAplicacion);	
+	}
+	$('#listaEstablecimientos').html(establecimiento);
+	});
+	//document.location.href ="#pageSeleccionaLocal";
+	$.mobile.changePage( "#pageSeleccionaLocal", { transition: "slide" });
+}
+
+function modificarContrasena()
+{
+	if(($('#passN').val() == $('#passNR').val()) && $('#passNR').val() != "")
+	{
+		$('#listaEstablecimientos').html('');		
+		var datos = "wsSocios.aspx?ws=cambioPassString&idSocio=" + $('#inputSocio').val().split(';')[0] + "&vPass=" + $('#passV').val() + "&nPass=" + $('#passN').val();
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		if(data == "OK")			
+			textoDialog.innerHTML = "La contraseña se ha guardado correctamente.";					
+		else			
+			textoDialog.innerHTML = "La contraseña antigua no es correcta. Inténtalo de nuevo";				
+		$('#alertDialogInfo').dialog('open');				
+		});	
+	}
+	else		
+	{
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "Las contraseñas no coinciden o están vacías";
+		$('#alertDialogInfo').dialog('open');
+	}
+}
+
+function recordarContrasena()
+{
+	if($('#correoRecordar').val() != "")
+	{					
+		var datos = "wsSocios.aspx?ws=newPassString&mail=" + $('#correoRecordar').val() + "&procedencia=drinkbo";
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		if(data == "OK")			
+			textoDialog.innerHTML = "La contraseña se ha enviado correctamente.";					
+		else			
+			textoDialog.innerHTML = "Hubo un error al reenviar la contraseña. Inténtalo de nuevo";				
+		$('#alertDialogInfo').dialog('open');				
+		});	
+	}
+	else		
+	{
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El correo no puede estar vacío";
+		$('#alertDialogInfo').dialog('open');
+	}
+}
+
+function modificarUsuario()
+{		
+	if($('#nombrePerfil').val() == ""){		
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El nombre debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if ($('#apellidosPerfil').val() == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "Los apellidos deben completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else{
+		var nombrePerfil = $('#nombrePerfil').val();
+		var apellidosPerfil = $('#apellidosPerfil').val();
+		var emailPerfil = $('#emailPerfil').val();
+		var fechaNacimientoPerfil = $('#fechaNacimientoPerfil').val();
+		var sexoPerfil = $('#sexoPerfil').val();
+		var passPerfil = $('#inputSocio').val().split(';')[0];	
+		var movilPerfil = $('#movilPerfil').val();
+		var telefonoPerfil = $('#telefonoPerfil').val();
+		var direccionPerfil = $('#direccionPerfil').val();
+		var codigoPostalPerfil = $('#codigoPostalPerfil').val();
+		
+		$('#listaEstablecimientos').html('');		
+		var datos = "wsSocios.aspx?ws=setSocioString&idSocio=" + $('#inputSocio').val().split(';')[0] + "&nombre=" + nombrePerfil + "&apellidos=" + apellidosPerfil + "&mail=" + emailPerfil + "&pass=" + passPerfil + "&sexo=" + sexoPerfil + "&fechaNacimiento=" + fechaNacimientoPerfil + "&movil=" + movilPerfil + "&telefono=" + telefonoPerfil + "&direccion=" + direccionPerfil + "&codigoPostal=" + codigoPostalPerfil + "&idFacebook=";
+		var dataFinal = WSFuncion(datos);
+		dataFinal.success(function (data){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		if(data == "OK")
+		{			
+			textoDialog.innerHTML = "Los datos se han guardado correctamente.";
 			var datos = "wsSocios.aspx?ws=getSocioXML&mail=" + emailLogueo + "&pass=" + passLogueo;
 			var dataFinal = WSFuncion(datos);
 			dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);					
-			$('#emailLogueo').val('');
-			$('#passLogueo').val('');			
-			if(dataFinal.id != null)
-			{
-				soloNumeros('#telefonoPerfil');
-				soloNumeros('#movilPerfil');
-				soloNumeros('#codigoPostalPerfil');				
+			dataFinal = $.parseJSON(data);			
+			if(dataFinal.id != null)				
 				setDatosUsuario(dataFinal);				
-				irASeleccionLocal();
-			}
-			else
-			{
-				var textoDialog=document.getElementById("alertDialogInfo");
-				textoDialog.innerHTML = "El usuario o contraseña son incorrectos.";			
-				$('#alertDialogInfo').dialog('open');	
-			}
-		});
-		}
-	}
-	
-	
-	function setDatosUsuario(dataFinal)
-	{
-		$('#inputSocio').val(dataFinal.id + ";" +dataFinal.nombre + ";" +dataFinal.apellidos + ";" +dataFinal.sexo + ";" +dataFinal.fechaNacimiento + ";" +dataFinal.movil + ";" +dataFinal.telefono + ";" +dataFinal.mail + ";" +dataFinal.direccion + ";" +dataFinal.codigoPostal + ";" +dataFinal.estado + ";" +dataFinal.cambioPass + ";");
-		guardarDatos('socio', $('#inputSocio').val().toString());
-		$('#usuarioMail').html(dataFinal.mail);
-		$('#usuarioNombre').html(dataFinal.nombre);
-		$('#usuarioApellidos').html(dataFinal.apellidos);
-		$('#usuarioSexo').html(dataFinal.sexo);
-		$('#usuarioFechaNacimiento').html(dataFinal.fechaNacimiento);
-		if(dataFinal.sexo == "Hombre"){
-			$('#imgUsuarioH').css('display', 'block');
-			$('#imgUsuarioM').css('display', 'none');
-		}else{
-			$('#imgUsuarioM').css('display', 'block');
-			$('#imgUsuarioH').css('display', 'none');
-		}		
-		$('#nombrePerfil').val(dataFinal.nombre);
-		$('#apellidosPerfil').val(dataFinal.apellidos);
-		$('#emailPerfil').val(dataFinal.mail);
-		$('#fechaNacimientoPerfil').val(dataFinal.fechaNacimiento);
-		$('#sexoPerfil').val(dataFinal.sexo);
-		$('#direccionPerfil').val(dataFinal.direccion);
-		$('#codigoPostalPerfil').val(dataFinal.codigoPostal);
-		$('#movilPerfil').val(dataFinal.movil);
-		$('#telefonoPerfil').val(dataFinal.telefono);
-	}
-	
-	function irASeleccionLocal()
-	{
-		$('#listaEstablecimientos').html('');		
-		var datos = "wsSocios.aspx?ws=getEstablecimientosUsuarioXML&idSocio=" + $('#inputSocio').val().split(';')[0] + "&pass=" + $('#inputSocio').val().split(';')[0];
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-		dataFinal = $.parseJSON(data);
-		var establecimiento = '';
-		$.each(dataFinal, function(index, d){
-			establecimiento += '<li onclick="seleccionaLocal(\'' + d.id + '\',\'' + d.nombre + '\', \'' + d.idAplicacion + '\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-last-child ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">' + d.nombre + '</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
-		});
-		if(dataFinal.length == 0){
-			establecimiento = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-last-child ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">No hay establecimientos para este usuario. Asocia a tu usuario un establecimiento para poder comprar</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
-		}else if(dataFinal.length == 1)
-		{
-			seleccionaLocal(dataFinal[0].id, dataFinal[0].nombre, dataFinal[0].idAplicacion);	
-		}
-		$('#listaEstablecimientos').html(establecimiento);
-		});
-		//document.location.href ="#pageSeleccionaLocal";
-		$.mobile.changePage( "#pageSeleccionaLocal", { transition: "slide" });
-	}
-	
-	function modificarContrasena()
-	{
-		if(($('#passN').val() == $('#passNR').val()) && $('#passNR').val() != "")
-		{
-			$('#listaEstablecimientos').html('');		
-			var datos = "wsSocios.aspx?ws=cambioPassString&idSocio=" + $('#inputSocio').val().split(';')[0] + "&vPass=" + $('#passV').val() + "&nPass=" + $('#passN').val();
-			var dataFinal = WSFuncion(datos);
-			dataFinal.success(function (data){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			if(data == "OK")			
-				textoDialog.innerHTML = "La contraseña se ha guardado correctamente.";					
-			else			
-				textoDialog.innerHTML = "La contraseña antigua no es correcta. Inténtalo de nuevo";				
-			$('#alertDialogInfo').dialog('open');				
-			});	
-		}
-		else		
-		{
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "Las contraseñas no coinciden o están vacías";
-			$('#alertDialogInfo').dialog('open');
-		}
-	}
-	
-	function recordarContrasena()
-	{
-		if($('#correoRecordar').val() != "")
-		{					
-			var datos = "wsSocios.aspx?ws=newPassString&mail=" + $('#correoRecordar').val() + "&procedencia=drinkbo";
-			var dataFinal = WSFuncion(datos);
-			dataFinal.success(function (data){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			if(data == "OK")			
-				textoDialog.innerHTML = "La contraseña se ha enviado correctamente.";					
-			else			
-				textoDialog.innerHTML = "Hubo un error al reenviar la contraseña. Inténtalo de nuevo";				
-			$('#alertDialogInfo').dialog('open');				
-			});	
-		}
-		else		
-		{
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El correo no puede estar vacío";
-			$('#alertDialogInfo').dialog('open');
-		}
-	}
-	
-	function modificarUsuario()
-	{		
-		if($('#nombrePerfil').val() == ""){		
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El nombre debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if ($('#apellidosPerfil').val() == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "Los apellidos deben completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else{
-			var nombrePerfil = $('#nombrePerfil').val();
-			var apellidosPerfil = $('#apellidosPerfil').val();
-			var emailPerfil = $('#emailPerfil').val();
-			var fechaNacimientoPerfil = $('#fechaNacimientoPerfil').val();
-			var sexoPerfil = $('#sexoPerfil').val();
-			var passPerfil = $('#inputSocio').val().split(';')[0];	
-			var movilPerfil = $('#movilPerfil').val();
-			var telefonoPerfil = $('#telefonoPerfil').val();
-			var direccionPerfil = $('#direccionPerfil').val();
-			var codigoPostalPerfil = $('#codigoPostalPerfil').val();
-			
-			$('#listaEstablecimientos').html('');		
-			var datos = "wsSocios.aspx?ws=setSocioString&idSocio=" + $('#inputSocio').val().split(';')[0] + "&nombre=" + nombrePerfil + "&apellidos=" + apellidosPerfil + "&mail=" + emailPerfil + "&pass=" + passPerfil + "&sexo=" + sexoPerfil + "&fechaNacimiento=" + fechaNacimientoPerfil + "&movil=" + movilPerfil + "&telefono=" + telefonoPerfil + "&direccion=" + direccionPerfil + "&codigoPostal=" + codigoPostalPerfil + "&idFacebook=";
-			var dataFinal = WSFuncion(datos);
-			dataFinal.success(function (data){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			if(data == "OK")
-			{			
-				textoDialog.innerHTML = "Los datos se han guardado correctamente.";
-				var datos = "wsSocios.aspx?ws=getSocioXML&mail=" + emailLogueo + "&pass=" + passLogueo;
-				var dataFinal = WSFuncion(datos);
-				dataFinal.success(function (data){
-				dataFinal = $.parseJSON(data);			
-				if(dataFinal.id != null)				
-					setDatosUsuario(dataFinal);				
-				});
-			}
-			else			
-				textoDialog.innerHTML = "Hubo un error al guardar los datos. Inténtalo de nuevo.";				
-			$('#alertDialogInfo').dialog('open');
 			});
 		}
+		else			
+			textoDialog.innerHTML = "Hubo un error al guardar los datos. Inténtalo de nuevo.";				
+		$('#alertDialogInfo').dialog('open');
+		});
 	}
+}
+
+function seleccionaLocal(id,nombre,idAplicacion)
+{
+	//document.location.href ="#page";
+	$.mobile.changePage( "#page", { transition: "slide" });
+	$('#inputIdEstablecimiento').val(id);
+	$('#inputIdAplicacion').val(idAplicacion);		
+	$('#idNombreLocal').val(nombre);
+	$('#tituloPage').html(nombre);
+}
+
+function preRegistro()
+{
+	var nombreRegistro = $('#nombreRegistro').val();
+	var apellidosRegistro = $('#apellidosRegistro').val();
+	var emailRegistro = $('#emailRegistro').val();
+	var fechaRegistro = $('#fechaNacimientoRegistro').val();		
+	var sexoRegistro = $('#sexoRegistro').val();
+	var passRegistro = $('#passRegistro').val();
 	
-	function seleccionaLocal(id,nombre,idAplicacion)
-	{
-		//document.location.href ="#page";
-		$.mobile.changePage( "#page", { transition: "slide" });
-		$('#inputIdEstablecimiento').val(id);
-		$('#inputIdAplicacion').val(idAplicacion);		
-		$('#idNombreLocal').val(nombre);
-		$('#tituloPage').html(nombre);
+	if(nombreRegistro == ""){		
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El nombre debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (apellidosRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "Los apellidos deben completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (emailRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El email debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (fechaRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "La fecha de nacimiento debe completarse.";			
+		$('#alertDialogInfo').dialog('open');			
+	}else if (sexoRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El sexo debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (passRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "La contraseña debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else{
+		soloNumeros('#codigoLocalRegistro');
+		soloNumeros('#telLocalRegistro');
+		//document.location.href ="#pageRegistro2";		
+		$.mobile.changePage( "#pageRegistro2", { transition: "slide" });
 	}
+}
+
+function registro()
+{
+	var nombreRegistro = $('#nombreRegistro').val();
+	var apellidosRegistro = $('#apellidosRegistro').val();
+	var emailRegistro = $('#emailRegistro').val();
+	var fechaRegistro = $('#fechaNacimientoRegistro').val();
+	var sexoRegistro = $('#sexoRegistro').val();
+	var passRegistro = $('#passRegistro').val();
 	
-	function preRegistro()
-	{
-		var nombreRegistro = $('#nombreRegistro').val();
-        var apellidosRegistro = $('#apellidosRegistro').val();
-        var emailRegistro = $('#emailRegistro').val();
-        var fechaRegistro = $('#fechaNacimientoRegistro').val();		
-        var sexoRegistro = $('#sexoRegistro').val();
-        var passRegistro = $('#passRegistro').val();
-		
-		if(nombreRegistro == ""){		
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El nombre debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (apellidosRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "Los apellidos deben completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (emailRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El email debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (fechaRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "La fecha de nacimiento debe completarse.";			
-			$('#alertDialogInfo').dialog('open');			
-		}else if (sexoRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El sexo debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (passRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "La contraseña debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else{
-			soloNumeros('#codigoLocalRegistro');
-			soloNumeros('#telLocalRegistro');
-			//document.location.href ="#pageRegistro2";		
-			$.mobile.changePage( "#pageRegistro2", { transition: "slide" });
-		}
-	}
+	var cifLocalRegistro = $('#cifLocalRegistro').val();
+	var denominacionLocalRegistro = $('#denominacionLocalRegistro').val();
+	var razonLocalRegistro = $('#razonLocalRegistro').val();
+	var nombreLocalRegistro = $('#nombreLocalRegistro').val();
+	var dirLocalRegistro = $('#dirLocalRegistro').val() ;
+	var codigoLocalRegistro = $('#codigoLocalRegistro').val();
+	var poblacionLocalRegistro = $('#poblacionLocalRegistro').val();
+	var provinciaLocalRegistro = $('#provinciaLocalRegistro').val();
+	var telLocalRegistro = $('#telLocalRegistro').val();			
 	
-	function registro()
-	{
-		var nombreRegistro = $('#nombreRegistro').val();
-        var apellidosRegistro = $('#apellidosRegistro').val();
-        var emailRegistro = $('#emailRegistro').val();
-        var fechaRegistro = $('#fechaNacimientoRegistro').val();
-        var sexoRegistro = $('#sexoRegistro').val();
-        var passRegistro = $('#passRegistro').val();
-		
-		var cifLocalRegistro = $('#cifLocalRegistro').val();
-        var denominacionLocalRegistro = $('#denominacionLocalRegistro').val();
-        var razonLocalRegistro = $('#razonLocalRegistro').val();
-		var nombreLocalRegistro = $('#nombreLocalRegistro').val();
-		var dirLocalRegistro = $('#dirLocalRegistro').val() ;
-		var codigoLocalRegistro = $('#codigoLocalRegistro').val();
-		var poblacionLocalRegistro = $('#poblacionLocalRegistro').val();
-        var provinciaLocalRegistro = $('#provinciaLocalRegistro').val();
-        var telLocalRegistro = $('#telLocalRegistro').val();			
-		
-		if(cifLocalRegistro == ""){		
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El CIF/NIF debe completarse.";			
-			$('#alertDialogInfo').dialog('open');		
-		}else if (razonLocalRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "La razón social debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (nombreLocalRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El nombre del local debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (dirLocalRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "La dirección debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (codigoLocalRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El código postal debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (poblacionLocalRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "La población debe completarse.";			
-			$('#alertDialogInfo').dialog('open');			
-		}else if (provinciaLocalRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "La provincia debe completarse.";			
-			$('#alertDialogInfo').dialog('open');		
-		}else if (denominacionLocalRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El tipo de local debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else if (telLocalRegistro == ""){
-			var textoDialog=document.getElementById("alertDialogInfo");
-			textoDialog.innerHTML = "El teléfono debe completarse.";			
-			$('#alertDialogInfo').dialog('open');
-		}else{
-			var datosRegistro = "wsSocios.aspx?ws=registerSocioString&nombre=" + nombreRegistro + "&apellidos=" + apellidosRegistro + "&mail=" + emailRegistro + "&pass=" + passRegistro + "&sexo=" + sexoRegistro + "&fechaNacimiento=" + fechaRegistro + "&movil=" + "" + "&telefono=" + "" + "&direccion=" + "" + "&codigoPostal=" + "" + "&idFacebook=" + "" + "&accesTokenFacebook=" + "" + "&linkFacebook=" + "" + "&userNameFacebook=" + "" + "&procedencia=" + "drinkbo";
-			var dataFinalRegistro = WSFuncion(datosRegistro);
-			dataFinalRegistro.success(function (dataRegistro){	
-			if(dataRegistro == "OK;")
-			{
-				var datosLogueo = "wsSocios.aspx?ws=getSocioXML&mail=" + emailRegistro + "&pass=" + passRegistro;
-				var dataFinalLogueo = WSFuncion(datosLogueo);
-				dataFinalLogueo.success(function (dataLogueo){
-				dataFinalLogueo = $.parseJSON(dataLogueo);
-				if(dataFinalLogueo.id != null)
-				{							
-					$('#inputSocio').val(dataFinalLogueo.id + ";" +dataFinalLogueo.nombre + ";" +dataFinalLogueo.apellidos + ";" +dataFinalLogueo.sexo + ";" +dataFinalLogueo.fechaNacimiento + ";" +dataFinalLogueo.movil + ";" +dataFinalLogueo.telefono + ";" +dataFinalLogueo.mail + ";" +dataFinalLogueo.direccion + ";" +dataFinalLogueo.codigoPostal + ";" +dataFinalLogueo.estado + ";" +dataFinalLogueo.cambioPass + ";");
-					guardarDatos('socio', $('#inputSocio').val().toString());
-					
-					var datosEstablecimiento = "wsSocios.aspx?ws=registerLocalString&idSocio=" + dataFinalLogueo.id + "&asociadoRazonSocial=" + razonLocalRegistro + "&asociadoCIF=" + cifLocalRegistro + "&asociadoCodigoPostal=" + codigoLocalRegistro + "&asociadoDireccion=" + dirLocalRegistro + "&asociadoPoblacion=" + poblacionLocalRegistro + "&asociadoProvincia=" + provinciaLocalRegistro + "&establecimientoCodigoPostal=" + codigoLocalRegistro + "&establecimientoDireccion=" + dirLocalRegistro + "&establecimientoNombre=" + nombreLocalRegistro + "&establecimientoPoblacion=" + poblacionLocalRegistro + "&establecimientoProvincia=" + provinciaLocalRegistro + "&establecimientoTelefono=" + telLocalRegistro + "&establecimientoDato=" + denominacionLocalRegistro;				
-					var dataEstablecimiento = WSFuncion(datosEstablecimiento);
-					dataEstablecimiento.success(function (dataFinalEstablecimiento){
-					var textoDialog=document.getElementById("alertDialogInfo");
-					if(dataFinalEstablecimiento == "OK")	
-					{
-						setDatosUsuario(dataFinalLogueo);		
-						textoDialog.innerHTML = "Enhorabuena tu registro se ha completado correctamente. Se te ha enviado un email para que confirmes tu correo electrónico y nos pondremos en contacto contigo cuando validemos tu establecimiento";					
-					}
-					else					
-						textoDialog.innerHTML = "Hubo un problema al registrar el establecimiento. Inténtelo de nuevo";												
-						
-					$('#alertDialogInfo').dialog('open');	
-					});
-					
-					irASeleccionLocal();
-				}
-				else
-				{
-					var textoDialog=document.getElementById("alertDialogInfo");
-					textoDialog.innerHTML = "Hubo un problema al registrar el socio. Inténtelo de nuevo";			
-					$('#alertDialogInfo').dialog('open');	
-				}
-				});
-			}
-			else if(dataRegistro == "YA EXISTE;")
-			{
+	if(cifLocalRegistro == ""){		
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El CIF/NIF debe completarse.";			
+		$('#alertDialogInfo').dialog('open');		
+	}else if (razonLocalRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "La razón social debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (nombreLocalRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El nombre del local debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (dirLocalRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "La dirección debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (codigoLocalRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El código postal debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (poblacionLocalRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "La población debe completarse.";			
+		$('#alertDialogInfo').dialog('open');			
+	}else if (provinciaLocalRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "La provincia debe completarse.";			
+		$('#alertDialogInfo').dialog('open');		
+	}else if (denominacionLocalRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El tipo de local debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else if (telLocalRegistro == ""){
+		var textoDialog=document.getElementById("alertDialogInfo");
+		textoDialog.innerHTML = "El teléfono debe completarse.";			
+		$('#alertDialogInfo').dialog('open');
+	}else{
+		var datosRegistro = "wsSocios.aspx?ws=registerSocioString&nombre=" + nombreRegistro + "&apellidos=" + apellidosRegistro + "&mail=" + emailRegistro + "&pass=" + passRegistro + "&sexo=" + sexoRegistro + "&fechaNacimiento=" + fechaRegistro + "&movil=" + "" + "&telefono=" + "" + "&direccion=" + "" + "&codigoPostal=" + "" + "&idFacebook=" + "" + "&accesTokenFacebook=" + "" + "&linkFacebook=" + "" + "&userNameFacebook=" + "" + "&procedencia=" + "drinkbo";
+		var dataFinalRegistro = WSFuncion(datosRegistro);
+		dataFinalRegistro.success(function (dataRegistro){	
+		if(dataRegistro == "OK;")
+		{
+			var datosLogueo = "wsSocios.aspx?ws=getSocioXML&mail=" + emailRegistro + "&pass=" + passRegistro;
+			var dataFinalLogueo = WSFuncion(datosLogueo);
+			dataFinalLogueo.success(function (dataLogueo){
+			dataFinalLogueo = $.parseJSON(dataLogueo);
+			if(dataFinalLogueo.id != null)
+			{							
+				$('#inputSocio').val(dataFinalLogueo.id + ";" +dataFinalLogueo.nombre + ";" +dataFinalLogueo.apellidos + ";" +dataFinalLogueo.sexo + ";" +dataFinalLogueo.fechaNacimiento + ";" +dataFinalLogueo.movil + ";" +dataFinalLogueo.telefono + ";" +dataFinalLogueo.mail + ";" +dataFinalLogueo.direccion + ";" +dataFinalLogueo.codigoPostal + ";" +dataFinalLogueo.estado + ";" +dataFinalLogueo.cambioPass + ";");
+				guardarDatos('socio', $('#inputSocio').val().toString());
+				
+				var datosEstablecimiento = "wsSocios.aspx?ws=registerLocalString&idSocio=" + dataFinalLogueo.id + "&asociadoRazonSocial=" + razonLocalRegistro + "&asociadoCIF=" + cifLocalRegistro + "&asociadoCodigoPostal=" + codigoLocalRegistro + "&asociadoDireccion=" + dirLocalRegistro + "&asociadoPoblacion=" + poblacionLocalRegistro + "&asociadoProvincia=" + provinciaLocalRegistro + "&establecimientoCodigoPostal=" + codigoLocalRegistro + "&establecimientoDireccion=" + dirLocalRegistro + "&establecimientoNombre=" + nombreLocalRegistro + "&establecimientoPoblacion=" + poblacionLocalRegistro + "&establecimientoProvincia=" + provinciaLocalRegistro + "&establecimientoTelefono=" + telLocalRegistro + "&establecimientoDato=" + denominacionLocalRegistro;				
+				var dataEstablecimiento = WSFuncion(datosEstablecimiento);
+				dataEstablecimiento.success(function (dataFinalEstablecimiento){
 				var textoDialog=document.getElementById("alertDialogInfo");
-				textoDialog.innerHTML = "El email introducido ya existe en nuestra plataforma. Entra en la aplicación para poder hacer tus compras.";
+				if(dataFinalEstablecimiento == "OK")	
+				{
+					setDatosUsuario(dataFinalLogueo);		
+					textoDialog.innerHTML = "Enhorabuena tu registro se ha completado correctamente. Se te ha enviado un email para que confirmes tu correo electrónico y nos pondremos en contacto contigo cuando validemos tu establecimiento";					
+				}
+				else					
+					textoDialog.innerHTML = "Hubo un problema al registrar el establecimiento. Inténtelo de nuevo";												
+					
 				$('#alertDialogInfo').dialog('open');	
-				//document.location.href ="#pageRegistro";
-				$.mobile.changePage( "#pageRegistro", { transition: "slide" });
+				});
+				
+				irASeleccionLocal();
 			}
 			else
 			{
@@ -542,839 +527,800 @@ function atrasPedido(){
 				textoDialog.innerHTML = "Hubo un problema al registrar el socio. Inténtelo de nuevo";			
 				$('#alertDialogInfo').dialog('open');	
 			}
-		});
+			});
 		}
+		else if(dataRegistro == "YA EXISTE;")
+		{
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "El email introducido ya existe en nuestra plataforma. Entra en la aplicación para poder hacer tus compras.";
+			$('#alertDialogInfo').dialog('open');	
+			//document.location.href ="#pageRegistro";
+			$.mobile.changePage( "#pageRegistro", { transition: "slide" });
+		}
+		else
+		{
+			var textoDialog=document.getElementById("alertDialogInfo");
+			textoDialog.innerHTML = "Hubo un problema al registrar el socio. Inténtelo de nuevo";			
+			$('#alertDialogInfo').dialog('open');	
+		}
+	});
 	}
-	
-	function limpiarContrasena()
-	{
-		$('#passV').val("");
-		$('#passN').val("");
-		$('#passNR').val("");	
-		//document.location.href ="#pageModificarContrasena";	
-		$.mobile.changePage( "#pageModificarContrasena", { transition: "slide" });				
-	}
-	
-	function guardarDatos(key, valor)
-	{		
-		localStorage.setItem(key, valor);		
-	}
-	
-	function cargarDatos(key)
-	{		
-		return localStorage.getItem(key) || '';								
-	}
-	
-	function limpiarDatos()	{
-		localStorage.clear();	
-		//document.location.href = '#pageLogueo';
-		$.mobile.changePage( "#pageLogueo", { transition: "slide" });	
-	}
-	
-	
-	function actualizarIVA() {
-        var pedido = document.getElementById("listProductosDetalle");
-        var elementosTR = pedido.getElementsByTagName("LI");
-        if (elementosTR.length == 1) {
-            $('#listImpuestoDetalle').html('');
-			$('#tituloImpuestos').html('');
-        } else {
-			$('#tituloImpuestos').html('Desglose por impuestos');
-            var totalPrecio = "0";
-            var totalImpuestos = "0";
-            var totalBaseImponible = "0";
-            var numIvas = "";
-            var auxIva = "";
-            var ivaArray = new Array();
-            var tipoImpArray = new Array();
-            var baseImpArray = new Array();
-            var impuestoArray = new Array();
-            var importeImp = new Array();
-            var subTotalArray = new Array();
-            var contador = 0;
-            for (var i = 1; i < elementosTR.length; i++) {
-                var iva = elementosTR[i].getAttribute('data-valoriva');
-                var precio = elementosTR[i].getAttribute('data-precio');
-                var nombreiva = elementosTR[i].getAttribute('data-nombreiva');
-               
-				var precioComa = precio.replace(',', '.');
-				totalPrecio = parseFloat(totalPrecio) + parseFloat(precioComa);
-				var auxImpuestos = (parseFloat(iva) * parseFloat(precioComa)) / parseFloat(100);
-				totalImpuestos = parseFloat(totalImpuestos) + parseFloat(auxImpuestos);
-				var auxBase = parseFloat(precioComa) - parseFloat(auxImpuestos)
-				totalBaseImponible = parseFloat(totalBaseImponible) + parseFloat(auxBase);
+}
 
-				if (numIvas.indexOf(iva) == -1) {
-					numIvas = numIvas + "" + iva + ";";
-					auxIva = iva;
-					ivaArray[contador] = iva;
-					tipoImpArray[contador] = nombreiva;
-					baseImpArray[contador] = 0;
-					importeImp[contador] = 0;
-					subTotalArray[contador] = 0;
-					contador++;
-				}
-				for (var j = 0; j < ivaArray.length; j++) {
-					if (iva == ivaArray[j]) {
-						baseImpArray[j] = parseFloat(baseImpArray[j]) + parseFloat(precioComa);
-						importeImp[j] = parseFloat(importeImp[j]) + parseFloat(auxImpuestos);
-						subTotalArray[j] = parseFloat(subTotalArray[j]) + parseFloat(auxImpuestos) + parseFloat(precioComa);
-					}
-				}
-            }
+function limpiarContrasena()
+{
+	$('#passV').val("");
+	$('#passN').val("");
+	$('#passNR').val("");	
+	//document.location.href ="#pageModificarContrasena";	
+	$.mobile.changePage( "#pageModificarContrasena", { transition: "slide" });				
+}
 
-			$('#listImpuestosDetalle').html('');
-			var titulosImpuestos = '<li class="ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" role="heading"> <div class="ui-grid-c"><div class="ui-block-a"><span>Tipo Impuesto</span></div><div class="ui-block-b"><span>Base Imp.</span></div><div class="ui-block-c"><span>Importe Impuesto</span></div><div class="ui-block-d"><span>SubTotal</span></div></div></li>';
-			var titulosImpuestos2 ='<li class="ui-li ui-li-divider ui-bar-e" data-role="list-divider" role="heading"><div class="ui-grid-b"><div class="ui-block-a"><span>Total Bases Imp.</span></div><div class="ui-block-b"><span>Total Impuestos</span></div><div class="ui-block-c"><span>TOTAL</span></div></div></li>';
-			var detallesImpuesto1 = '<li class="ui-li ui-li-static ui-btn-up-c"><div class="ui-grid-c"><div class="ui-block-a"><span>         IVA 21%</span></div><div class="ui-block-b"><span>173,35</span></div><div class="ui-block-c"><span>36,40</span></div><div class="ui-block-d"><span>209.75</span></div></div></li>';
-			var detallesImpuesto2 = '<li class="ui-li ui-li-static ui-btn-up-c ui-last-child"> <div class="ui-grid-b"><div class="ui-block-a"><span>173,35  </span> </div><div class="ui-block-b"> <span>36,40</span></div><div class="ui-block-c"><span>      209,75</span></div> </div></li>';
+function guardarDatos(key, valor)
+{		
+	localStorage.setItem(key, valor);		
+}
 
-			var totalDesgloseImpuestos = ''+titulosImpuestos;
-            for (var j = 0; j < ivaArray.length; j++) {
-                totalDesgloseImpuestos += '<li class="ui-li ui-li-static ui-btn-up-c"><div class="ui-grid-c"><div class="ui-block-a"><span>'+tipoImpArray[j]+' %</span></div><div class="ui-block-b"><span>'+ baseImpArray[j].toFixed(2) +' €</span></div><div class="ui-block-c"><span>'+ importeImp[j].toFixed(2) +' €</span></div><div class="ui-block-d"><span>'+ subTotalArray[j].toFixed(2) +' €</span></div></div></li>';
+function cargarDatos(key)
+{		
+	return localStorage.getItem(key) || '';								
+}
+
+function limpiarDatos()	{
+	localStorage.clear();	
+	//document.location.href = '#pageLogueo';
+	$.mobile.changePage( "#pageLogueo", { transition: "slide" });	
+}
+
+
+function actualizarIVA() {
+	var pedido = document.getElementById("listProductosDetalle");
+	var elementosTR = pedido.getElementsByTagName("LI");
+	if (elementosTR.length == 1) {
+		$('#listImpuestoDetalle').html('');
+		$('#tituloImpuestos').html('');
+	} else {
+		$('#tituloImpuestos').html('Desglose por impuestos');
+		var totalPrecio = "0";
+		var totalImpuestos = "0";
+		var totalBaseImponible = "0";
+		var numIvas = "";
+		var auxIva = "";
+		var ivaArray = new Array();
+		var tipoImpArray = new Array();
+		var baseImpArray = new Array();
+		var impuestoArray = new Array();
+		var importeImp = new Array();
+		var subTotalArray = new Array();
+		var contador = 0;
+		for (var i = 1; i < elementosTR.length; i++) {
+			var iva = elementosTR[i].getAttribute('data-valoriva');
+			var precio = elementosTR[i].getAttribute('data-precio');
+			var nombreiva = elementosTR[i].getAttribute('data-nombreiva');
+		   
+			var precioComa = precio.replace(',', '.');
+			totalPrecio = parseFloat(totalPrecio) + parseFloat(precioComa);
+			var auxImpuestos = (parseFloat(iva) * parseFloat(precioComa)) / parseFloat(100);
+			totalImpuestos = parseFloat(totalImpuestos) + parseFloat(auxImpuestos);
+			var auxBase = parseFloat(precioComa) - parseFloat(auxImpuestos)
+			totalBaseImponible = parseFloat(totalBaseImponible) + parseFloat(auxBase);
+
+			if (numIvas.indexOf(iva) == -1) {
+				numIvas = numIvas + "" + iva + ";";
+				auxIva = iva;
+				ivaArray[contador] = iva;
+				tipoImpArray[contador] = nombreiva;
+				baseImpArray[contador] = 0;
+				importeImp[contador] = 0;
+				subTotalArray[contador] = 0;
+				contador++;
 			}
-			totalDesgloseImpuestos += titulosImpuestos2;
-            
-            var auxTOTAL = parseFloat(totalPrecio) + parseFloat(totalImpuestos);
-			totalDesgloseImpuestos += '<li class="ui-li ui-li-static ui-btn-up-c ui-last-child"> <div class="ui-grid-b"><div class="ui-block-a"><span>'+ totalPrecio.toFixed(2) +' €</span> </div><div class="ui-block-b"> <span>'+ totalImpuestos.toFixed(2) +' €</span></div><div class="ui-block-c"><span> '+ auxTOTAL.toFixed(2) +' €</span></div> </div></li>'
-            
-			$('#listImpuestosDetalle').html(totalDesgloseImpuestos);
-        }
-    }
-		
-	function verPedido(idPedido, idProveedor, color){
-		$.mobile.showPageLoadingMsg("a", "Cargando...");		
-		$('#inputPedidoAbierto').val(idPedido);
-		$('#idProveedor').val(idProveedor);		
-		
-		var datos = "wsPedidos.aspx?ws=getPedidoXML&idPedido="+$('#inputPedidoAbierto').val();
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			
-			$('#estadoPedidoDetalle').html(dataFinal.estado);
-			$('#estadoPedidoDetalle').css("color",'#'+color);
-			
-			$('#descriocionDetalle').html(dataFinal.descripcion);
-			$('#descriocionProveedor').html(dataFinal.proveedor);
-			$('#descriocionAlmacen').html(dataFinal.almacen);
-			$('#descriocionFormaPago').html(dataFinal.formaPago);	
-			$('#descriocionFechaPedido').html(dataFinal.fechaPedido);
-			$('#descriocionFechaRecepcion').html(dataFinal.fechaRecepcion);
-			$('#descriocionFechaEntrega').html(dataFinal.fechaEntrega);
-			$('#descriocionComentarios').html(dataFinal.comentario);
-			$('#detalleTotal').html('TOTAL: '+dataFinal.importe);
-						
-			$('#idTituloDetallePedido').html('Nº PEDIDO '+idPedido+'    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IMPORTE TOTAL:'+dataFinal.importe);
-						
-			if (dataFinal.idEstado == "2") {
-				$('#botonSolicitarPedido').css('display', 'block');
-				$('#botonCancelarPedido').css('display', 'block');
-				$('#botonAceptarPedido').css('display', 'none');
-				$('#botonModificarPedido').css('display', 'block');
-				$('#SinOpciones').css('display', 'none');				
-			}
-			else if (dataFinal.idEstado == "8") {
-				$('#botonSolicitarPedido').css('display', 'none');
-				$('#botonCancelarPedido').css('display', 'none');
-				$('#botonAceptarPedido').css('display', 'block');
-				$('#botonModificarPedido').css('display', 'none');
-				$('#SinOpciones').css('display', 'none')
-			}
-			else {
-				$('#botonSolicitarPedido').css('display', 'none');
-				$('#botonCancelarPedido').css('display', 'none');
-				$('#botonAceptarPedido').css('display', 'none');
-				$('#botonModificarPedido').css('display', 'none');
-				$('#SinOpciones').css('display', 'block')
-			}
-		});
-		var inicioListas = '<li class="ui-grid-b ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px;" role="heading"><div class="ui-block-a"> <span>Producto</span></div><div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>Unidades</span></div></div><div class="ui-block-c"><div class="ui-block-b" style=" width:50%;text-align:center;"><span> Total </span> </div></div></li>'
-		
-		$('#listProductosCanjeDetalle').html();
-		$('#listProductosDetalle').html();
-		
-		var datos = "wsPedidos.aspx?ws=getArticulosPedidoXML&idPedido="+idPedido;
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var productosPedido = '';
-			$.each(dataFinal, function(index, d){
-				//alert(((parseFloat(d.precio)*parseFloat(d.numUnidades)).toFixed(2)).replace('.',','));
-				productosPedido += '<li data-precio="'+((parseFloat(d.precio)*parseFloat(d.numUnidades)).toFixed(2)).replace('.',',')+'" data-valoriva="'+d.impuestoValor+'" data-nombreiva="'+d.impuestoValor+'" class="ui-grid-b ui-li ui-li-static ui-btn-up-c" style="height:30px;">  <div class="ui-block-a"><span>'+d.producto+'</span></div> <div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>'+d.numUnidades+'</span> </div></div><div class="ui-block-c"> <div class="ui-block-b" style=" width:50%;text-align:center;"><span>'+d.importe+'€</span> </div></div></li>';	
-				//alert(d.impuestoValor+'     '+d.importeNeto);					
-			});
-			$('#listProductosDetalle').html(inicioListas+productosPedido);
-			actualizarIVA();
-		});
-				
-		var datos = "wsPedidos.aspx?ws=getArticulosPedidoCanjeXML&idPedido="+idPedido;
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data2){
-			dataFinal = $.parseJSON(data2);
-			var productosPedido = '';
-			if(dataFinal.length < 1){
-				$('#listProductosCanjeDetalle').html('');
-				$('#tituloProductosCanje').html('');
-			}else{
-				$.each(dataFinal, function(index, d){
-					productosPedido += '<li class="ui-grid-b ui-li ui-li-static ui-btn-up-c" style="height:30px;">  <div class="ui-block-a"><span>'+d.articulo+'</span></div> <div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>'+d.unidades+'</span> </div></div><div class="ui-block-c"> <div class="ui-block-b" style=" width:50%;text-align:center;"><span>'+d.puntos+' puntos</span> </div></div></li>';		
-				});
-				$('#listProductosCanjeDetalle').html(inicioListas+productosPedido);
-				$('#tituloProductosCanje').html('Productos de canje');
-			}
-		});		
-		$.mobile.hidePageLoadingMsg();
-		//document.location.href = "#detallePedido";
-		$.mobile.changePage( "#detallePedido", { transition: "slide" });
-	}
-			
-	function misPedidos(){		
-		var htmlPedidos = '<li class="ui-grid-c ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px" role="heading"><span class="ui-block-a">Fecha</span><span class="ui-block-b" style="; text-align:center">Total</span><span class="ui-block-c">Proveedor </span><span class="ui-block-d" style=" text-align:right">Estado</span></li>';
-		$.mobile.showPageLoadingMsg("a", "Cargando...");
-		var datos = "wsPedidos.aspx?ws=getPedidosAbiertosXML&idAplicacion="+$('#inputIdAplicacion').val()+"&idEstablecimiento="+$('#inputIdEstablecimiento').val();
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var pedidos = '';
-			$.each(dataFinal, function(index, d){
-				pedidos += '<li name="unPedido" onclick="verPedido(\''+d.id+'\',\''+d.idProveedor+'\',\''+d.color+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\"   style="white-space: pre-wrap; font-size:12px;" class="ui-link-inherit" style="height:30px" href="#"><div class="ui-grid-c"><span class="ui-block-a">'+d.fechaCreacion+'</span><span class="ui-block-b" style=" text-align:center">'+d.importe+' </span><span class="ui-block-c">'+d.proveedor+'</span><span class="ui-block-d" style=" text-align:right"><span style="color:#'+d.color+'">'+d.estado+'</span></span></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>'				
-				
-				if(d.estado == 'Enviado'){
-					var diferencia = new Date() - new Date(d.fechaRecepcion);					
-					if(diferencia > 0){
-						$('#alertDialogInfoText').html('Tienes pedidos sin recibir, por favor revisa tus pedidos.');
-						$('#alertDialogInfo').dialog('open');
-					}					
+			for (var j = 0; j < ivaArray.length; j++) {
+				if (iva == ivaArray[j]) {
+					baseImpArray[j] = parseFloat(baseImpArray[j]) + parseFloat(precioComa);
+					importeImp[j] = parseFloat(importeImp[j]) + parseFloat(auxImpuestos);
+					subTotalArray[j] = parseFloat(subTotalArray[j]) + parseFloat(auxImpuestos) + parseFloat(precioComa);
 				}
-			});
-			$('#listPedidos').html(htmlPedidos+pedidos);
-		});
-		//document.location.href ="#pageMisPedidos";
-		$.mobile.changePage( "#pageMisPedidos", { transition: "slide" });
-		$.mobile.hidePageLoadingMsg();
-	}
-		
-	//var datos = "ws=getProveedoresXML&idEstablecimiento=63";          "
-	function WSFuncion(datos){
-		var url = "http://www.canalpreference.com/ws/"+datos;
-		var dataFinal = '';
-		return $.ajax({
-		  type: 'GET',
-		  url: url,
-		  dataType: "jsonp",
-		  crossDomain: true,         
-		  cache:false,
-		  timeout:	10000,
-		  success: function(data){
-			/* parse JSON */
-			//dataFinal = $.parseJSON(data);
-			//$.each(dataFinal, function(index, d){
-			//});
-			},
-			beforeSend: function () {
-				$.mobile.showPageLoadingMsg("a", "Cargando...");
-			},
-			complete: function () {
-				$.mobile.hidePageLoadingMsg();
-			},
-			error:function(jqXHR, textStatus, errorThrown){
-				//alert(jqXHR.status+'     /    '+errorThrown);
-				$('#alertDialogInfoText').html('No hay conexión con el servidor, comprueba la conexión a internet e intentalo de nuevo más tarde.');
-				$('#alertDialogInfo').dialog('open');
 			}
-		});
+		}
+
+		$('#listImpuestosDetalle').html('');
+		var titulosImpuestos = '<li class="ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" role="heading"> <div class="ui-grid-c"><div class="ui-block-a"><span>Tipo Impuesto</span></div><div class="ui-block-b"><span>Base Imp.</span></div><div class="ui-block-c"><span>Importe Impuesto</span></div><div class="ui-block-d"><span>SubTotal</span></div></div></li>';
+		var titulosImpuestos2 ='<li class="ui-li ui-li-divider ui-bar-e" data-role="list-divider" role="heading"><div class="ui-grid-b"><div class="ui-block-a"><span>Total Bases Imp.</span></div><div class="ui-block-b"><span>Total Impuestos</span></div><div class="ui-block-c"><span>TOTAL</span></div></div></li>';
+		var detallesImpuesto1 = '<li class="ui-li ui-li-static ui-btn-up-c"><div class="ui-grid-c"><div class="ui-block-a"><span>         IVA 21%</span></div><div class="ui-block-b"><span>173,35</span></div><div class="ui-block-c"><span>36,40</span></div><div class="ui-block-d"><span>209.75</span></div></div></li>';
+		var detallesImpuesto2 = '<li class="ui-li ui-li-static ui-btn-up-c ui-last-child"> <div class="ui-grid-b"><div class="ui-block-a"><span>173,35  </span> </div><div class="ui-block-b"> <span>36,40</span></div><div class="ui-block-c"><span>      209,75</span></div> </div></li>';
+
+		var totalDesgloseImpuestos = ''+titulosImpuestos;
+		for (var j = 0; j < ivaArray.length; j++) {
+			totalDesgloseImpuestos += '<li class="ui-li ui-li-static ui-btn-up-c"><div class="ui-grid-c"><div class="ui-block-a"><span>'+tipoImpArray[j]+' %</span></div><div class="ui-block-b"><span>'+ baseImpArray[j].toFixed(2) +' €</span></div><div class="ui-block-c"><span>'+ importeImp[j].toFixed(2) +' €</span></div><div class="ui-block-d"><span>'+ subTotalArray[j].toFixed(2) +' €</span></div></div></li>';
+		}
+		totalDesgloseImpuestos += titulosImpuestos2;
+		
+		var auxTOTAL = parseFloat(totalPrecio) + parseFloat(totalImpuestos);
+		totalDesgloseImpuestos += '<li class="ui-li ui-li-static ui-btn-up-c ui-last-child"> <div class="ui-grid-b"><div class="ui-block-a"><span>'+ totalPrecio.toFixed(2) +' €</span> </div><div class="ui-block-b"> <span>'+ totalImpuestos.toFixed(2) +' €</span></div><div class="ui-block-c"><span> '+ auxTOTAL.toFixed(2) +' €</span></div> </div></li>'
+		
+		$('#listImpuestosDetalle').html(totalDesgloseImpuestos);
 	}
+}
 	
-	function proveedores(){
-		$.mobile.showPageLoadingMsg("a", "Cargando...");
-		var datos = "wsPedidos.aspx?ws=getProveedoresXML&idEstablecimiento=63"
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var proveedores = '';
-			$.each(dataFinal, function(index, d){
-				proveedores += "<li class=\"ui-btn ui-btn-up-c ui-btn-icon-right ui-li-has-arrow ui-li ui-first-child ui-last-child\" data-theme=\"c\" data-iconpos=\"right\" data-icon=\"arrow-r\" data-wrapperels=\"div\" data-iconshadow=\"true\" data-shadow=\"false\" data-corners=\"false\"><div class=\"ui-btn-inner ui-li\"><div class=\"ui-btn-text\"><a data-transition=\"slide\" class=\"ui-link-inherit\" href=\"#\" onclick=\"seleccionaProveedor('"+d.id+"','"+d.nombre+"')\">"+d.nombre+"</a></div><span class=\"ui-icon ui-icon-arrow-r ui-icon-shadow\">&nbsp;</span></div></li>";
-			});
-			$('#listaProveedores').html(proveedores);
-		});
-		//document.location.href ="#pageProveedores";
-		$.mobile.changePage( "#pageProveedores", { transition: "slide" });
-		$.mobile.hidePageLoadingMsg();
-	}
+function verPedido(idPedido, idProveedor, color){
+	$.mobile.showPageLoadingMsg("a", "Cargando...");		
+	$('#inputPedidoAbierto').val(idPedido);
+	$('#idProveedor').val(idProveedor);		
+	
+	var datos = "wsPedidos.aspx?ws=getPedidoXML&idPedido="+$('#inputPedidoAbierto').val();
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
 		
-	function seleccionaProveedor(id,nombre){
-		var pedidoArticulos = $('#listaPedido li');
-		if(pedidoArticulos.length != 0){			
-			//Ya tiene un proveedor pulsado avisamos			
-			$('#textoDialog').html('Hay un pedido a medias con el proveedor <span style="color:#FF6500;">"'+$('#nombreProveedor').val()+'</span>.<br /> Si cambia de proveedor su pedido empezado se eliminará, y empezara uno nuevo con el proveedor seleccionado.');
-			$('#idProveedor').val(id);
-			$('#nombreProveedor').val(nombre)
-			$('#alertDialog').dialog("open");
-		}else{
+		$('#estadoPedidoDetalle').html(dataFinal.estado);
+		$('#estadoPedidoDetalle').css("color",'#'+color);
+		
+		$('#descriocionDetalle').html(dataFinal.descripcion);
+		$('#descriocionProveedor').html(dataFinal.proveedor);
+		$('#descriocionAlmacen').html(dataFinal.almacen);
+		$('#descriocionFormaPago').html(dataFinal.formaPago);	
+		$('#descriocionFechaPedido').html(dataFinal.fechaPedido);
+		$('#descriocionFechaRecepcion').html(dataFinal.fechaRecepcion);
+		$('#descriocionFechaEntrega').html(dataFinal.fechaEntrega);
+		$('#descriocionComentarios').html(dataFinal.comentario);
+		$('#detalleTotal').html('TOTAL: '+dataFinal.importe);
 					
-			$.mobile.showPageLoadingMsg("a", "Cargando...");
-		
-			<!-- GUARDAMOS PROVEEDOR SELECCIONADO -->
-			$('#inputPedidoAbierto').val();
-			$('#idProveedor').val(id);
-			$('#nombreProveedor').val(nombre)
-			$('#nombreUndProducto').val(nombre);
-			$('#nombreUndProducto2').val(nombre);
-				
-			<!-- CARGAMOS PRODUCTOS FAVORITOS -->
-			var datos = "wsPedidos.aspx?ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
-			var dataFinal = WSFuncion(datos);
-			dataFinal.success(function (data){
-				dataFinal = $.parseJSON(data);
-				var productos = '';
-				$.each(dataFinal, function(index, d){
-					if($('#'+d.id+'undCompraPEDIDO').html()){
-						var unidadesCompraAnt = $('#'+d.id+'undCompraPEDIDO').html();
-					}else{
-						var unidadesCompraAnt = 0;
-					}
-					if($('#'+d.id+'undCanjePEDIDO').html()){
-						var unidadesCanjeAnt = $('#'+d.id+'undCanjePEDIDO').html();
-					}else{
-						var unidadesCanjeAnt = 0;
-					}
-					productos += '<li id="'+d.id+'" data-tradeId="'+d.tradeId+'" data-tradePointsA="'+d.tradePointsA+'" data-tradePointsC="'+d.tradePointsC+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;  max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style=" max-width: 80% !important; white-space: pre-wrap !important; float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;;"><span>'+parseFloat(d.pum_price).toFixed(2)+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
-				});
-				$('#listaProductos').html(productos);
-			});
-			
-			$('#infoProductos').css('display','block');
-			
-			//Cargamos las cateorias de productos
-			cargarCategoriasPadre();
-			
-			//Cargamos los puntos que tiene el local
-			cargarPuntosFabricantes();
-			
-			//document.location.href ="#pageProductos";
-			$.mobile.changePage( "#pageProductos", { transition: "slide" });
-			$.mobile.hidePageLoadingMsg();
+		$('#idTituloDetallePedido').html('Nº PEDIDO '+idPedido+'    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IMPORTE TOTAL:'+dataFinal.importe);
+					
+		if (dataFinal.idEstado == "2") {
+			$('#botonSolicitarPedido').css('display', 'block');
+			$('#botonCancelarPedido').css('display', 'block');
+			$('#botonAceptarPedido').css('display', 'none');
+			$('#botonModificarPedido').css('display', 'block');
+			$('#SinOpciones').css('display', 'none');				
 		}
-	}
+		else if (dataFinal.idEstado == "8") {
+			$('#botonSolicitarPedido').css('display', 'none');
+			$('#botonCancelarPedido').css('display', 'none');
+			$('#botonAceptarPedido').css('display', 'block');
+			$('#botonModificarPedido').css('display', 'none');
+			$('#SinOpciones').css('display', 'none')
+		}
+		else {
+			$('#botonSolicitarPedido').css('display', 'none');
+			$('#botonCancelarPedido').css('display', 'none');
+			$('#botonAceptarPedido').css('display', 'none');
+			$('#botonModificarPedido').css('display', 'none');
+			$('#SinOpciones').css('display', 'block')
+		}
+	});
+	var inicioListas = '<li class="ui-grid-b ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px;" role="heading"><div class="ui-block-a"> <span>Producto</span></div><div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>Unidades</span></div></div><div class="ui-block-c"><div class="ui-block-b" style=" width:50%;text-align:center;"><span> Total </span> </div></div></li>'
 	
-	function cargarPuntosFabricantes(){
-		//Puntos fabricantes
-		var datos = "wsPedidos.aspx?ws=getPuntosFabricanteXML&idEstablecimiento="+$('#inputIdEstablecimiento').val();
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var fabricante = '';
-			$.each(dataFinal, function(index, d){
-				//alert(d.idFabricante);
-				fabricante += d.idFabricante+ ';' + d.puntos + ';p;';				
-			});
-			$('#inputPuntosFabricante').val(fabricante);
-		});
-	}
+	$('#listProductosCanjeDetalle').html();
+	$('#listProductosDetalle').html();
 	
-	function cargarCategoriasPadre(){
-		<!-- CARGAMOS CATEGORIAS -->
-		$('#listCategorias').html('');
-		var datos = "wsPedidos.aspx?ws=getCategoriasPadreXML"
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var categorias = '';
-			$.each(dataFinal, function(index, d){
-				categorias += '<div id="'+d.id+'CategoriasPadre" onclick="seleccionarCategoria(\''+d.id+'\',\''+d.nombre+'\')" class="ui-collapsible ui-collapsible-inset ui-collapsible-themed-content ui-collapsible-collapsed" data-role="collapsible"><h3 class="ui-collapsible-heading ui-li-heading ui-collapsible-heading-collapsed"><a data-transition=\"slide\" data-theme="c" data-iconpos="left" data-icon="plus" data-wrapperels="span" data-iconshadow="true" data-shadow="false" data-corners="false" href="#" class="ui-collapsible-heading-toggle ui-btn ui-btn-icon-left ui-btn-up-c"><span class="ui-btn-inner"><span class="ui-btn-text">'+d.nombre+'<span class="ui-collapsible-heading-status"> </span></span><span class="ui-icon ui-icon-shadow ui-icon-plus">&nbsp;</span></span></a></h3><div aria-hidden="false" class="ui-collapsible-content ui-body-d ui-collapsible-content-collapsed" id="'+d.id+'CatHija"><ul class="ui-listview" data-divider-theme="d" data-filter-theme="c" data-filter="true" data-role="listview" id="'+d.id+'CatHijaUL"></ul></div></div>';				 
-				 /*categorias += '<li id="'+d.id+'" onclick="seleccionarCategoria(\''+d.id+'\',\''+d.nombre+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">'+d.nombre+'</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';*/
-			});
-			$('#listCategorias').html(categorias);
+	var datos = "wsPedidos.aspx?ws=getArticulosPedidoXML&idPedido="+idPedido;
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var productosPedido = '';
+		$.each(dataFinal, function(index, d){
+			//alert(((parseFloat(d.precio)*parseFloat(d.numUnidades)).toFixed(2)).replace('.',','));
+			productosPedido += '<li data-precio="'+((parseFloat(d.precio)*parseFloat(d.numUnidades)).toFixed(2)).replace('.',',')+'" data-valoriva="'+d.impuestoValor+'" data-nombreiva="'+d.impuestoValor+'" class="ui-grid-b ui-li ui-li-static ui-btn-up-c" style="height:30px;">  <div class="ui-block-a"><span>'+d.producto+'</span></div> <div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>'+d.numUnidades+'</span> </div></div><div class="ui-block-c"> <div class="ui-block-b" style=" width:50%;text-align:center;"><span>'+d.importe+'€</span> </div></div></li>';	
+			//alert(d.impuestoValor+'     '+d.importeNeto);					
 		});
-	}
-		
-	function seleccionarCategoria(id, nombre){		
-		$.mobile.showPageLoadingMsg("a", "Cargando...");
-		
-		<!-- CARGAMOS CATEGORIAS HIJO -->
-		var datos = "wsPedidos.aspx?ws=getCategoriasHijoXML&idCategoria="+id
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var categorias = '';
-			$.each(dataFinal, function(index, d){
-				categorias += '<li id="'+d.id+'CatHijaReal" onclick="seleccionarCategoriaHija(\''+id+'\',\''+d.id+'\',\''+d.nombre+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">'+d.nombre+'</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
-			});
-			$('#'+id+'CatHijaUL').html('');
-			$('#'+id+'CatHijaUL').html(categorias);
-			$('#'+id+'CatHija').removeClass('ui-collapsible-content-collapsed');
+		$('#listProductosDetalle').html(inicioListas+productosPedido);
+		actualizarIVA();
+	});
 			
-			if(dataFinal.length == 1){
-				seleccionarCategoriaHija(id,dataFinal[0].id,dataFinal[0].nombre);
-			}else if(dataFinal.length == 0){
-				seleccionarCategoriaHija(id,id,nombre);
-			}
-		});
-		
-		//document.location.href ="#pageProductos";
-		$.mobile.changePage( "#pageProductos", { transition: "slide" });
-		$.mobile.hidePageLoadingMsg();
-	}
-	
-	function seleccionarCategoriaHija(idPadre,id,nombre){	
-		$('#infoProductos').css('display','none');	
-		$('#listaProductos').html('');		
-		var datos = "wsPedidos.aspx?ws=getArticulosByCategoriaXML&idCategoria="+id+"&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var productos = '';
+	var datos = "wsPedidos.aspx?ws=getArticulosPedidoCanjeXML&idPedido="+idPedido;
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data2){
+		dataFinal = $.parseJSON(data2);
+		var productosPedido = '';
+		if(dataFinal.length < 1){
+			$('#listProductosCanjeDetalle').html('');
+			$('#tituloProductosCanje').html('');
+		}else{
 			$.each(dataFinal, function(index, d){
-				productos += '<li id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px; max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>'+d.pum_price+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+				productosPedido += '<li class="ui-grid-b ui-li ui-li-static ui-btn-up-c" style="height:30px;">  <div class="ui-block-a"><span>'+d.articulo+'</span></div> <div class="ui-block-b"><div class="ui-block-a" style=" width:50%;text-align:center;"><span>'+d.unidades+'</span> </div></div><div class="ui-block-c"> <div class="ui-block-b" style=" width:50%;text-align:center;"><span>'+d.puntos+' puntos</span> </div></div></li>';		
 			});
-			if(dataFinal.length == 0){
-				productos = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">No hay articulos para esta categoria</a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>'
+			$('#listProductosCanjeDetalle').html(inicioListas+productosPedido);
+			$('#tituloProductosCanje').html('Productos de canje');
+		}
+	});		
+	$.mobile.hidePageLoadingMsg();
+	//document.location.href = "#detallePedido";
+	$.mobile.changePage( "#detallePedido", { transition: "slide" });
+}
+		
+function misPedidos(){		
+	var htmlPedidos = '<li class="ui-grid-c ui-li ui-li-divider ui-bar-e ui-first-child" data-role="list-divider" style="height:30px" role="heading"><span class="ui-block-a">Fecha</span><span class="ui-block-b" style="; text-align:center">Total</span><span class="ui-block-c">Proveedor </span><span class="ui-block-d" style=" text-align:right">Estado</span></li>';
+	$.mobile.showPageLoadingMsg("a", "Cargando...");
+	var datos = "wsPedidos.aspx?ws=getPedidosAbiertosXML&idAplicacion="+$('#inputIdAplicacion').val()+"&idEstablecimiento="+$('#inputIdEstablecimiento').val();
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var pedidos = '';
+		$.each(dataFinal, function(index, d){
+			pedidos += '<li name="unPedido" onclick="verPedido(\''+d.id+'\',\''+d.idProveedor+'\',\''+d.color+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\"   style="white-space: pre-wrap; font-size:12px;" class="ui-link-inherit" style="height:30px" href="#"><div class="ui-grid-c"><span class="ui-block-a">'+d.fechaCreacion+'</span><span class="ui-block-b" style=" text-align:center">'+d.importe+' </span><span class="ui-block-c">'+d.proveedor+'</span><span class="ui-block-d" style=" text-align:right"><span style="color:#'+d.color+'">'+d.estado+'</span></span></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>'				
+			
+			if(d.estado == 'Enviado'){
+				var diferencia = new Date() - new Date(d.fechaRecepcion);					
+				if(diferencia > 0){
+					$('#alertDialogInfoText').html('Tienes pedidos sin recibir, por favor revisa tus pedidos.');
+					$('#alertDialogInfo').dialog('open');
+				}					
 			}
-			$('#listaProductos').html(productos);
 		});
-		$( "#panelProductos" ).panel( "close" );
-		cargarCategoriasPadre();		
-	}
+		$('#listPedidos').html(htmlPedidos+pedidos);
+	});
+	//document.location.href ="#pageMisPedidos";
+	$.mobile.changePage( "#pageMisPedidos", { transition: "slide" });
+	$.mobile.hidePageLoadingMsg();
+}
 	
-	function buscar(){
-		$('#infoProductos').css('display','none');
-		$('#listaProductos').html('');		
-		var datos = "wsPedidos.aspx?ws=getArticulosByCategoriaXML&idCategoria=0&texto="+$('#buscador').val()+"&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+//var datos = "ws=getProveedoresXML&idEstablecimiento=63";          "
+function WSFuncion(datos){
+	var url = "http://www.canalpreference.com/ws/"+datos;
+	var dataFinal = '';
+	return $.ajax({
+	  type: 'GET',
+	  url: url,
+	  dataType: "jsonp",
+	  crossDomain: true,         
+	  cache:false,
+	  timeout:	10000,
+	  success: function(data){
+		/* parse JSON */
+		//dataFinal = $.parseJSON(data);
+		//$.each(dataFinal, function(index, d){
+		//});
+		},
+		beforeSend: function () {
+			$.mobile.showPageLoadingMsg("a", "Cargando...");
+		},
+		complete: function () {
+			$.mobile.hidePageLoadingMsg();
+		},
+		error:function(jqXHR, textStatus, errorThrown){
+			//alert(jqXHR.status+'     /    '+errorThrown);
+			$('#alertDialogInfoText').html('No hay conexión con el servidor, comprueba la conexión a internet e intentalo de nuevo más tarde.');
+			$('#alertDialogInfo').dialog('open');
+		}
+	});
+}
+
+function proveedores(){
+	$.mobile.showPageLoadingMsg("a", "Cargando...");
+	var datos = "wsPedidos.aspx?ws=getProveedoresXML&idEstablecimiento=63"
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var proveedores = '';
+		$.each(dataFinal, function(index, d){
+			proveedores += "<li class=\"ui-btn ui-btn-up-c ui-btn-icon-right ui-li-has-arrow ui-li ui-first-child ui-last-child\" data-theme=\"c\" data-iconpos=\"right\" data-icon=\"arrow-r\" data-wrapperels=\"div\" data-iconshadow=\"true\" data-shadow=\"false\" data-corners=\"false\"><div class=\"ui-btn-inner ui-li\"><div class=\"ui-btn-text\"><a data-transition=\"slide\" class=\"ui-link-inherit\" href=\"#\" onclick=\"seleccionaProveedor('"+d.id+"','"+d.nombre+"')\">"+d.nombre+"</a></div><span class=\"ui-icon ui-icon-arrow-r ui-icon-shadow\">&nbsp;</span></div></li>";
+		});
+		$('#listaProveedores').html(proveedores);
+	});
+	//document.location.href ="#pageProveedores";
+	$.mobile.changePage( "#pageProveedores", { transition: "slide" });
+	$.mobile.hidePageLoadingMsg();
+}
+	
+function seleccionaProveedor(id,nombre){
+	var pedidoArticulos = $('#listaPedido li');
+	if(pedidoArticulos.length != 0){			
+		//Ya tiene un proveedor pulsado avisamos			
+		$('#textoDialog').html('Hay un pedido incompleto con el proveedor <span style="color:#FF6500;">"'+$('#nombreProveedor').val()+'</span>.<br /> Si cambia de proveedor su pedido se eliminará, y empezará uno nuevo.');
+		$('#idProveedor').val(id);
+		$('#nombreProveedor').val(nombre)
+		$('#alertDialog').dialog("open");
+	}else{
+				
+		$.mobile.showPageLoadingMsg("a", "Cargando...");
+	
+		<!-- GUARDAMOS PROVEEDOR SELECCIONADO -->
+		$('#inputPedidoAbierto').val();
+		$('#idProveedor').val(id);
+		$('#nombreProveedor').val(nombre)
+		$('#nombreUndProducto').val(nombre);
+		$('#nombreUndProducto2').val(nombre);
+			
+		<!-- CARGAMOS PRODUCTOS FAVORITOS -->
+		var datos = "wsPedidos.aspx?ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
 			dataFinal = $.parseJSON(data);
 			var productos = '';
 			$.each(dataFinal, function(index, d){
 				if($('#'+d.id+'undCompraPEDIDO').html()){
-					//alert('si');
+					var unidadesCompraAnt = $('#'+d.id+'undCompraPEDIDO').html();
 				}else{
-					//alert('no');
+					var unidadesCompraAnt = 0;
 				}
 				if($('#'+d.id+'undCanjePEDIDO').html()){
-					//alert('si2');
+					var unidadesCanjeAnt = $('#'+d.id+'undCanjePEDIDO').html();
 				}else{
-					//alert('no2');
+					var unidadesCanjeAnt = 0;
 				}
-				productos += '<li id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;  max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>'+d.pum_price+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+				productos += '<li id="'+d.id+'" data-tradeId="'+d.tradeId+'" data-tradePointsA="'+d.tradePointsA+'" data-tradePointsC="'+d.tradePointsC+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http://www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;  max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style=" max-width: 80% !important; white-space: pre-wrap !important; float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;;"><span>'+parseFloat(d.pum_price).toFixed(2)+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
 			});
-			if(dataFinal.length == 0){
-				productos = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">No hay articulos para esta categoria</a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>'
-			}
 			$('#listaProductos').html(productos);
 		});
-		$( "#panelProductos" ).panel( "close" );
+		
+		$('#infoProductos').css('display','block');
+		
+		//Cargamos las cateorias de productos
 		cargarCategoriasPadre();
-		$('#buscador').val('')	
+		
+		//Cargamos los puntos que tiene el local
+		cargarPuntosFabricantes();
+		
+		//document.location.href ="#pageProductos";
+		$.mobile.changePage( "#pageProductos", { transition: "slide" });
+		$.mobile.hidePageLoadingMsg();
 	}
-	
-	function misFavoritos(){
-		seleccionaProveedor($('#idProveedor').val(),$('#nombreUndProducto').val());
-		$( "#panelProductos" ).panel( "close" );
-	}
-	
-	function seleccionarProducto(image,id,name,description,bottling,current_price,tradeId,tradeName,tradePointsA,tradePointsC,tradeIdAcuerdo,idAlert,precioIVA){		
-		$('#nombreUndProducto').html(name+'<br />'+description+'   '+bottling);
-		$('#descrpUndProducto').html('Precio: '+parseFloat(precioIVA).toFixed(2)+' €');
-		$('#nombreUndProducto2').html(name+'<br />'+description+'   '+bottling);
-		$('#descrpUndProducto2').html('Precio: '+parseFloat(precioIVA).toFixed(2)+' €');
-		$('#'+idAlert).dialog('open');
-		
-		
-		var antUnidadesCanje = $('#'+id+'undCanje').html();
-		if(antUnidadesCanje == 'undefined'){
-			antUnidadesCanje = $('#'+id+'undCanjePEDIDO').html();
-		}	
-		if(antUnidadesCanje != 0){
-			$('#unidadesProductoCanje').val(antUnidadesCanje);
-			$('#unidadesProductoCanje2').val(antUnidadesCanje);
-			$('#divCanje').css('display','block');
-			$('#divCanje2').css('display','block');
-			$('#onoff').val('on').slider("refresh");
-			$('#onoff2').val('on').slider("refresh");
-		}else{
-			$('#unidadesProductoCanje').val(0);
-			$('#unidadesProductoCanje2').val(0);
-			$('#divCanje').css('display','none');
-			$('#divCanje2').css('display','none');
-			$('#onoff').val('off').slider("refresh");
-			$('#onoff2').val('off').slider("refresh");
-		}
-		//Canje a cero todo
-		$('#mensajesInfoCanje').html('');
-		$('#mensajesInfoCanje2').html('');				
-		
-		var antUnidades = $('#'+id+'undCompra').html();
-		if(antUnidades == 'undefined'){
-			antUnidades = $('#'+id+'undCompraPEDIDO').html();
-		}		
-		if(antUnidades != 0){
-			$('#unidadesProducto').val(antUnidades);
-			$('#unidadesProducto2').val(antUnidades);
-		}else{
-			$('#unidadesProducto').val(1);
-			$('#unidadesProducto2').val(1);
-		}
-		
-		soloNumeros("#unidadesProducto");
-		soloNumeros("#unidadesProducto2");
-		
-		$('#'+idAlert).attr('data-image', image);
-		$('#'+idAlert).attr('data-id', id);
-		$('#'+idAlert).attr('data-name', name);
-		$('#'+idAlert).attr('data-description', description);
-		$('#'+idAlert).attr('data-bottling', bottling);
-		$('#'+idAlert).attr('data-current_price', current_price);
-		$('#'+idAlert).attr('data-tradeId', tradeId);
-		$('#'+idAlert).attr('data-tradeName', tradeName);
-		$('#'+idAlert).attr('data-tradePointsA', tradePointsA);
-		$('#'+idAlert).attr('data-tradePointsC', tradePointsC);
-		$('#'+idAlert).attr('data-tradeIdAcuerdo', tradeIdAcuerdo);
-		$('#'+idAlert).attr('data-precioIVA', precioIVA);
+}
 
-		if(tradePointsC == ''){
-			$('#onoff').slider( "disable" );
-			$('#onoff2').slider( "disable" );
-			$('#mensajesInfoCanjeAntes').html('Este producto no puede canjearse.');
-			$('#mensajesInfoCanjeAntes2').html('Este producto no puede canjearse.');
-		}else{
-			$('#onoff').slider( "enable" );
-			$('#onoff2').slider( "enable" );
-			$('#mensajesInfoCanjeAntes').html('');
-			$('#mensajesInfoCanjeAntes2').html('');
-		}
-	}
-	
-	function menos(){
-		var cantidad = $('#unidadesProducto').val();
-		var cantidad2 = $('#unidadesProducto2').val();
-		if(cantidad - 1 >= 0){		
-			$('#unidadesProducto').val(cantidad-1);
-		}
-		if(cantidad2 - 1 >= 0){		
-			$('#unidadesProducto2').val(cantidad2-1);
-		}
-	}
-	
-	function mas(){
-		var cantidad = $('#unidadesProducto').val();
-		$('#unidadesProducto').val(parseInt(cantidad)+1);
-		var cantidad2 = $('#unidadesProducto2').val();
-		$('#unidadesProducto2').val(parseInt(cantidad)+1);
-	}
-	
-	function menosCanje(){
-		var cantidad = $('#unidadesProductoCanje').val();
-		var cantidad2 = $('#unidadesProductoCanje2').val();
-		if(cantidad - 1 >= 0){		
-			$('#unidadesProductoCanje').val(cantidad-1);
-		}
-		if(cantidad2 - 1 >= 0){		
-			$('#unidadesProductoCanje2').val(cantidad2-1);
-		}
-		$('#mensajesInfoCanje').html('');
-	}
-	
-	function puntosFabricanteTotal(idFabricante){
-		var total = $('#inputPuntosFabricante').val();
-		var puntosFabricantes = total.split(';p;');
-		for(var i = 0 ; i < puntosFabricantes.length; i++){
-			datosFabricante = puntosFabricantes[i].split(';');
-			if(datosFabricante[0] == idFabricante){
-				return datosFabricante[1];
-				break;
-			}
-		}
-		return 0;
-	 }
-	
-	function unidadesManual(idAlert){
-		var fabricanteID = $(idAlert).attr('data-tradeid');
-		var puntosC = $(idAlert).attr('data-tradepointsc');	
-		//puntosC=2;	
-		var puntosDelFabricante = puntosFabricanteTotal(fabricanteID);		
-		var puntosEnCarro = puntosEnElCarro();		
-		
-		if(idAlert == 'alertUnidadesProductoPedido'){
-			var cantidad = $('#unidadesProductoCanje2').val();
-		}else{
-			var cantidad = $('#unidadesProductoCanje').val();
-		}
-		if(cantidad == ''){
-			cantidad = 0;
-		}		
-		var cantidadTotal = parseInt(cantidad);
-        var puntos = parseInt(puntosC) * parseInt(cantidadTotal) * parseInt(-1);
-        var puntosQuedan = parseInt(puntosDelFabricante)-parseInt(puntosEnCarro);		
-
-        if(puntosQuedan < 0){
-            var puntosPUEDO = parseInt(puntosQuedan) / (parseInt(puntosC) * parseInt(-1));
-            $('#unidadesProductoCanje').val(puntosPUEDO);
-			$('#unidadesProductoCanje2').val(puntosPUEDO);
-			$('#mensajesInfoCanje').html('No hay puntos suficientes para más unidades.');
-			$('#mensajesInfoCanje2').html('No hay puntos suficientes para más unidades.');			
-        }else{
-            if((parseInt(puntosQuedan) + parseInt(puntos)) < 0){
-                 var puntosPUEDO = parseInt(puntosQuedan) / (parseInt(puntosC));
-                 $('#unidadesProductoCanje').val(parseInt(puntosPUEDO));
-				 $('#mensajesInfoCanje').html('No hay puntos suficientes para más unidades.');
-				 $('#unidadesProductoCanje2').val(parseInt(puntosPUEDO));
-				 $('#mensajesInfoCanje2').html('No hay puntos suficientes para más unidades.');
-            }else{
-                $('#unidadesProductoCanje').val(parseInt(cantidad));
-				$('#unidadesProductoCanje2').val(parseInt(cantidad));
-				$('#mensajesInfoCanje').html('');
-				$('#mensajesInfoCanje2').html('');
-            }
-        }		
-	}
-	
-	function masCanje(idAlert){
-		var fabricanteID = $(idAlert).attr('data-tradeid');
-		var puntosC = $(idAlert).attr('data-tradepointsc');	
-		//puntosC=2;	
-		var puntosDelFabricante = puntosFabricanteTotal(fabricanteID);
-		//puntosDelFabricante = 140;
-		var puntosEnCarro = puntosEnElCarro();		
-		
-		if(idAlert == 'alertUnidadesProductoPedido'){
-			var cantidad = $('#unidadesProductoCanje2').val();
-		}else{
-			var cantidad = $('#unidadesProductoCanje').val();
-		}
-		
-		var cantidadTotal = parseInt(cantidad) + parseInt(1);
-        var puntos = parseInt(puntosC) * parseInt(cantidadTotal) * parseInt(-1);
-        var puntosQuedan = parseInt(puntosDelFabricante)-parseInt(puntosEnCarro);		
-
-        if(puntosQuedan < 0){
-            var puntosPUEDO = parseInt(puntosQuedan) / (parseInt(puntosC) * parseInt(-1));
-            $('#unidadesProductoCanje').val(puntosPUEDO);
-			$('#unidadesProductoCanje2').val(puntosPUEDO);
-			$('#mensajesInfoCanje').html('No hay puntos suficientes para más unidades.');
-			$('#mensajesInfoCanje2').html('No hay puntos suficientes para más unidades.');			
-        }else{
-            if((parseInt(puntosQuedan) + parseInt(puntos)) < 0){
-                 var puntosPUEDO = parseInt(puntosQuedan) / (parseInt(puntosC));
-                 $('#unidadesProductoCanje').val(parseInt(puntosPUEDO));
-				 $('#mensajesInfoCanje').html('No hay puntos suficientes para más unidades.');
-				 $('#unidadesProductoCanje2').val(parseInt(puntosPUEDO));
-				 $('#mensajesInfoCanje2').html('No hay puntos suficientes para más unidades.');
-            }else{
-                $('#unidadesProductoCanje').val(parseInt(cantidad)+parseInt(1));
-				$('#unidadesProductoCanje2').val(parseInt(cantidad)+parseInt(1));
-				$('#mensajesInfoCanje').html('');
-				$('#mensajesInfoCanje2').html('');
-            }
-        }		
-	}
-	
-	function existe(id){		
-		var pedido = $('#listaPedido li');
-		var existe = false;
-		pedido.each(function(index, element) {
-            if(id+'PEDIDO' == element.id){
-				existe = true;
-				return existe;
-			}			
-        });
-		return existe;
-	}
-	
-	function aceptarUnidades(idAlert){
-		if(idAlert == '#alertUnidadesProductoPedido'){
-			var unidades = $('#unidadesProducto2').val();
-			var unidadesCanje = $('#unidadesProductoCanje2').val();
-		}else{
-			var unidades = $('#unidadesProducto').val();
-			var unidadesCanje = $('#unidadesProductoCanje').val()
-		}
-		
-		var id = $(idAlert).attr('data-id');
-		//Comprobamos si existe en el pedido
-		var esta = existe(id);
-		if(!esta){
-			var name = $(idAlert).attr('data-name');
-			var description = $(idAlert).attr('data-description');
-			var bottling = $(idAlert).attr('data-bottling');
-			var current_price = $(idAlert).attr('data-current_price');
-			var tradeId = $(idAlert).attr('data-tradeId');
-			var tradeName = $(idAlert).attr('data-tradeName');
-			var tradePointsA = $(idAlert).attr('data-tradePointsA');
-			var tradePointsC = $(idAlert).attr('data-tradePointsC');
-			var tradeIdAcuerdo = $(idAlert).attr('data-tradeIdAcuerdo');
-			var image = $(idAlert).attr('data-image');
-			var precioIVA = $(idAlert).attr('data-precioIVA');
-			
-			var total = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);	
-			var totalIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);					
-			
-			var pedidoHTML = $('#listaPedido').html();
-			if(pedidoHTML.split('PEDIDO').length < 2){
-				pedidoHTML = '';
-			}
-			
-			pedidoHTML += '<li name="productoPedido" id="'+id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="'+unidades+'" data-image="'+image+'" data-id="'+id+'" data-name="'+name+'" data-description="'+description+'" data-bottling="'+bottling+'" data-current_price="'+current_price+'" data-tradeId="'+tradeId+'" data-tradeName="'+tradeName+'" data-tradePointsA="'+tradePointsA+'" data-tradePointsC="'+tradePointsC+'" data-tradeIdAcuerdo="'+tradeIdAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+image+'\',\''+id+'\',\''+name+'\', \''+description+'\', \''+bottling+'\',\''+current_price+'\',\''+tradeId+'\',\''+tradeName+'\',\''+tradePointsA+'\',\''+tradePointsC+'\',\''+tradeIdAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+description+'</span><span>'+bottling+'</span></p><p class="ui-li-desc" style=" margin-top:25px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+id+'TOTAL">'+totalIVA+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:<span id="'+id+'undCanjePEDIDO">'+unidadesCanje+'</span></span><span style="margin-left:15px;">A comprar:<span id="'+id+'undCompraPEDIDO">'+unidades+'</span></span><span style="margin-left:15px;"><span>'+precioIVA+'€/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
-			
-			//<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span>
-			$('#listaPedido').html(pedidoHTML);
-			$('#'+id+'undCompra').html(unidades);
-			$('#'+id+'undCanje').html(unidadesCanje);
-			
-			totalizar();
-			
-			$(idAlert).dialog("close");
-		}else{
-			var current_price = $(idAlert).attr('data-current_price');
-			var precioIVA = $(idAlert).attr('data-precioIVA');
-			var total = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);
-			var totalIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);
-			
-			$('#'+id+'PEDIDO').attr('data-unidades',unidades);
-			$('#'+id+'undCompraPEDIDO').html(unidades);
-			$('#'+id+'undCompra').html(unidades);
-			$('#'+id+'TOTAL').html(totalIVA);
-			
-			totalizar();
-			
-			$(idAlert).dialog("close");
-		}	
-	}
-	
-	function totalizar(){
-		var pedido = $('#listaPedido li');
-		var existe = false;
-		var total = 0;
-		var totalIVA = 0;
-		pedido.each(function(index, element) {
-			var id = element.id;
-			var unidades = $('#'+id).attr('data-unidades');
-			var current_price = $('#'+id).attr('data-current_price');
-			var precioIVA = $('#'+id).attr('data-precioIVA');
-			var totalLinea = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);	
-			var totalLineaIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);	
-			total = (parseFloat(total) + parseFloat(totalLinea)).toFixed(2);
-			totalIVA = (parseFloat(totalIVA) + parseFloat(totalLineaIVA)).toFixed(2);
-        });
-		$('#contadorArticulos').html(parseFloat(totalIVA).toFixed(2));
-		$('#contadorPedido').html(parseFloat(totalIVA).toFixed(2));
-	}
-	
-	function mostrarPedido(){
-		//document.location.href = "#pagePedido";
-		$.mobile.changePage( "#pagePedido", { transition: "slide" });
-		setTimeout(function(){
-			$("[name='divP']").removeClass();
-			$("[name='divP']").addClass('ui-btn-inner ui-li');
-			$("[name='productoPedido']").removeClass();
-			$("[name='productoPedido']").addClass('ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c');
-			},100);
-	}
-	
-	function soloNumeros(id){
-		$(id).keydown(function(event) {
-		if(event.shiftKey)
-		{
-			event.preventDefault();
-		}
-		if (event.keyCode == 46 || event.keyCode == 8){
-		}
-		else {
-			if (event.keyCode < 95) {
-			  if (event.keyCode < 48 || event.keyCode > 57) {
-					event.preventDefault();
-			  }
-			} 
-			else {
-			  if (event.keyCode < 96 || event.keyCode > 105) {
-				  event.preventDefault();
-			  }
-			}
-		  }
+function cargarPuntosFabricantes(){
+	//Puntos fabricantes
+	var datos = "wsPedidos.aspx?ws=getPuntosFabricanteXML&idEstablecimiento="+$('#inputIdEstablecimiento').val();
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var fabricante = '';
+		$.each(dataFinal, function(index, d){
+			//alert(d.idFabricante);
+			fabricante += d.idFabricante+ ';' + d.puntos + ';p;';				
 		});
-	}
+		$('#inputPuntosFabricante').val(fabricante);
+	});
+}
+
+function cargarCategoriasPadre(){
+	<!-- CARGAMOS CATEGORIAS -->
+	$('#listCategorias').html('');
+	var datos = "wsPedidos.aspx?ws=getCategoriasPadreXML"
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var categorias = '';
+		$.each(dataFinal, function(index, d){
+			categorias += '<div id="'+d.id+'CategoriasPadre" onclick="seleccionarCategoria(\''+d.id+'\',\''+d.nombre+'\')" class="ui-collapsible ui-collapsible-inset ui-collapsible-themed-content ui-collapsible-collapsed" data-role="collapsible"><h3 class="ui-collapsible-heading ui-li-heading ui-collapsible-heading-collapsed"><a data-transition=\"slide\" data-theme="c" data-iconpos="left" data-icon="plus" data-wrapperels="span" data-iconshadow="true" data-shadow="false" data-corners="false" href="#" class="ui-collapsible-heading-toggle ui-btn ui-btn-icon-left ui-btn-up-c"><span class="ui-btn-inner"><span class="ui-btn-text">'+d.nombre+'<span class="ui-collapsible-heading-status"> </span></span><span class="ui-icon ui-icon-shadow ui-icon-plus">&nbsp;</span></span></a></h3><div aria-hidden="false" class="ui-collapsible-content ui-body-d ui-collapsible-content-collapsed" id="'+d.id+'CatHija"><ul class="ui-listview" data-divider-theme="d" data-filter-theme="c" data-filter="true" data-role="listview" id="'+d.id+'CatHijaUL"></ul></div></div>';				 
+			 /*categorias += '<li id="'+d.id+'" onclick="seleccionarCategoria(\''+d.id+'\',\''+d.nombre+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a class="ui-link-inherit" href="#">'+d.nombre+'</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';*/
+		});
+		$('#listCategorias').html(categorias);
+	});
+}
 	
-	function cerrarPedido(metodo){
-		if(metodo == 1){
-			//Al proveedor
-			enviarPedido();
-			//document.location.href = "#pageSolicita";
-			$.mobile.changePage( "#pageSolicita", { transition: "slide" });
-		}else{
-			//Borrador
-			enviarPedido();
+function seleccionarCategoria(id, nombre){		
+	$.mobile.showPageLoadingMsg("a", "Cargando...");
+	
+	<!-- CARGAMOS CATEGORIAS HIJO -->
+	var datos = "wsPedidos.aspx?ws=getCategoriasHijoXML&idCategoria="+id
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var categorias = '';
+		$.each(dataFinal, function(index, d){
+			categorias += '<li id="'+d.id+'CatHijaReal" onclick="seleccionarCategoriaHija(\''+id+'\',\''+d.id+'\',\''+d.nombre+'\')" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-c" data-theme="c" data-iconpos="right" data-icon="arrow-r" data-wrapperels="div" data-iconshadow="true" data-shadow="false" data-corners="false"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">'+d.nombre+'</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></div></li>';
+		});
+		$('#'+id+'CatHijaUL').html('');
+		$('#'+id+'CatHijaUL').html(categorias);
+		$('#'+id+'CatHija').removeClass('ui-collapsible-content-collapsed');
+		
+		if(dataFinal.length == 1){
+			seleccionarCategoriaHija(id,dataFinal[0].id,dataFinal[0].nombre);
+		}else if(dataFinal.length == 0){
+			seleccionarCategoriaHija(id,id,nombre);
 		}
-	}
+	});
 	
-	function solicitarYA(){
-		 var fechaSelec = $('#fechaRecepcion').val();
-		// var idSocio = $('#inputSocio').val().split(';')[0];
-		 var idSocio = '99CCFC50-B60E-4EFB-A81D-9234E56580E8';
-		if(fechaSelec == ''){
-			alert('Tienes que seleccionar una fecha para la recepción del pedido.');
-		}else{
-			var datos = "wsPedidos.aspx?ws=solicitarPedidoString&idPedido="+$('#inputPedidoAbierto').val()+"&fechaSeleccionada="+fechaSelec+"&observacionesRecepcion="+$('#instrucciones').val()+"&idSocio="+idSocio;
-			var dataFinal = WSFuncion(datos);
-			dataFinal.success(function (data){
-				if(data.split('#Error;').length == 1){ 
-					//Guardado Correctamente
-					$('#alertDialogInfoText').html('Pedido solicitado correctamente');
-					$('#alertDialogInfo').dialog('open');
-				} else {
-					//Error
-					$('#alertDialogInfoText').html(data.split('#Error;')[1]);
-					$('#alertDialogInfo').dialog('open');
-				}
-			});
-			//document.location.href = "#page";
-			$.mobile.changePage( "#page", { transition: "slide" });
+	//document.location.href ="#pageProductos";
+	$.mobile.changePage( "#pageProductos", { transition: "slide" });
+	$.mobile.hidePageLoadingMsg();
+}
+
+function seleccionarCategoriaHija(idPadre,id,nombre){	
+	$('#infoProductos').css('display','none');	
+	$('#listaProductos').html('');		
+	var datos = "wsPedidos.aspx?ws=getArticulosByCategoriaXML&idCategoria="+id+"&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var productos = '';
+		$.each(dataFinal, function(index, d){
+			productos += '<li id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http://www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px; max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>'+d.pum_price+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+		});
+		if(dataFinal.length == 0){
+			productos = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">No hay articulos para esta categoria</a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>'
 		}
-	}
-	
-	function enviarPedido(){
-		var pedidoTotalCanje = "";
-		var pedidoTotalAcumula = "";
-		var listaPedido = document.getElementById("listaPedido");
-		var filas = listaPedido.getElementsByTagName('li');
-		var canjeActivo = 0;
-		for(var i = 0; i< filas.length; i++){
-			canjeActivo = 0;
-			var id = filas[i].getAttribute('data-id');
-			if($('#'+id+'undCanjePEDIDO').html() != 0){
-				var cantidadCanje = $('#'+id+'undCanjePEDIDO').html();
-				canjeActivo = 1;
+		$('#listaProductos').html(productos);
+	});
+	$( "#panelProductos" ).panel( "close" );
+	cargarCategoriasPadre();		
+}
+
+function buscar(){
+	$('#infoProductos').css('display','none');
+	$('#listaProductos').html('');		
+	var datos = "wsPedidos.aspx?ws=getArticulosByCategoriaXML&idCategoria=0&texto="+$('#buscador').val()+"&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento=63"
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var productos = '';
+		$.each(dataFinal, function(index, d){
+			if($('#'+d.id+'undCompraPEDIDO').html()){
+				//alert('si');
+			}else{
+				//alert('no');
 			}
-			var cantidad = filas[i].getAttribute('data-unidades');
-			var precio = filas[i].getAttribute('data-current_price');
-			var puntos = filas[i].getAttribute('data-tradepointsa');
-			var puntosC = filas[i].getAttribute('data-tradepointsc');
-			var puntosA = filas[i].getAttribute('data-tradepointsa');
-			var fabricante = filas[i].getAttribute('data-tradeid');
-			var acuerdo = filas[i].getAttribute('data-tradeidacuerdo');
-			if(canjeActivo == 1){
-				pedidoTotalCanje = pedidoTotalCanje+id+'/'+cantidadCanje+'/'+fabricante+'/'+acuerdo+'/'+parseFloat(puntos)*parseFloat(cantidadCanje)+';p;';
+			if($('#'+d.id+'undCanjePEDIDO').html()){
+				//alert('si2');
+			}else{
+				//alert('no2');
 			}
-			pedidoTotalAcumula = pedidoTotalAcumula+id+'/'+cantidad+'/'+fabricante+'/'+acuerdo+'/'+puntos+';p;';			        
+			productos += '<li id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http://www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;  max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span>'+d.pum_price+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+		});
+		if(dataFinal.length == 0){
+			productos = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" href="#">No hay articulos para esta categoria</a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>'
 		}
-		var idProveedor = $('#idProveedor').val();
-		var idPedido = $('#inputPedidoAbierto').val();
-		var idEstablecimiento = $('#inputIdEstablecimiento').val();
-		//Mandamos pedidoTotalAcumula, pedidoTotalCanje, idPedido, idProveedor
-		$('#listaPedido').html("");
-		totalizar();		
+		$('#listaProductos').html(productos);
+	});
+	$( "#panelProductos" ).panel( "close" );
+	cargarCategoriasPadre();
+	$('#buscador').val('')	
+}
+
+function misFavoritos(){
+	seleccionaProveedor($('#idProveedor').val(),$('#nombreUndProducto').val());
+	$( "#panelProductos" ).panel( "close" );
+}
+
+function seleccionarProducto(image,id,name,description,bottling,current_price,tradeId,tradeName,tradePointsA,tradePointsC,tradeIdAcuerdo,idAlert,precioIVA){		
+	$('#nombreUndProducto').html(name+'<br />'+description+'   '+bottling);
+	$('#descrpUndProducto').html('Precio: '+parseFloat(precioIVA).toFixed(2)+' €');
+	$('#nombreUndProducto2').html(name+'<br />'+description+'   '+bottling);
+	$('#descrpUndProducto2').html('Precio: '+parseFloat(precioIVA).toFixed(2)+' €');
+	$('#'+idAlert).dialog('open');
+	
+	
+	var antUnidadesCanje = $('#'+id+'undCanje').html();
+	if(antUnidadesCanje == 'undefined'){
+		antUnidadesCanje = $('#'+id+'undCanjePEDIDO').html();
+	}	
+	if(antUnidadesCanje != 0){
+		$('#unidadesProductoCanje').val(antUnidadesCanje);
+		$('#unidadesProductoCanje2').val(antUnidadesCanje);
+		$('#divCanje').css('display','block');
+		$('#divCanje2').css('display','block');
+		$('#onoff').val('on').slider("refresh");
+		$('#onoff2').val('on').slider("refresh");
+	}else{
+		$('#unidadesProductoCanje').val(0);
+		$('#unidadesProductoCanje2').val(0);
+		$('#divCanje').css('display','none');
+		$('#divCanje2').css('display','none');
+		$('#onoff').val('off').slider("refresh");
+		$('#onoff2').val('off').slider("refresh");
+	}
+	//Canje a cero todo
+	$('#mensajesInfoCanje').html('');
+	$('#mensajesInfoCanje2').html('');				
+	
+	var antUnidades = $('#'+id+'undCompra').html();
+	if(antUnidades == 'undefined'){
+		antUnidades = $('#'+id+'undCompraPEDIDO').html();
+	}		
+	if(antUnidades != 0){
+		$('#unidadesProducto').val(antUnidades);
+		$('#unidadesProducto2').val(antUnidades);
+	}else{
+		$('#unidadesProducto').val(1);
+		$('#unidadesProducto2').val(1);
+	}
+	
+	soloNumeros("#unidadesProducto");
+	soloNumeros("#unidadesProducto2");
+	
+	$('#'+idAlert).attr('data-image', image);
+	$('#'+idAlert).attr('data-id', id);
+	$('#'+idAlert).attr('data-name', name);
+	$('#'+idAlert).attr('data-description', description);
+	$('#'+idAlert).attr('data-bottling', bottling);
+	$('#'+idAlert).attr('data-current_price', current_price);
+	$('#'+idAlert).attr('data-tradeId', tradeId);
+	$('#'+idAlert).attr('data-tradeName', tradeName);
+	$('#'+idAlert).attr('data-tradePointsA', tradePointsA);
+	$('#'+idAlert).attr('data-tradePointsC', tradePointsC);
+	$('#'+idAlert).attr('data-tradeIdAcuerdo', tradeIdAcuerdo);
+	$('#'+idAlert).attr('data-precioIVA', precioIVA);
+
+	if(tradePointsC == ''){
+		$('#onoff').slider( "disable" );
+		$('#onoff2').slider( "disable" );
+		$('#mensajesInfoCanjeAntes').html('Este producto no puede canjearse.');
+		$('#mensajesInfoCanjeAntes2').html('Este producto no puede canjearse.');
+	}else{
+		$('#onoff').slider( "enable" );
+		$('#onoff2').slider( "enable" );
+		$('#mensajesInfoCanjeAntes').html('');
+		$('#mensajesInfoCanjeAntes2').html('');
+	}
+}
+
+function menos(){
+	var cantidad = $('#unidadesProducto').val();
+	var cantidad2 = $('#unidadesProducto2').val();
+	if(cantidad - 1 >= 0){		
+		$('#unidadesProducto').val(cantidad-1);
+	}
+	if(cantidad2 - 1 >= 0){		
+		$('#unidadesProducto2').val(cantidad2-1);
+	}
+}
+
+function mas(){
+	var cantidad = $('#unidadesProducto').val();
+	$('#unidadesProducto').val(parseInt(cantidad)+1);
+	var cantidad2 = $('#unidadesProducto2').val();
+	$('#unidadesProducto2').val(parseInt(cantidad)+1);
+}
+
+function menosCanje(){
+	var cantidad = $('#unidadesProductoCanje').val();
+	var cantidad2 = $('#unidadesProductoCanje2').val();
+	if(cantidad - 1 >= 0){		
+		$('#unidadesProductoCanje').val(cantidad-1);
+	}
+	if(cantidad2 - 1 >= 0){		
+		$('#unidadesProductoCanje2').val(cantidad2-1);
+	}
+	$('#mensajesInfoCanje').html('');
+}
+
+function puntosFabricanteTotal(idFabricante){
+	var total = $('#inputPuntosFabricante').val();
+	var puntosFabricantes = total.split(';p;');
+	for(var i = 0 ; i < puntosFabricantes.length; i++){
+		datosFabricante = puntosFabricantes[i].split(';');
+		if(datosFabricante[0] == idFabricante){
+			return datosFabricante[1];
+			break;
+		}
+	}
+	return 0;
+ }
+
+function unidadesManual(idAlert){
+	var fabricanteID = $(idAlert).attr('data-tradeid');
+	var puntosC = $(idAlert).attr('data-tradepointsc');	
+	//puntosC=2;	
+	var puntosDelFabricante = puntosFabricanteTotal(fabricanteID);		
+	var puntosEnCarro = puntosEnElCarro();		
+	
+	if(idAlert == 'alertUnidadesProductoPedido'){
+		var cantidad = $('#unidadesProductoCanje2').val();
+	}else{
+		var cantidad = $('#unidadesProductoCanje').val();
+	}
+	if(cantidad == ''){
+		cantidad = 0;
+	}		
+	var cantidadTotal = parseInt(cantidad);
+	var puntos = parseInt(puntosC) * parseInt(cantidadTotal) * parseInt(-1);
+	var puntosQuedan = parseInt(puntosDelFabricante)-parseInt(puntosEnCarro);		
+
+	if(puntosQuedan < 0){
+		var puntosPUEDO = parseInt(puntosQuedan) / (parseInt(puntosC) * parseInt(-1));
+		$('#unidadesProductoCanje').val(puntosPUEDO);
+		$('#unidadesProductoCanje2').val(puntosPUEDO);
+		$('#mensajesInfoCanje').html('No hay puntos suficientes para más unidades.');
+		$('#mensajesInfoCanje2').html('No hay puntos suficientes para más unidades.');			
+	}else{
+		if((parseInt(puntosQuedan) + parseInt(puntos)) < 0){
+			 var puntosPUEDO = parseInt(puntosQuedan) / (parseInt(puntosC));
+			 $('#unidadesProductoCanje').val(parseInt(puntosPUEDO));
+			 $('#mensajesInfoCanje').html('No hay puntos suficientes para más unidades.');
+			 $('#unidadesProductoCanje2').val(parseInt(puntosPUEDO));
+			 $('#mensajesInfoCanje2').html('No hay puntos suficientes para más unidades.');
+		}else{
+			$('#unidadesProductoCanje').val(parseInt(cantidad));
+			$('#unidadesProductoCanje2').val(parseInt(cantidad));
+			$('#mensajesInfoCanje').html('');
+			$('#mensajesInfoCanje2').html('');
+		}
+	}		
+}
+
+function masCanje(idAlert){
+	var fabricanteID = $(idAlert).attr('data-tradeid');
+	var puntosC = $(idAlert).attr('data-tradepointsc');	
+	//puntosC=2;	
+	var puntosDelFabricante = puntosFabricanteTotal(fabricanteID);
+	//puntosDelFabricante = 140;
+	var puntosEnCarro = puntosEnElCarro();		
+	
+	if(idAlert == 'alertUnidadesProductoPedido'){
+		var cantidad = $('#unidadesProductoCanje2').val();
+	}else{
+		var cantidad = $('#unidadesProductoCanje').val();
+	}
+	
+	var cantidadTotal = parseInt(cantidad) + parseInt(1);
+	var puntos = parseInt(puntosC) * parseInt(cantidadTotal) * parseInt(-1);
+	var puntosQuedan = parseInt(puntosDelFabricante)-parseInt(puntosEnCarro);		
+
+	if(puntosQuedan < 0){
+		var puntosPUEDO = parseInt(puntosQuedan) / (parseInt(puntosC) * parseInt(-1));
+		$('#unidadesProductoCanje').val(puntosPUEDO);
+		$('#unidadesProductoCanje2').val(puntosPUEDO);
+		$('#mensajesInfoCanje').html('No hay puntos suficientes para más unidades.');
+		$('#mensajesInfoCanje2').html('No hay puntos suficientes para más unidades.');			
+	}else{
+		if((parseInt(puntosQuedan) + parseInt(puntos)) < 0){
+			 var puntosPUEDO = parseInt(puntosQuedan) / (parseInt(puntosC));
+			 $('#unidadesProductoCanje').val(parseInt(puntosPUEDO));
+			 $('#mensajesInfoCanje').html('No hay puntos suficientes para más unidades.');
+			 $('#unidadesProductoCanje2').val(parseInt(puntosPUEDO));
+			 $('#mensajesInfoCanje2').html('No hay puntos suficientes para más unidades.');
+		}else{
+			$('#unidadesProductoCanje').val(parseInt(cantidad)+parseInt(1));
+			$('#unidadesProductoCanje2').val(parseInt(cantidad)+parseInt(1));
+			$('#mensajesInfoCanje').html('');
+			$('#mensajesInfoCanje2').html('');
+		}
+	}		
+}
+
+function existe(id){		
+	var pedido = $('#listaPedido li');
+	var existe = false;
+	pedido.each(function(index, element) {
+		if(id+'PEDIDO' == element.id){
+			existe = true;
+			return existe;
+		}			
+	});
+	return existe;
+}
+
+function aceptarUnidades(idAlert){
+	if(idAlert == '#alertUnidadesProductoPedido'){
+		var unidades = $('#unidadesProducto2').val();
+		var unidadesCanje = $('#unidadesProductoCanje2').val();
+	}else{
+		var unidades = $('#unidadesProducto').val();
+		var unidadesCanje = $('#unidadesProductoCanje').val()
+	}
+	
+	var id = $(idAlert).attr('data-id');
+	//Comprobamos si existe en el pedido
+	var esta = existe(id);
+	if(!esta){
+		var name = $(idAlert).attr('data-name');
+		var description = $(idAlert).attr('data-description');
+		var bottling = $(idAlert).attr('data-bottling');
+		var current_price = $(idAlert).attr('data-current_price');
+		var tradeId = $(idAlert).attr('data-tradeId');
+		var tradeName = $(idAlert).attr('data-tradeName');
+		var tradePointsA = $(idAlert).attr('data-tradePointsA');
+		var tradePointsC = $(idAlert).attr('data-tradePointsC');
+		var tradeIdAcuerdo = $(idAlert).attr('data-tradeIdAcuerdo');
+		var image = $(idAlert).attr('data-image');
+		var precioIVA = $(idAlert).attr('data-precioIVA');
 		
-		//LLAMAR AL WEBSERVICE PARA ACTUALIZAR LOS PRODUCTOS A CERO
+		var total = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);	
+		var totalIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);					
 		
-		//alert(pedidoTotalAcumula+'   /   '+pedidoTotalCanje);
+		var pedidoHTML = $('#listaPedido').html();
+		if(pedidoHTML.split('PEDIDO').length < 2){
+			pedidoHTML = '';
+		}
 		
-		var datos = "wsPedidos.aspx?ws=crearPedidoString&articulosAcumula="+pedidoTotalAcumula+"&articulosCanje="+pedidoTotalCanje+"&idPedido="+idPedido+"&idProveedor="+idProveedor+"&idEstablecimiento="+idEstablecimiento;
+		pedidoHTML += '<li name="productoPedido" id="'+id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="'+unidades+'" data-image="'+image+'" data-id="'+id+'" data-name="'+name+'" data-description="'+description+'" data-bottling="'+bottling+'" data-current_price="'+current_price+'" data-tradeId="'+tradeId+'" data-tradeName="'+tradeName+'" data-tradePointsA="'+tradePointsA+'" data-tradePointsC="'+tradePointsC+'" data-tradeIdAcuerdo="'+tradeIdAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+image+'\',\''+id+'\',\''+name+'\', \''+description+'\', \''+bottling+'\',\''+current_price+'\',\''+tradeId+'\',\''+tradeName+'\',\''+tradePointsA+'\',\''+tradePointsC+'\',\''+tradeIdAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http://www.drinkbo.com/'+image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+description+'</span><span>'+bottling+'</span></p><p class="ui-li-desc" style=" margin-top:25px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+id+'TOTAL">'+totalIVA+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:<span id="'+id+'undCanjePEDIDO">'+unidadesCanje+'</span></span><span style="margin-left:15px;">A comprar:<span id="'+id+'undCompraPEDIDO">'+unidades+'</span></span><span style="margin-left:15px;"><span>'+precioIVA+'€/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+		
+		//<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span>
+		$('#listaPedido').html(pedidoHTML);
+		$('#'+id+'undCompra').html(unidades);
+		$('#'+id+'undCanje').html(unidadesCanje);
+		
+		totalizar();
+		
+		$(idAlert).dialog("close");
+	}else{
+		var current_price = $(idAlert).attr('data-current_price');
+		var precioIVA = $(idAlert).attr('data-precioIVA');
+		var total = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);
+		var totalIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);
+		
+		$('#'+id+'PEDIDO').attr('data-unidades',unidades);
+		$('#'+id+'undCompraPEDIDO').html(unidades);
+		$('#'+id+'undCompra').html(unidades);
+		$('#'+id+'TOTAL').html(totalIVA);
+		
+		totalizar();
+		
+		$(idAlert).dialog("close");
+	}	
+}
+
+function totalizar(){
+	var pedido = $('#listaPedido li');
+	var existe = false;
+	var total = 0;
+	var totalIVA = 0;
+	pedido.each(function(index, element) {
+		var id = element.id;
+		var unidades = $('#'+id).attr('data-unidades');
+		var current_price = $('#'+id).attr('data-current_price');
+		var precioIVA = $('#'+id).attr('data-precioIVA');
+		var totalLinea = (parseFloat(current_price) * parseFloat(unidades)).toFixed(2);	
+		var totalLineaIVA = (parseFloat(precioIVA) * parseFloat(unidades)).toFixed(2);	
+		total = (parseFloat(total) + parseFloat(totalLinea)).toFixed(2);
+		totalIVA = (parseFloat(totalIVA) + parseFloat(totalLineaIVA)).toFixed(2);
+	});
+	$('#contadorArticulos').html(parseFloat(totalIVA).toFixed(2));
+	$('#contadorPedido').html(parseFloat(totalIVA).toFixed(2));
+}
+
+function mostrarPedido(){
+	//document.location.href = "#pagePedido";
+	$.mobile.changePage( "#pagePedido", { transition: "slide" });
+	setTimeout(function(){
+		$("[name='divP']").removeClass();
+		$("[name='divP']").addClass('ui-btn-inner ui-li');
+		$("[name='productoPedido']").removeClass();
+		$("[name='productoPedido']").addClass('ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c');
+		},100);
+}
+
+function soloNumeros(id){
+	$(id).keydown(function(event) {
+	if(event.shiftKey)
+	{
+		event.preventDefault();
+	}
+	if (event.keyCode == 46 || event.keyCode == 8){
+	}
+	else {
+		if (event.keyCode < 95) {
+		  if (event.keyCode < 48 || event.keyCode > 57) {
+				event.preventDefault();
+		  }
+		} 
+		else {
+		  if (event.keyCode < 96 || event.keyCode > 105) {
+			  event.preventDefault();
+		  }
+		}
+	  }
+	});
+}
+
+function cerrarPedido(metodo){
+	if(metodo == 1){
+		//Al proveedor
+		enviarPedido();
+		//document.location.href = "#pageSolicita";
+		$.mobile.changePage( "#pageSolicita", { transition: "slide" });
+	}else{
+		//Borrador
+		enviarPedido();
+	}
+}
+
+function solicitarYA(){
+	 var fechaSelec = $('#fechaRecepcion').val();
+	// var idSocio = $('#inputSocio').val().split(';')[0];
+	 var idSocio = '99CCFC50-B60E-4EFB-A81D-9234E56580E8';
+	if(fechaSelec == ''){
+		alert('Tienes que seleccionar una fecha para la recepción del pedido.');
+	}else{
+		var datos = "wsPedidos.aspx?ws=solicitarPedidoString&idPedido="+$('#inputPedidoAbierto').val()+"&fechaSeleccionada="+fechaSelec+"&observacionesRecepcion="+$('#instrucciones').val()+"&idSocio="+idSocio;
 		var dataFinal = WSFuncion(datos);
 		dataFinal.success(function (data){
-			if(data.split('#Error;').length == 1){
+			if(data.split('#Error;').length == 1){ 
 				//Guardado Correctamente
-				$('#alertDialogInfoText').html('Pedido guardado como borrador correctamente');
+				$('#alertDialogInfoText').html('Pedido solicitado correctamente');
 				$('#alertDialogInfo').dialog('open');
-				$('#inputPedidoAbierto').val(data);
 			} else {
 				//Error
 				$('#alertDialogInfoText').html(data.split('#Error;')[1]);
@@ -1383,192 +1329,252 @@ function atrasPedido(){
 		});
 		//document.location.href = "#page";
 		$.mobile.changePage( "#page", { transition: "slide" });
-	 }
-	
-	function borrarProducto(){
-		var idLI = $('#alertUnidadesProductoPedido').attr('data-id');
-		$('#'+idLI+'PEDIDO').remove();
-		$('#alertUnidadesProductoPedido').dialog('close');
-		totalizar();
 	}
-	
-	function solicitarPedido(){
-		//document.location.href = "#pageSolicita";
-		$.mobile.changePage( "#pageSolicita", { transition: "slide" });
+}
+
+function enviarPedido(){
+	var pedidoTotalCanje = "";
+	var pedidoTotalAcumula = "";
+	var listaPedido = document.getElementById("listaPedido");
+	var filas = listaPedido.getElementsByTagName('li');
+	var canjeActivo = 0;
+	for(var i = 0; i< filas.length; i++){
+		canjeActivo = 0;
+		var id = filas[i].getAttribute('data-id');
+		if($('#'+id+'undCanjePEDIDO').html() != 0){
+			var cantidadCanje = $('#'+id+'undCanjePEDIDO').html();
+			canjeActivo = 1;
+		}
+		var cantidad = filas[i].getAttribute('data-unidades');
+		var precio = filas[i].getAttribute('data-current_price');
+		var puntos = filas[i].getAttribute('data-tradepointsa');
+		var puntosC = filas[i].getAttribute('data-tradepointsc');
+		var puntosA = filas[i].getAttribute('data-tradepointsa');
+		var fabricante = filas[i].getAttribute('data-tradeid');
+		var acuerdo = filas[i].getAttribute('data-tradeidacuerdo');
+		if(canjeActivo == 1){
+			pedidoTotalCanje = pedidoTotalCanje+id+'/'+cantidadCanje+'/'+fabricante+'/'+acuerdo+'/'+parseFloat(puntos)*parseFloat(cantidadCanje)+';p;';
+		}
+		pedidoTotalAcumula = pedidoTotalAcumula+id+'/'+cantidad+'/'+fabricante+'/'+acuerdo+'/'+puntos+';p;';			        
 	}
-	function cancelarPedido(){
-		//Borrar pedido
-		var datos = "wsPedidos.aspx?ws=eliminarPedidoString&idPedido="+$('#inputPedidoAbierto').val();
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			if(data.split('#Error;').length == 1){
-				//Guardado Correctamente
-				$('#alertDialogInfoText').html('Pedido eliminado correctamente');
-				$('#alertDialogInfo').dialog('open');
-				$('#inputPedidoAbierto').val(data);
-			} else {
-				//Error
-				$('#alertDialogInfoText').html(data.split('#Error;')[1]);
-				$('#alertDialogInfo').dialog('open');
-			}
-			misPedidos();
+	var idProveedor = $('#idProveedor').val();
+	var idPedido = $('#inputPedidoAbierto').val();
+	var idEstablecimiento = $('#inputIdEstablecimiento').val();
+	//Mandamos pedidoTotalAcumula, pedidoTotalCanje, idPedido, idProveedor
+	$('#listaPedido').html("");
+	totalizar();		
+	
+	//LLAMAR AL WEBSERVICE PARA ACTUALIZAR LOS PRODUCTOS A CERO
+	
+	//alert(pedidoTotalAcumula+'   /   '+pedidoTotalCanje);
+	
+	var datos = "wsPedidos.aspx?ws=crearPedidoString&articulosAcumula="+pedidoTotalAcumula+"&articulosCanje="+pedidoTotalCanje+"&idPedido="+idPedido+"&idProveedor="+idProveedor+"&idEstablecimiento="+idEstablecimiento;
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		if(data.split('#Error;').length == 1){
+			//Guardado Correctamente
+			$('#alertDialogInfoText').html('Pedido guardado como borrador correctamente');
+			$('#alertDialogInfo').dialog('open');
+			$('#inputPedidoAbierto').val(data);
+		} else {
+			//Error
+			$('#alertDialogInfoText').html(data.split('#Error;')[1]);
+			$('#alertDialogInfo').dialog('open');
+		}
+	});
+	//document.location.href = "#page";
+	$.mobile.changePage( "#page", { transition: "slide" });
+ }
+
+function borrarProducto(){
+	var idLI = $('#alertUnidadesProductoPedido').attr('data-id');
+	$('#'+idLI+'PEDIDO').remove();
+	$('#alertUnidadesProductoPedido').dialog('close');
+	totalizar();
+}
+
+function solicitarPedido(){
+	//document.location.href = "#pageSolicita";
+	$.mobile.changePage( "#pageSolicita", { transition: "slide" });
+}
+function cancelarPedido(){
+	//Borrar pedido
+	var datos = "wsPedidos.aspx?ws=eliminarPedidoString&idPedido="+$('#inputPedidoAbierto').val();
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		if(data.split('#Error;').length == 1){
+			//Guardado Correctamente
+			$('#alertDialogInfoText').html('Pedido eliminado correctamente');
+			$('#alertDialogInfo').dialog('open');
+			$('#inputPedidoAbierto').val(data);
+		} else {
+			//Error
+			$('#alertDialogInfoText').html(data.split('#Error;')[1]);
+			$('#alertDialogInfo').dialog('open');
+		}
+		misPedidos();
+	});
+}
+function aceptarPedido(){
+	//Recibir pedido (ciclo completo)
+	var datos = "wsPedidos.aspx?ws=recibirPedidoString&idPedido="+$('#inputPedidoAbierto').val();
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){			
+		if(data.split('#Error;').length == 1){ 
+			//Guardado Correctamente
+			$('#alertDialogInfoText').html('Pedido recibido correctamente');
+			$('#alertDialogInfo').dialog('open');				
+			$('#inputPedidoAbierto').val(data);
+		} else {
+			//Error
+			$('#alertDialogInfoText').html(data.split('#Error;')[1]);
+			$('#alertDialogInfo').dialog('open');
+		}
+		misPedidos();
+	});		
+}
+function volverProductos(){
+	//document.location.href="#pageProductos";
+	//$.mobile.changePage( "#pageProductos", { transition: "slide" });
+	setTimeout(function(){
+		$("[name='divP']").removeClass();
+		$("[name='divP']").addClass('ui-btn-inner ui-li');
+		$("[name='productoPedido']").removeClass();
+		$("[name='productoPedido']").addClass('ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c');
+	},100);
+}
+
+function modificarPedido(){
+	//Modificar pedido, cargamos articulos pedido anterior
+	//Seleccionamos el proveedor y cargamos los productos		
+	var datos = "wsPedidos.aspx?ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento="+$('#inputIdEstablecimiento').val();
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var productos = '';
+		$.each(dataFinal, function(index, d){
+			productos += '<li name="productoPedido" id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http://www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;  max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style=" max-width: 80% !important; white-space: pre-wrap !important; float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;;"><span>'+parseFloat(d.current_price).toFixed(2)+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
 		});
-	}
-	function aceptarPedido(){
-		//Recibir pedido (ciclo completo)
-		var datos = "wsPedidos.aspx?ws=recibirPedidoString&idPedido="+$('#inputPedidoAbierto').val();
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){			
-			if(data.split('#Error;').length == 1){ 
-				//Guardado Correctamente
-				$('#alertDialogInfoText').html('Pedido recibido correctamente');
-				$('#alertDialogInfo').dialog('open');				
-				$('#inputPedidoAbierto').val(data);
-			} else {
-				//Error
-				$('#alertDialogInfoText').html(data.split('#Error;')[1]);
-				$('#alertDialogInfo').dialog('open');
-			}
-			misPedidos();
-		});		
-	}
-	function volverProductos(){
-		//document.location.href="#pageProductos";
-		//$.mobile.changePage( "#pageProductos", { transition: "slide" });
-		setTimeout(function(){
-			$("[name='divP']").removeClass();
-			$("[name='divP']").addClass('ui-btn-inner ui-li');
-			$("[name='productoPedido']").removeClass();
-			$("[name='productoPedido']").addClass('ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c');
-		},100);
-	}
+		$('#listaProductos').html(productos);			
+	});
 	
-	function modificarPedido(){
-		//Modificar pedido, cargamos articulos pedido anterior
-		//Seleccionamos el proveedor y cargamos los productos		
-		var datos = "wsPedidos.aspx?ws=getArticulosFavoritosXML&idCategoria=0&texto=&idProveedor="+$('#idProveedor').val()+"&idFabricante=0&idArticuloUnidadInventario=0&idEstablecimiento="+$('#inputIdEstablecimiento').val();
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var productos = '';
-			$.each(dataFinal, function(index, d){
-				productos += '<li name="productoPedido" id="'+d.id+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.name+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.current_price+'\',\''+d.tradeId+'\',\''+d.tradeName+'\',\''+d.tradePointsA+'\',\''+d.tradePointsC+'\',\''+d.tradeIdAcuerdo+'\',\'alertUnidadesProducto\',\''+d.pum_price+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 80px;max-width: 80px;  max-height: 98px !important; max-width: 98px !important; height: 98px !important;" alt=""></img><p class="ui-li-desc" style=" max-width: 80% !important; white-space: pre-wrap !important; float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;"><span style="color:#FF6500;">'+d.name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style="margin-top:15px; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;;"><span>'+parseFloat(d.current_price).toFixed(2)+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>Unidades a canjear:<span id="'+d.id+'undCanje">0</span></span><span style="margin-left:15px;">Unidades a comprar:<span id="'+d.id+'undCompra">0</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
-			});
-			$('#listaProductos').html(productos);			
+	$('#infoProductos').css('display','block');
+	
+	var datos = "wsPedidos.aspx?ws=getArticulosPedidoXML&idPedido="+$('#inputPedidoAbierto').val();
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){			
+		dataFinal = $.parseJSON(data);
+		var productos = '';
+		$.each(dataFinal, function(index, d){
+			var unidades = d.numUnidades.split(',')[0];
+			var id = d.idProdProve;
+			var name = d.producto;
+			var description = d.description;
+			var bottling = d.bottling;
+			var current_price = d.precio;
+			var tradeId = d.idFabricante;
+			var tradeName = d.idFabricante;
+			var tradePointsA = d.puntosA;
+			var tradePointsC = d.puntosC;
+			var tradeIdAcuerdo = d.idAcuerdo;
+			var image = d.image;
+			var precioIVA = d.precio;
+			var impuesto = d.impuesto;
+			var impuestoValor = d.impuestoValor;
+			var impuestoAplicado = (parseFloat(current_price) * parseFloat(impuestoValor))/100;
+			precioIVA = parseFloat(precioIVA) + parseFloat(impuestoAplicado);
+			
+			var total = (parseFloat(current_price) * unidades).toFixed(2);	
+			var totalIVA = (parseFloat(precioIVA) * unidades).toFixed(2);	
+			
+			var pedidoHTML = $('#listaPedido').html();
+			if(pedidoHTML.split('PEDIDO').length < 2){
+				pedidoHTML = '';
+			}			
+			pedidoHTML += '<li name="productoPedido" id="'+id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="'+unidades+'" data-image="'+image+'" data-id="'+id+'" data-name="'+name+'" data-description="'+description+'" data-bottling="'+bottling+'" data-current_price="'+current_price+'" data-tradeId="'+tradeId+'" data-tradeName="'+tradeName+'" data-tradePointsA="'+tradePointsA+'" data-tradePointsC="'+tradePointsC+'" data-tradeIdAcuerdo="'+tradeIdAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+image+'\',\''+id+'\',\''+name+'\', \''+description+'\', \''+bottling+'\',\''+current_price+'\',\''+tradeId+'\',\''+tradeName+'\',\''+tradePointsA+'\',\''+tradePointsC+'\',\''+tradeIdAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http://www.drinkbo.com/'+image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+description+'</span><span>'+bottling+'</span></p><p class="ui-li-desc" style=" margin-top:0px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+id+'TOTAL">'+totalIVA+'</span>€<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span></p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:<span id="'+id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">A comprar:<span id="'+id+'undCompraPEDIDO">'+unidades+'</span></span><span style="margin-left:15px;"><span>'+current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
+			
+			$('#listaPedido').html(pedidoHTML);
+			$('#'+id+'undCompra').html(unidades);
+			$('#'+id+'undCompraPEDIDO').html(unidades);
+			$('#unidadesProducto2').val(unidades)
+			$('#unidadesProducto').val(unidades)
+			
+			totalizar();
 		});
-		
-		$('#infoProductos').css('display','block');
-		
-		var datos = "wsPedidos.aspx?ws=getArticulosPedidoXML&idPedido="+$('#inputPedidoAbierto').val();
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){			
-			dataFinal = $.parseJSON(data);
-			var productos = '';
-			$.each(dataFinal, function(index, d){
-				var unidades = d.numUnidades.split(',')[0];
-				var id = d.idProdProve;
-				var name = d.producto;
-				var description = d.description;
-				var bottling = d.bottling;
-				var current_price = d.precio;
-				var tradeId = d.idFabricante;
-				var tradeName = d.idFabricante;
-				var tradePointsA = d.puntosA;
-				var tradePointsC = d.puntosC;
-				var tradeIdAcuerdo = d.idAcuerdo;
-				var image = d.image;
-				var precioIVA = d.precio;
+	});
+	//document.location.href = "#pagePedido";
+	$.mobile.changePage( "#pagePedido", { transition: "slide" });
+	var datos = "wsPedidos.aspx?ws=getArticulosPedidoCanjeXML&idPedido="+$('#inputPedidoAbierto').val();
+	var dataFinal = WSFuncion(datos);
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		var pedidoHTML = $('#listaPedido').html();
+		$.each(dataFinal, function(index, d){
+			if(existe(d.id)){
+				//Si existe, solo modificamos datos de CANJE
+				$('#'+d.id+'undCanjePEDIDO').html(d.unidades);
+				$('#'+d.id+'undCanje').html(d.unidades);
+			}else{
 				var impuesto = d.impuesto;
 				var impuestoValor = d.impuestoValor;
-				var impuestoAplicado = (parseFloat(current_price) * parseFloat(impuestoValor))/100;
+				var impuestoAplicado = (parseFloat(d.precio) * parseFloat(impuestoValor))/100;
+				var precioIVA = d.precio;
 				precioIVA = parseFloat(precioIVA) + parseFloat(impuestoAplicado);
-				
-				var total = (parseFloat(current_price) * unidades).toFixed(2);	
-				var totalIVA = (parseFloat(precioIVA) * unidades).toFixed(2);	
-				
-				var pedidoHTML = $('#listaPedido').html();
-				if(pedidoHTML.split('PEDIDO').length < 2){
-					pedidoHTML = '';
-				}			
-				pedidoHTML += '<li name="productoPedido" id="'+id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="'+unidades+'" data-image="'+image+'" data-id="'+id+'" data-name="'+name+'" data-description="'+description+'" data-bottling="'+bottling+'" data-current_price="'+current_price+'" data-tradeId="'+tradeId+'" data-tradeName="'+tradeName+'" data-tradePointsA="'+tradePointsA+'" data-tradePointsC="'+tradePointsC+'" data-tradeIdAcuerdo="'+tradeIdAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+image+'\',\''+id+'\',\''+name+'\', \''+description+'\', \''+bottling+'\',\''+current_price+'\',\''+tradeId+'\',\''+tradeName+'\',\''+tradePointsA+'\',\''+tradePointsC+'\',\''+tradeIdAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+name+'</span><br /><span style="font-weight:500; margin-right:10px;">'+description+'</span><span>'+bottling+'</span></p><p class="ui-li-desc" style=" margin-top:0px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+id+'TOTAL">'+totalIVA+'</span>€<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span></p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:<span id="'+id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">A comprar:<span id="'+id+'undCompraPEDIDO">'+unidades+'</span></span><span style="margin-left:15px;"><span>'+current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
-				
-				$('#listaPedido').html(pedidoHTML);
-				$('#'+id+'undCompra').html(unidades);
-				$('#'+id+'undCompraPEDIDO').html(unidades);
-				$('#unidadesProducto2').val(unidades)
-				$('#unidadesProducto').val(unidades)
-				
-				totalizar();
-			});
-		});
-		//document.location.href = "#pagePedido";
-		$.mobile.changePage( "#pagePedido", { transition: "slide" });
-		var datos = "wsPedidos.aspx?ws=getArticulosPedidoCanjeXML&idPedido="+$('#inputPedidoAbierto').val();
-		var dataFinal = WSFuncion(datos);
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			var pedidoHTML = $('#listaPedido').html();
-			$.each(dataFinal, function(index, d){
-				if(existe(d.id)){
-					//Si existe, solo modificamos datos de CANJE
-					$('#'+d.id+'undCanjePEDIDO').html(d.unidades);
-					$('#'+d.id+'undCanje').html(d.unidades);
-				}else{
-					var impuesto = d.impuesto;
-					var impuestoValor = d.impuestoValor;
-					var impuestoAplicado = (parseFloat(d.precio) * parseFloat(impuestoValor))/100;
-					var precioIVA = d.precio;
-					precioIVA = parseFloat(precioIVA) + parseFloat(impuestoAplicado);
-					var total = (parseFloat(current_price) * unidades).toFixed(2);
-					var totalIVA = (parseFloat(precioIVA) * unidades).toFixed(2);					
-					//No existe, añadimos producto entero con CANJE
-					pedidoHTML += '<li name="productoPedido" id="'+d.id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="0" data-image="'+d.image+'" data-id="'+d.id+'" data-name="'+d.articulo+'" data-description="'+d.description+'" data-bottling="'+d.bottling+'" data-current_price="'+d.precio+'" data-tradeId="'+d.idFabricante+'" data-tradeName="'+d.idFabricante+'" data-tradePointsA="'+d.puntosA+'" data-tradePointsC="'+d.puntosC+'" data-tradeIdAcuerdo="'+d.idAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.articulo+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.precio+'\',\''+d.idFabricante+'\',\''+d.idFabricante+'\',\''+d.puntosA+'\',\''+d.puntosC+'\',\''+d.idAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http:/www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+d.articulo+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style=" margin-top:25px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+d.id+'TOTAL">'+totalIVA+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:'+d.unidades+'<span id="'+d.id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">A comprar:<span id="'+d.id+'undCompraPEDIDO">0</span></span><span style="margin-left:15px;"><span>'+d.current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
-				}
-			});
-		});
-		//<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span>
-	}
-	
-	function puntosEnElCarro(){
-		var pedido = $('#listaPedido li');	
-		var puntosCanjeTotal = 0;	
-		pedido.each(function(index, element) {
-			var id = element.id.split('PEDIDOS')[0];
-			var unidadesCanje = $('#'+id+'undCanjePEDIDO').val();
-			if(unidadesCanje == 0){
-				//Sin unidades de canje
-			}else{
-				//Con unidades de canje
-				var puntosCanje = $('#'+element.id).attr('data-tradepointsc');
-				if(puntosCanje == ''){
-					//Sin puntos de canje
-				}else{
-					puntosCanjeTotal = parseInt(puntosCanjeTotal) + (parseInt(puntosCanje) * parseInt(unidadesCanje));
-				}
+				var total = (parseFloat(current_price) * unidades).toFixed(2);
+				var totalIVA = (parseFloat(precioIVA) * unidades).toFixed(2);					
+				//No existe, añadimos producto entero con CANJE
+				pedidoHTML += '<li name="productoPedido" id="'+d.id+'PEDIDO" data-precioIVA="'+precioIVA+'" data-unidades="0" data-image="'+d.image+'" data-id="'+d.id+'" data-name="'+d.articulo+'" data-description="'+d.description+'" data-bottling="'+d.bottling+'" data-current_price="'+d.precio+'" data-tradeId="'+d.idFabricante+'" data-tradeName="'+d.idFabricante+'" data-tradePointsA="'+d.puntosA+'" data-tradePointsC="'+d.puntosC+'" data-tradeIdAcuerdo="'+d.idAcuerdo+'" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-first-child ui-last-child ui-btn-up-c" data-icon="plus" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-iconpos="right" data-theme="c"><div name="divP" class="ui-btn-inner ui-li"><div class="ui-btn-text"><a data-transition=\"slide\" class="ui-link-inherit" onclick="seleccionarProducto(\''+d.image+'\',\''+d.id+'\',\''+d.articulo+'\', \''+d.description+'\', \''+d.bottling+'\',\''+d.precio+'\',\''+d.idFabricante+'\',\''+d.idFabricante+'\',\''+d.puntosA+'\',\''+d.puntosC+'\',\''+d.idAcuerdo+'\',\'alertUnidadesProductoPedido\',\''+precioIVA+'\');" href="#" style="height:77px;"><img class="ui-li-thumb" src="http://www.drinkbo.com/'+d.image+'" style="position: absolute;left: 1px;top: 0px;max-height: 98px;max-width: 98px; height:98px;" alt=""></img><p class="ui-li-desc" style="float:left; margin-left:-30px; margin-top: 5px; font-size: 15px; margin-bottom:0px; font-weight:bold;  max-width: 80% !important; white-space: pre-wrap !important;"><span style="color:#FF6500;">'+d.articulo+'</span><br /><span style="font-weight:500; margin-right:10px;">'+d.description+'</span><span>'+d.bottling+'</span></p><p class="ui-li-desc" style=" margin-top:25px; text-align:center; margin-bottom:0px; font-size:22px; color:#FF6500; font-weight:bold; float:right;"><span id="'+d.id+'TOTAL">'+totalIVA+'</span>€</p><div style="clear:both;"></div><p class="ui-li-desc" style=" margin-top: 5px; margin-left:-30px; float: left; color:#0070C2; font-weight:bold;"><span>A canjear:'+d.unidades+'<span id="'+d.id+'undCanjePEDIDO">0</span></span><span style="margin-left:15px;">A comprar:<span id="'+d.id+'undCompraPEDIDO">0</span></span><span style="margin-left:15px;"><span>'+d.current_price+'/Und</span></span></p></a> </div><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></div></li>';
 			}
-        });	
-		return puntosCanjeTotal;	
-	}
-	
-	function cargarMisPuntos(){
-		var datos = "wsPedidos.aspx?ws=getPuntosFabricanteXML&idEstablecimiento="+$('#inputIdEstablecimiento').val();
-		var dataFinal = WSFuncion(datos);
-		var puntos = '';
-		dataFinal.success(function (data){
-			dataFinal = $.parseJSON(data);
-			$.each(dataFinal, function(index, d){
-					puntos += '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-count ui-first-child ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"> <div class="ui-btn-text"> <a data-transition=\"slide\" class="ui-link-inherit" data-inline="true" data-transition="slide" href="#fabricante1">'+d.nombre+' <span class="ui-li-count ui-btn-up-c ui-btn-corner-all">'+d.puntos+' puntos</span>   </a>    </div>   <span class="ui-icon ui-icon-arrow-r ui-icon-shadow">  </span> </div></li>';
-			});
-			$('#listPuntos').html(puntos);
 		});
-		if(puntos == ''){
-			$('#mensajeMisPuntos').html('No tienes puntos de ningún fabricante para canjear por productos, para conseguir puntos tienes que hacer nuevos pedidos. <a data-transition=\"slide\" id="botonModificarPedido" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-left ui-btn-up-b" data-inline="true" data-iconpos="left" data-icon="star" data-role="button" style="margin-left: 0px; display: block; width: 200px;" onclick="proveedores();" data-theme="b" href="#" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span"><span class="ui-btn-inner"><span class="ui-btn-text">Pedido nuevo</span><span class="ui-icon ui-icon-star ui-icon-shadow"></span></span></a>');
+	});
+	//<br /><span style="font-size:15px; color:#0070CC;"> S/I: '+total+' €</span>
+}
+
+function puntosEnElCarro(){
+	var pedido = $('#listaPedido li');	
+	var puntosCanjeTotal = 0;	
+	pedido.each(function(index, element) {
+		var id = element.id.split('PEDIDOS')[0];
+		var unidadesCanje = $('#'+id+'undCanjePEDIDO').val();
+		if(unidadesCanje == 0){
+			//Sin unidades de canje
 		}else{
-			$('#mensajeMisPuntos').html('Recuerda que con estos puntos puedes adquirir productos en tu proximo pedido.');
+			//Con unidades de canje
+			var puntosCanje = $('#'+element.id).attr('data-tradepointsc');
+			if(puntosCanje == ''){
+				//Sin puntos de canje
+			}else{
+				puntosCanjeTotal = parseInt(puntosCanjeTotal) + (parseInt(puntosCanje) * parseInt(unidadesCanje));
+			}
 		}
-		//document.location.href = "#pagePuntos";
-		$.mobile.changePage( "#pagePuntos", { transition: "slide" });
+	});	
+	return puntosCanjeTotal;	
+}
+
+function cargarMisPuntos(){
+	var datos = "wsPedidos.aspx?ws=getPuntosFabricanteXML&idEstablecimiento="+$('#inputIdEstablecimiento').val();
+	var dataFinal = WSFuncion(datos);
+	var puntos = '';
+	dataFinal.success(function (data){
+		dataFinal = $.parseJSON(data);
+		$.each(dataFinal, function(index, d){
+				puntos += '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-count ui-first-child ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li"> <div class="ui-btn-text"> <a data-transition=\"slide\" class="ui-link-inherit" data-inline="true" data-transition="slide" href="#fabricante1">'+d.nombre+' <span class="ui-li-count ui-btn-up-c ui-btn-corner-all">'+d.puntos+' puntos</span>   </a>    </div>   <span class="ui-icon ui-icon-arrow-r ui-icon-shadow">  </span> </div></li>';
+		});
+		$('#listPuntos').html(puntos);
+	});
+	if(puntos == ''){
+		$('#mensajeMisPuntos').html('No tienes puntos de ningún fabricante para canjear por productos, para conseguir puntos tienes que hacer nuevos pedidos. <a data-transition=\"slide\" id="botonModificarPedido" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-left ui-btn-up-b" data-inline="true" data-iconpos="left" data-icon="star" data-role="button" style="margin-left: 0px; display: block; width: 200px;" onclick="proveedores();" data-theme="b" href="#" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span"><span class="ui-btn-inner"><span class="ui-btn-text">Pedido nuevo</span><span class="ui-icon ui-icon-star ui-icon-shadow"></span></span></a>');
+	}else{
+		$('#mensajeMisPuntos').html('Recuerda que con estos puntos puedes adquirir productos en tu proximo pedido.');
 	}
+	//document.location.href = "#pagePuntos";
+	$.mobile.changePage( "#pagePuntos", { transition: "slide" });
+}
+
+function compartir(){
+	alert('AA');
+}
+
 </script>
 
 <style>
@@ -1732,7 +1738,7 @@ function atrasPedido(){
 <div data-role="page" class="pagina" data-position="fixed" id="pageLogueo">	
 	<div data-role="content" style="width: 100%; padding: 0px">
     	<div style="text-align:center; margin-top:5%;">
-        	<img alt="" style="width:70%;  max-height:500px; max-width:500px;" src="img/logoBL.jpg" />
+        	<img alt="" style="width:100%;  max-height:500px; max-width:500px;" src="img/logoBL.jpg" />
     	</div>
         <div style="width: 100%; padding-bottom: 15px;">
             <div style="width:70%;margin: 0px auto; padding-top: 15px; text-align:center; margin-top:10%;">       
@@ -1766,7 +1772,7 @@ function atrasPedido(){
             <a data-transition="slide" href="#" onclick="ocultarElemento(this);" style="float:right" data-role="button" data-icon="delete" data-inline="true" data-iconpos="notext">Dismiss</a>
        	</div>
     	<div style="width: 100%;">
-            <div style="width:70%;">      	
+            <div style="width:100%; text-align:center; margin-left:-30px;">      	
             	<form class="form-horizontal">
                     <div class="control-group">
                         <label class="control-label" for="nombreRegistro">Nombre</label>
@@ -2197,6 +2203,9 @@ function atrasPedido(){
             </div>
             <div>                    
                 <a data-transition="slide" href="#" style="color: #FFF" onClick="limpiarDatos();"><img src="img/candado.png" style="width: 50px; height: 50px">Logout</a>                   
+            </div>
+             <div>                    
+                <a data-transition="slide" href="#" style="color: #FFF" onClick="compartir();"><img src="img/compartir.png" style="width: 50px; height: 50px">Compartir</a>                   
             </div>
         </div>		
 	</div>
